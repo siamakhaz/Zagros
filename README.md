@@ -3,7 +3,7 @@
 A Rust CLI and MCP server for ingesting, storing, and searching official CVE records and
 authoritative security standards, backed by a local **HelixDB** graph-vector store.
 
-![cve-rag](assets/cve-rag.png)
+![cve-rag](assets/zagros.png)
 
 ---
 
