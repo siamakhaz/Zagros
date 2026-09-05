@@ -8,7 +8,7 @@ services:
     container_name: zagros-ui
     restart: unless-stopped
     ports:
-      - "127.0.0.1:8788:8788"
+      - "0.0.0.0:8788:8788"
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=n8n_default"
