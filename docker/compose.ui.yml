@@ -22,3 +22,9 @@ services:
       UI_PORT: 8788
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8788/api/status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
