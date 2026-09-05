@@ -59,11 +59,7 @@ services:
     networks:
       - zagros
     healthcheck:
-      test: ["CMD", "curl", "-fsS", "http://localhost:8080/healthz"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
-      start_period: 10s
+      disable: true
 
   mcp:
     build:
@@ -82,7 +78,7 @@ services:
       - "traefik.http.services.ota.loadbalancer.server.port=8789"
     depends_on:
       helix:
-        condition: service_healthy
+        condition: service_started
     deploy:
       resources:
         limits:
