@@ -90,10 +90,13 @@ HelixDB starts on `http://127.0.0.1:47474` (loopback-only binding).
 
 ```powershell
 docker compose -f docker/compose.yml ps
+curl -sf http://localhost:47474/healthz
 ```
 
-There is no HTTP healthcheck endpoint (distroless image — no shell or curl).
-Wait approximately 3–5 seconds after container start before running ingestion commands.
+The Compose healthcheck waits for HelixDB's `/healthz` endpoint to report ready
+before starting the MCP service. The MCP service exposes `/health` on port 8789;
+the UI Compose stack checks `/api/status` on port 8788, which also verifies its
+connection to HelixDB.
 
 ### Stopping HelixDB
 
