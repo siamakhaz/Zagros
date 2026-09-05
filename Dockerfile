@@ -23,5 +23,5 @@ ENV ZAGROS_DATA_DIR=/data
 # Docker Desktop MCP Toolkit needs the stdio binary.
 EXPOSE 8789
 VOLUME ["/data"]
-USER cverag
+USER zagros
 ENTRYPOINT ["/usr/local/bin/zagros-mcp-http"]
