@@ -1,4 +1,4 @@
-# CVE RAG — Security Knowledge MCP Server
+# Zagros — Security Knowledge MCP Server
 
 A Rust CLI and MCP server for ingesting, storing, and searching official CVE records and
 authoritative security standards, backed by a local **HelixDB** graph-vector store.
