@@ -1,10 +1,10 @@
-name: cve-rag
+name: zagros
 title: Security RAG (CVE + CWE + ASVS + CAPEC + ATT&CK)
 type: server
-image: cve-rag-mcp:0.1.0
-# The image default entrypoint is cve-rag-mcp-http (HTTP server).
+image: zagros-mcp:0.1.0
+# The image default entrypoint is zagros-mcp-http (HTTP server).
 # The MCP Toolkit needs the stdio binary, so override it here.
-command: ["/usr/local/bin/cve-rag-mcp"]
+command: ["/usr/local/bin/zagros-mcp"]
 description: >
   Search CVE records and the security knowledge base (MITRE CWE, OWASP ASVS,
   MITRE CAPEC, MITRE ATT&CK) stored in a local HelixDB instance.

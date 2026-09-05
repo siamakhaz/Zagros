@@ -1,11 +1,11 @@
-// cve-rag-mcp — stdio MCP transport
+// zagros-mcp — stdio MCP transport
 //
-// Thin wrapper around the shared CveMcpServer in cve_rag::mcp.
+// Thin wrapper around the shared CveMcpServer in zagros::mcp.
 // Launched on-demand by Docker Desktop MCP Toolkit as a short-lived
 // subprocess with one client connected over stdin/stdout.
 
-use cve_rag::mcp::CveMcpServer;
 use rmcp::{ServiceExt, transport::stdio};
+use zagros::mcp::CveMcpServer;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -16,7 +16,7 @@ async fn main() -> anyhow::Result<()> {
 
 #[cfg(test)]
 mod tests {
-    use cve_rag::mcp::valid_cve_id;
+    use zagros::mcp::valid_cve_id;
 
     #[test]
     fn validates_cve_ids() {

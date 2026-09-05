@@ -100,7 +100,7 @@ pub struct OwnedSearchHit {
 }
 
 pub fn data_file() -> PathBuf {
-    std::env::var_os("CVE_RAG_DATA_DIR")
+    std::env::var_os("ZAGROS_DATA_DIR")
         .map(PathBuf::from)
         .unwrap_or_else(|| PathBuf::from("data"))
         .join("cves.json")
@@ -108,7 +108,7 @@ pub fn data_file() -> PathBuf {
 
 pub fn http_client() -> Result<reqwest::Client> {
     let mut headers = HeaderMap::new();
-    headers.insert(USER_AGENT, HeaderValue::from_static("cve-rag/0.1"));
+    headers.insert(USER_AGENT, HeaderValue::from_static("zagros/0.1"));
     reqwest::Client::builder()
         .default_headers(headers)
         .timeout(std::time::Duration::from_secs(30))

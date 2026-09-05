@@ -1,6 +1,6 @@
 // Shared MCP server implementation.
 //
-// Both the stdio binary (cve-rag-mcp) and the HTTP binary (cve-rag-mcp-http)
+// Both the stdio binary (zagros-mcp) and the HTTP binary (zagros-mcp-http)
 // use this module.  Transport-specific code lives in the respective binaries.
 
 use crate::{CveDocument, db, owned_hit, rank_documents, sync_cves_to_helix};
@@ -288,6 +288,6 @@ pub fn valid_cve_id(value: &str) -> bool {
 }
 
 pub fn internal_error(error: anyhow::Error) -> McpError {
-    eprintln!("[cve-rag] internal error: {error:#}");
+    eprintln!("[zagros] internal error: {error:#}");
     McpError::internal_error("an internal error occurred; see server logs", None)
 }

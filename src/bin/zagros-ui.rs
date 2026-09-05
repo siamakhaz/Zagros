@@ -5,9 +5,9 @@ use axum::{
     response::{Html, IntoResponse},
     routing::get,
 };
-use cve_rag::{CveDocument, db, rank_documents, rank_knowledge};
 use serde::{Deserialize, Serialize};
 use std::{collections::BTreeMap, net::SocketAddr, sync::Arc};
+use zagros::{CveDocument, db, rank_documents, rank_knowledge};
 
 #[derive(Clone)]
 struct AppState {
@@ -120,7 +120,7 @@ async fn main() -> anyhow::Result<()> {
         .with_state(state);
 
     let listener = tokio::net::TcpListener::bind(bind_addr).await?;
-    println!("CVE UI listening on http://{bind_addr}");
+    println!("Zagros UI listening on http://{bind_addr}");
     axum::serve(listener, app).await?;
     Ok(())
 }
@@ -351,7 +351,7 @@ fn cve_view(doc: &CveDocument) -> CveView {
     }
 }
 
-fn knowledge_view(doc: &cve_rag::sources::KnowledgeDoc) -> KnowledgeView {
+fn knowledge_view(doc: &zagros::sources::KnowledgeDoc) -> KnowledgeView {
     KnowledgeView {
         id: doc.id.clone(),
         name: doc.name.clone(),
@@ -379,7 +379,7 @@ fn cve_issues(doc: &CveDocument) -> Vec<String> {
     issues
 }
 
-fn knowledge_issues(doc: &cve_rag::sources::KnowledgeDoc) -> Vec<String> {
+fn knowledge_issues(doc: &zagros::sources::KnowledgeDoc) -> Vec<String> {
     let mut issues = Vec::new();
     if doc.name.trim().is_empty() {
         issues.push("Missing name".into());

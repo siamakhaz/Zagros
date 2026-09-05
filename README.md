@@ -3,7 +3,7 @@
 A Rust CLI and MCP server for ingesting, storing, and searching official CVE records and
 authoritative security standards, backed by a local **HelixDB** graph-vector store.
 
-![cve-rag](assets/zagros.png)
+![Zagros](assets/zagros.png)
 
 ---
 
@@ -60,14 +60,14 @@ cargo build
 First run — load a useful corpus from the full deltaLog history:
 
 ```powershell
-.\target\debug\cve-rag.exe backfill --limit 500
+.\target\debug\zagros.exe backfill --limit 500
 # fetched 499 CVEs; 499 total in HelixDB
 ```
 
 Ongoing — pull the latest changed CVEs:
 
 ```powershell
-.\target\debug\cve-rag.exe ingest --limit 50
+.\target\debug\zagros.exe ingest --limit 50
 ```
 
 Both commands are idempotent (upsert, not append).
@@ -75,17 +75,17 @@ Both commands are idempotent (upsert, not append).
 ### 4. Populate the security knowledge base
 
 ```powershell
-.\target\debug\cve-rag.exe source all
+.\target\debug\zagros.exe source all
 # ingested 969 CWE, 345 ASVS, 613 CAPEC, 697 ATT&CK records
 ```
 
 Or ingest a single source:
 
 ```powershell
-.\target\debug\cve-rag.exe source cwe
-.\target\debug\cve-rag.exe source asvs
-.\target\debug\cve-rag.exe source capec
-.\target\debug\cve-rag.exe source attack
+.\target\debug\zagros.exe source cwe
+.\target\debug\zagros.exe source asvs
+.\target\debug\zagros.exe source capec
+.\target\debug\zagros.exe source attack
 ```
 
 ### 5. Search
@@ -93,23 +93,23 @@ Or ingest a single source:
 Search CVE records:
 
 ```powershell
-.\target\debug\cve-rag.exe search "remote code execution" --top-k 5
-.\target\debug\cve-rag.exe search CVE-2026-17061
-.\target\debug\cve-rag.exe search "buffer overflow" --json    # machine-readable output
+.\target\debug\zagros.exe search "remote code execution" --top-k 5
+.\target\debug\zagros.exe search CVE-2026-17061
+.\target\debug\zagros.exe search "buffer overflow" --json    # machine-readable output
 ```
 
 Search the security knowledge base (CWE / ASVS / CAPEC / ATT&CK):
 
 ```powershell
-.\target\debug\cve-rag.exe know "SQL injection"
-.\target\debug\cve-rag.exe know "hardcoded credentials"
-.\target\debug\cve-rag.exe know "lateral movement techniques"
+.\target\debug\zagros.exe know "SQL injection"
+.\target\debug\zagros.exe know "hardcoded credentials"
+.\target\debug\zagros.exe know "lateral movement techniques"
 ```
 
 Interactive REPL:
 
 ```powershell
-.\target\debug\cve-rag.exe interactive
+.\target\debug\zagros.exe interactive
 # > remote code execution
 # > :limit 20
 # > :quit
@@ -118,7 +118,7 @@ Interactive REPL:
 Check index status:
 
 ```powershell
-.\target\debug\cve-rag.exe status
+.\target\debug\zagros.exe status
 ```
 
 ### Optional web UI
@@ -126,7 +126,7 @@ Check index status:
 Run locally:
 
 ```powershell
-cargo run --bin cve-ui
+cargo run --bin zagros-ui
 # open http://localhost:8788
 ```
 
@@ -143,12 +143,14 @@ Set `UI_PORT` to change the port.
 
 ## MCP server (AI agent integration)
 
-The MCP server binary (`cve-rag-mcp`) exposes four tools to AI agent clients.
+The MCP server binary (`zagros-mcp`) exposes four tools to AI agent clients.
+A second binary, `zagros-mcp-http`, serves the same tools over Streamable HTTP
+for clients that cannot use the Docker MCP Toolkit stdio transport.
 
 Build the Docker image:
 
 ```powershell
-docker build -t cve-rag-mcp:0.1.0 .
+docker build -t zagros-mcp:0.1.0 .
 ```
 
 Register with Docker Desktop MCP Toolkit:
@@ -193,7 +195,7 @@ docker mcp client connect vscode --profile profile
 | Variable | Default | Purpose |
 |---|---|---|
 | `HELIX_URL` | `http://localhost:47474` | HelixDB instance URL |
-| `CVE_RAG_DATA_DIR` | `data/` (relative to CWD) | Directory for the legacy flat-file cache |
+| `ZAGROS_DATA_DIR` | `data/` (relative to CWD) | Directory for the legacy flat-file cache |
 
 ---
 

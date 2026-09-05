@@ -281,9 +281,9 @@ docker mcp client connect cursor --profile my-profile --global
 
 ---
 
-## cve-rag MCP Server on Windows
+## Zagros MCP Server on Windows
 
-The `cve-rag-mcp` server in this project uses Docker MCP. On Windows without
+The `zagros-mcp` server in this project uses Docker MCP. On Windows without
 Docker Desktop, follow these steps instead of `register.ps1`.
 
 ### WSL2 Path
@@ -292,40 +292,40 @@ Inside your WSL2 terminal, from the project root:
 
 ```bash
 # Build the image
-docker build -t cve-rag-mcp:0.1.0 .
+docker build -t zagros-mcp:0.1.0 .
 
 # Create a local server definition
 cat > docker/server-wsl.yaml <<'EOF'
-name: cve-rag
-description: CVE RAG search and retrieval tools
-image: cve-rag-mcp:0.1.0
+name: zagros
+description: Zagros search and retrieval tools
+image: zagros-mcp:0.1.0
 environment:
   HELIX_URL: http://host.docker.internal:47474
 allowHosts:
   - raw.githubusercontent.com:443
 volumes:
-  - cve-rag-data:/data
+  - zagros-data:/data
 EOF
 
 # Create a profile using the local server definition
-docker mcp profile create --name cve-profile \
+docker mcp profile create --name zagros-profile \
   --server file://./docker/server-wsl.yaml
 
 # Run the gateway
-DOCKER_MCP_IN_CONTAINER=1 docker mcp gateway run --profile cve-profile
+DOCKER_MCP_IN_CONTAINER=1 docker mcp gateway run --profile zagros-profile
 ```
 
 ### Native Windows Path
 
 ```powershell
 # Build the image
-docker build -t cve-rag-mcp:0.1.0 .
+docker build -t zagros-mcp:0.1.0 .
 
 # Register via file reference
-docker mcp profile create --name cve-profile `
+docker mcp profile create --name zagros-profile `
   --server file://./docker/server.yaml
 
-docker mcp gateway run --profile cve-profile
+docker mcp gateway run --profile zagros-profile
 ```
 
 ---
@@ -473,6 +473,6 @@ make sure:
 ## See Also
 
 - [DOCKER-MCP-LINUX.md](DOCKER-MCP-LINUX.md) — Linux-native setup (no WSL2)
-- [MCP.md](MCP.md) — cve-rag MCP server tool reference
+- [MCP.md](MCP.md) — Zagros MCP server tool reference
 - [CONFIGURATION.md](CONFIGURATION.md) — HelixDB and environment setup
 - [docker/mcp-gateway on GitHub](https://github.com/docker/mcp-gateway) — upstream source

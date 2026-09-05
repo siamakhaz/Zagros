@@ -5,8 +5,8 @@
 | Variable | Default | Description |
 |---|---|---|
 | `HELIX_URL` | `http://localhost:47474` | HelixDB instance URL used by all CLI commands and the MCP server |
-| `CVE_RAG_DATA_DIR` | `data/` relative to CWD | Directory for the legacy flat-file cache (`cves.json`) |
-| `UI_PORT` | `8788` | Port for the optional CVE UI binary (`cve-ui`) |
+| `ZAGROS_DATA_DIR` | `data/` relative to CWD | Directory for the legacy flat-file cache (`cves.json`) |
+| `UI_PORT` | `8788` | Port for the optional web UI binary (`zagros-ui`) |
 
 ### Setting `HELIX_URL`
 
@@ -29,13 +29,13 @@ environment:
   HELIX_URL: http://host.docker.internal:47474
 ```
 
-### Setting `CVE_RAG_DATA_DIR`
+### Setting `ZAGROS_DATA_DIR`
 
 Used only by `save_local_index` and `load_local_index` (legacy flat-file path).
 HelixDB is the canonical store; this variable is rarely needed.
 
 ```powershell
-$env:CVE_RAG_DATA_DIR = "C:\data\cve-rag"
+$env:ZAGROS_DATA_DIR = "C:\data\zagros"
 ```
 
 ### Running the UI
@@ -43,14 +43,14 @@ $env:CVE_RAG_DATA_DIR = "C:\data\cve-rag"
 The optional web UI binds to `http://localhost:8788` by default.
 
 ```powershell
-cargo run --bin cve-ui
+cargo run --bin zagros-ui
 ```
 
 To use a different port:
 
 ```powershell
 $env:UI_PORT = "8790"
-cargo run --bin cve-ui
+cargo run --bin zagros-ui
 ```
 
 ### Running the UI with Docker Compose
@@ -71,7 +71,7 @@ docker compose -f docker/compose.ui.yml down
 
 | File | Purpose |
 |---|---|
-| `Dockerfile.ui` | Two-stage build that produces the `cve-ui` binary image |
+| `Dockerfile.ui` | Two-stage build that produces the `zagros-ui` binary image |
 | `docker/compose.ui.yml` | Compose service for the UI; exposes loopback port `8788` |
 
 ---
@@ -101,7 +101,7 @@ Wait approximately 3–5 seconds after container start before running ingestion 
 docker compose -f docker/compose.yml down
 ```
 
-Data persists in the named volume `cve-rag_helix-data` across container restarts
+Data persists in the named volume `zagros_helix-data` across container restarts
 and `down` commands. Use `down -v` to also delete the volume.
 
 ### Docker Compose configuration (`docker/compose.yml`)
@@ -112,7 +112,7 @@ and `down` commands. Use `down -v` to also delete the volume.
 | Port | `127.0.0.1:47474:8080` | Loopback-only; not exposed to the network |
 | Memory limit | `256m` | Sufficient for the current corpus size |
 | CPU limit | `1.0` | One vCPU |
-| Volume | `cve-rag_helix-data` | Named, survives container restarts |
+| Volume | `zagros_helix-data` | Named, survives container restarts |
 
 ### Connecting from inside a Docker container
 
@@ -135,9 +135,9 @@ environment:
 # Create a profile
 docker mcp profile create --name profile
 
-# Add the server (uses docker/cve-rag-server.yaml)
-docker mcp profile server add cve_rag `
-  --server file://C:/Projects/RAG/cve-rag/docker/cve-rag-server.yaml
+# Add the server (uses docker/zagros-server.yaml)
+docker mcp profile server add zagros `
+  --server file://C:/Projects/RAG/zagros/docker/zagros-server.yaml
 
 # Verify tools are visible
 docker mcp tools ls --gateway-arg=--profile --gateway-arg=profile
@@ -164,14 +164,14 @@ Two YAML files are provided:
 | File | Use case |
 |---|---|
 | `docker/server.yaml` | MCP server runs inside Docker; HelixDB also in Docker (internal network) |
-| `docker/cve-rag-server.yaml` | MCP server inside Docker; HelixDB on host (`host.docker.internal:47474`) |
+| `docker/zagros-server.yaml` | MCP server inside Docker; HelixDB on host (`host.docker.internal:47474`) |
 
 ### Allowed hosts
 
 The MCP server is permitted to reach only:
 
 - `raw.githubusercontent.com:443` — CVE delta feed
-- `host.docker.internal:47474` — HelixDB on the Docker host (cve-rag-server.yaml only)
+- `host.docker.internal:47474` — HelixDB on the Docker host (zagros-server.yaml only)
 
 ---
 
@@ -197,10 +197,10 @@ The setup script runs all configuration steps in order and is safe to re-run.
 
 1. **Preflight** — verifies `docker`, `cargo`, and `pwsh` ≥ 7 are available.
 2. **HelixDB** — starts HelixDB with Docker Compose; polls until responsive (up to 30 s).
-3. **Build** — `cargo build --release --bin cve-rag-mcp`.
-4. **Image** — `docker build -t cve-rag-mcp:0.1.0 .`
+3. **Build** — `cargo build --release --bin zagros-mcp`.
+4. **Image** — `docker build -t zagros-mcp:0.1.0 .`
 5. **Register** — runs `docker/register.ps1` to create catalog entry and add to profile.
-6. **Seed** (if `-Seed`) — runs `cve-rag-mcp backfill --limit $SeedLimit`.
+6. **Seed** (if `-Seed`) — runs `zagros-mcp backfill --limit $SeedLimit`.
 
 **Example:**
 
@@ -216,19 +216,19 @@ The setup script runs all configuration steps in order and is safe to re-run.
 
 ## Dockerfile
 
-The `Dockerfile` produces the `cve-rag-mcp` image only (the CLI binary is not included).
+The `Dockerfile` produces the `zagros-mcp` image only (the CLI binary is not included).
 
 **Build:**
 
 ```powershell
-docker build -t cve-rag-mcp:0.1.0 .
+docker build -t zagros-mcp:0.1.0 .
 ```
 
 **Runtime environment variables available inside the container:**
 
 | Variable | Default set by image | Description |
 |---|---|---|
-| `CVE_RAG_DATA_DIR` | `/data` | Mounted volume path |
+| `ZAGROS_DATA_DIR` | `/data` | Mounted volume path |
 | `HELIX_URL` | not set (use `http://host.docker.internal:47474`) | HelixDB URL |
 
 **Volume:**
@@ -237,5 +237,5 @@ The image declares `/data` as a Docker volume. Mount a named volume for persiste
 
 ```yaml
 volumes:
-  - cve-rag-data:/data
+  - zagros-data:/data
 ```

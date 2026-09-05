@@ -1,6 +1,6 @@
-# cve-rag Documentation
+# Zagros Documentation
 
-cve-rag is a Rust CLI and MCP server for ingesting, storing, and searching official
+Zagros is a Rust CLI and MCP server for ingesting, storing, and searching official
 CVE records and authoritative security knowledge standards, backed by a local
 HelixDB graph-vector store.
 

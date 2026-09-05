@@ -21,8 +21,10 @@ cargo build
 ```
 
 Produces:
-- `target\debug\cve-rag.exe` — CLI
-- `target\debug\cve-rag-mcp.exe` — MCP server
+- `target\debug\zagros.exe` — CLI
+- `target\debug\zagros-mcp.exe` — MCP server (stdio)
+- `target\debug\zagros-mcp-http.exe` — MCP server (Streamable HTTP)
+- `target\debug\zagros-ui.exe` — web UI
 
 ### Release build (optimized, for Docker image)
 
@@ -31,14 +33,16 @@ cargo build --release
 ```
 
 Produces:
-- `target\release\cve-rag.exe`
-- `target\release\cve-rag-mcp.exe`
+- `target\release\zagros.exe`
+- `target\release\zagros-mcp.exe`
+- `target\release\zagros-mcp-http.exe`
+- `target\release\zagros-ui.exe`
 
 ### Build only one binary
 
 ```powershell
-cargo build --bin cve-rag
-cargo build --bin cve-rag-mcp
+cargo build --bin zagros
+cargo build --bin zagros-mcp
 ```
 
 ### Check without producing binaries
@@ -62,7 +66,7 @@ Current tests (4 total):
 | `exact_cve_id_is_ranked_first` | `src/lib.rs` | Exact CVE ID match outranks all partial matches |
 | `phrase_and_title_matches_receive_higher_score` | `src/lib.rs` | Title phrase match outscores description-only match |
 | `unrelated_documents_are_not_returned` | `src/lib.rs` | No results when no term overlap |
-| `validates_cve_ids` | `src/bin/cve-rag-mcp.rs` | `valid_cve_id` accepts well-formed IDs and rejects malformed and path-traversal inputs |
+| `validates_cve_ids` | `src/bin/zagros-mcp.rs` | `valid_cve_id` accepts well-formed IDs and rejects malformed and path-traversal inputs |
 
 Run a single test:
 
@@ -86,7 +90,9 @@ cargo test -- --nocapture
 | `src/db.rs` | HelixDB CRUD: upsert, load, count for `Cve` and `Knowledge` nodes |
 | `src/sources.rs` | Knowledge source parsers: CWE XML ZIP, ASVS CSV, CAPEC XML, ATT&CK STIX JSON |
 | `src/main.rs` | CLI entry point: clap command dispatch |
-| `src/bin/cve-rag-mcp.rs` | MCP server: tool handlers, DocCache, rate-limit guard, CVE ID validation |
+| `src/bin/zagros-mcp.rs` | MCP server (stdio): tool handlers, DocCache, rate-limit guard, CVE ID validation |
+| `src/bin/zagros-mcp-http.rs` | MCP server (Streamable HTTP): same tools over TCP, host allowlist |
+| `src/bin/zagros-ui.rs` | Web UI: axum routes and HTML review console |
 
 ### Adding a new CLI subcommand
 
@@ -153,7 +159,7 @@ cargo clippy -- -D warnings # treat warnings as errors
 ## Building the Docker image
 
 ```powershell
-docker build -t cve-rag-mcp:0.1.0 .
+docker build -t zagros-mcp:0.1.0 .
 ```
 
 The Dockerfile uses a two-stage build. Both base images are pinned to SHA256
@@ -163,7 +169,7 @@ digests. The build uses `--locked` to ensure the exact dependency versions in
 To rebuild from scratch (ignore Docker layer cache):
 
 ```powershell
-docker build --no-cache -t cve-rag-mcp:0.1.0 .
+docker build --no-cache -t zagros-mcp:0.1.0 .
 ```
 
 ---
@@ -175,9 +181,9 @@ docker build --no-cache -t cve-rag-mcp:0.1.0 .
 ```powershell
 docker compose -f docker/compose.yml down -v          # delete volume
 docker compose -f docker/compose.yml up -d helix       # fresh start
-.\target\debug\cve-rag.exe backfill --limit 500
-.\target\debug\cve-rag.exe source all
-.\target\debug\cve-rag.exe status
+.\target\debug\zagros.exe backfill --limit 500
+.\target\debug\zagros.exe source all
+.\target\debug\zagros.exe status
 ```
 
 ### Watch for compilation errors
@@ -197,7 +203,7 @@ Because BM25 runs in-process, the standard Rust profiling tools apply.
 For a quick timing measurement:
 
 ```powershell
-Measure-Command { .\target\release\cve-rag.exe search "remote code execution" }
+Measure-Command { .\target\release\zagros.exe search "remote code execution" }
 ```
 
 ---

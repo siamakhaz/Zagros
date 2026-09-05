@@ -409,27 +409,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "cve-rag"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "axum",
- "chrono",
- "clap",
- "csv",
- "helix-db",
- "quick-xml",
- "reqwest",
- "rmcp",
- "serde",
- "serde_json",
- "sonic-rs",
- "thiserror",
- "tokio",
- "zip",
-]
-
-[[package]]
 name = "darling"
 version = "0.24.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2617,6 +2596,27 @@ dependencies = [
  "quote",
  "syn 2.0.119",
  "synstructure",
+]
+
+[[package]]
+name = "zagros"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "axum",
+ "chrono",
+ "clap",
+ "csv",
+ "helix-db",
+ "quick-xml",
+ "reqwest",
+ "rmcp",
+ "serde",
+ "serde_json",
+ "sonic-rs",
+ "thiserror",
+ "tokio",
+ "zip",
 ]
 
 [[package]]

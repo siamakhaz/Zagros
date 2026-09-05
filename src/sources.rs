@@ -140,14 +140,14 @@ fn parse_cwe_xml(xml: &[u8]) -> Result<Vec<KnowledgeDoc>> {
                 let raw = match std::str::from_utf8(e) {
                     Ok(s) => s,
                     Err(err) => {
-                        eprintln!("[cve-rag] warning: invalid UTF-8 in XML text, skipping: {err}");
+                        eprintln!("[zagros] warning: invalid UTF-8 in XML text, skipping: {err}");
                         ""
                     }
                 };
                 match unescape(raw) {
                     Ok(s) => desc_buf.push_str(&s),
                     Err(err) => {
-                        eprintln!("[cve-rag] warning: XML unescape failed, skipping entity: {err}")
+                        eprintln!("[zagros] warning: XML unescape failed, skipping entity: {err}")
                     }
                 }
             }
@@ -340,14 +340,14 @@ fn parse_capec_xml(xml: &[u8]) -> Result<Vec<KnowledgeDoc>> {
                 let raw = match std::str::from_utf8(e) {
                     Ok(s) => s,
                     Err(err) => {
-                        eprintln!("[cve-rag] warning: invalid UTF-8 in XML text, skipping: {err}");
+                        eprintln!("[zagros] warning: invalid UTF-8 in XML text, skipping: {err}");
                         ""
                     }
                 };
                 match unescape(raw) {
                     Ok(s) => desc_buf.push_str(&s),
                     Err(err) => {
-                        eprintln!("[cve-rag] warning: XML unescape failed, skipping entity: {err}")
+                        eprintln!("[zagros] warning: XML unescape failed, skipping entity: {err}")
                     }
                 }
             }

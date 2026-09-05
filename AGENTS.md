@@ -1,8 +1,8 @@
-# AGENTS.md — cve-rag
+# AGENTS.md — Zagros
 
 ## What this repo is
 
-Rust CLI + MCP server for ingesting and BM25-searching CVE records and four security knowledge corpora (CWE, ASVS, CAPEC, ATT&CK), backed by a local HelixDB graph-vector store. Three binaries share one library crate.
+Rust CLI + MCP server for ingesting and BM25-searching CVE records and four security knowledge corpora (CWE, ASVS, CAPEC, ATT&CK), backed by a local HelixDB graph-vector store. Four binaries share one library crate.
 
 ---
 
@@ -10,11 +10,12 @@ Rust CLI + MCP server for ingesting and BM25-searching CVE records and four secu
 
 | Binary | Source | Purpose |
 |---|---|---|
-| `cve-rag` | `src/main.rs` | CLI (clap derive) |
-| `cve-rag-mcp` | `src/bin/cve-rag-mcp.rs` | MCP server (stdio transport) |
-| `cve-ui` | `src/bin/cve-ui.rs` | Optional web UI (axum, port 8788) |
+| `zagros` | `src/main.rs` | CLI (clap derive) |
+| `zagros-mcp` | `src/bin/zagros-mcp.rs` | MCP server (stdio transport) |
+| `zagros-mcp-http` | `src/bin/zagros-mcp-http.rs` | MCP server (Streamable HTTP, port 8789) |
+| `zagros-ui` | `src/bin/zagros-ui.rs` | Optional web UI (axum, port 8788) |
 
-All three link to `src/lib.rs` (BM25 engine, HTTP ingestion, data types) and `src/db.rs` / `src/sources.rs`.
+All four link to `src/lib.rs` (BM25 engine, HTTP ingestion, data types) and `src/db.rs` / `src/sources.rs`.
 
 ---
 
@@ -25,7 +26,7 @@ All three link to `src/lib.rs` (BM25 engine, HTTP ingestion, data types) and `sr
 cargo check
 cargo build                          # debug: target\debug\*.exe
 cargo build --release                # release: target\release\*.exe
-cargo build --bin cve-rag            # single binary
+cargo build --bin zagros             # single binary
 
 # Test (4 unit tests, all offline, no HelixDB required)
 cargo test
@@ -61,9 +62,9 @@ HelixDB uses two node labels: `Cve` (key: `cve_id`) and `Knowledge` (key: `doc_i
 ## First-run seeding sequence
 
 ```powershell
-.\target\debug\cve-rag.exe backfill --limit 500   # ~499 CVEs from deltaLog history
-.\target\debug\cve-rag.exe source all              # CWE + ASVS + CAPEC + ATT&CK
-.\target\debug\cve-rag.exe status                  # verify counts
+.\target\debug\zagros.exe backfill --limit 500   # ~499 CVEs from deltaLog history
+.\target\debug\zagros.exe source all              # CWE + ASVS + CAPEC + ATT&CK
+.\target\debug\zagros.exe status                  # verify counts
 ```
 
 `backfill` and `source` are idempotent (upsert). Re-running is safe.
@@ -80,7 +81,7 @@ docker compose -f docker/compose.yml up -d helix
 ## MCP server setup
 
 ```powershell
-docker build -t cve-rag-mcp:0.1.0 .   # two-stage build, uses Cargo.lock --locked
+docker build -t zagros-mcp:0.1.0 .   # two-stage build, uses Cargo.lock --locked
 .\docker\register.ps1                  # registers with Docker Desktop MCP Toolkit, profile "profile"
 .\scripts\setup.ps1 -Seed -SeedLimit 500  # full automated setup (build + register + seed)
 ```
@@ -99,8 +100,9 @@ MCP tools: `search_cves`, `get_cve`, `index_status`, `sync_cves`.
 | `src/db.rs` | HelixDB CRUD for `Cve` and `Knowledge` nodes |
 | `src/sources.rs` | Parsers for CWE (XML ZIP), ASVS (CSV), CAPEC (XML), ATT&CK (STIX JSON) |
 | `src/main.rs` | CLI command dispatch |
-| `src/bin/cve-rag-mcp.rs` | MCP tool handlers, `DocCache`, rate-limit guard, `valid_cve_id` |
-| `src/bin/cve-ui.rs` | Axum web UI |
+| `src/bin/zagros-mcp.rs` | MCP tool handlers, `DocCache`, rate-limit guard, `valid_cve_id` |
+| `src/bin/zagros-mcp-http.rs` | Streamable HTTP transport for the MCP tools |
+| `src/bin/zagros-ui.rs` | Axum web UI |
 
 New domain logic goes in `src/lib.rs` or `src/db.rs`, not in the CLI or MCP binaries.
 
@@ -124,7 +126,7 @@ New domain logic goes in `src/lib.rs` or `src/db.rs`, not in the CLI or MCP bina
 | F-01 | High | HelixDB port `47474` binds to `0.0.0.0`; fix: `127.0.0.1:47474:8080` in `docker/compose.yml:27` |
 | F-02 | High | CVE ingestion has no URL-origin validation or payload size cap on individual CVE records — **already partially fixed** in `src/lib.rs` (`bytes.len() < 10 MB` check and origin prefix check present in current code) |
 | F-03 | Medium | `upsert_document` is delete-then-insert, not atomic; a record can vanish if the process dies mid-upsert |
-| F-04 | Medium | `sync_cves` rate-limit guard **already implemented** in current `src/bin/cve-rag-mcp.rs` |
+| F-04 | Medium | `sync_cves` rate-limit guard **already implemented** in current `src/bin/zagros-mcp.rs` |
 | F-05 | Medium | `load_all()` full table scan; MCP server cache **already implemented** |
 | F-06 | Low | BM25 `MIN_SCORE` threshold **already set** at 1.0 in `src/lib.rs` |
 

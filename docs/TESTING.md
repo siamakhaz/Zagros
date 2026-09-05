@@ -1,6 +1,6 @@
 # Testing the Deployed Application
 
-This document covers how to verify that a deployed cve-rag instance is working
+This document covers how to verify that a deployed Zagros instance is working
 correctly at every layer: HelixDB, the CLI, the MCP gateway, and the AI client.
 
 Run these checks in order — each layer depends on the one below it.
@@ -24,11 +24,11 @@ Expected output:
 If the container is not running:
 
 ```bash
-docker ps --filter name=cve-rag-helix
+docker ps --filter name=zagros-helix
 # restart if needed:
-cd /path/to/cve-rag
-CVE_RAG_DATA_DIR=/data/cve-rag/data \
-  docker compose -f docker/compose.yml --project-name cve-rag up -d helix
+cd /path/to/zagros
+ZAGROS_DATA_DIR=/data/zagros/data \
+  docker compose -f docker/compose.yml --project-name zagros up -d helix
 ```
 
 ---
@@ -40,7 +40,7 @@ The CLI binaries talk to HelixDB directly. No Docker gateway involved.
 ### Check index status
 
 ```bash
-./target/release/cve-rag status
+./target/release/zagros status
 ```
 
 Expected output (after seeding):
@@ -58,20 +58,20 @@ CVE nodes    : 1000
 If CVE nodes is 0, run the seed commands:
 
 ```bash
-./target/release/cve-rag backfill --limit 1000
-./target/release/cve-rag source all
+./target/release/zagros backfill --limit 1000
+./target/release/zagros source all
 ```
 
 ### Search CVEs
 
 ```bash
-./target/release/cve-rag search "remote code execution" --top-k 3
+./target/release/zagros search "remote code execution" --top-k 3
 ```
 
 Expected: 3 ranked CVE records with IDs, scores, and descriptions.
 
 ```bash
-./target/release/cve-rag search "CVE-2026-62819"
+./target/release/zagros search "CVE-2026-62819"
 ```
 
 Expected: exact match for that CVE ID ranked first.
@@ -79,7 +79,7 @@ Expected: exact match for that CVE ID ranked first.
 ### Search knowledge base
 
 ```bash
-./target/release/cve-rag know "SQL injection"
+./target/release/zagros know "SQL injection"
 ```
 
 Expected: ranked results from CWE / ASVS / CAPEC / ATT&CK.
@@ -88,7 +88,7 @@ Expected: ranked results from CWE / ASVS / CAPEC / ATT&CK.
 
 ## Layer 3 — MCP gateway
 
-Tests the docker-mcp gateway and the `cve-rag-mcp` container in isolation,
+Tests the docker-mcp gateway and the `zagros-mcp` container in isolation,
 without an AI client.
 
 ### Check gateway starts and lists tools
@@ -101,9 +101,9 @@ docker mcp gateway run --profile profile --verbose --dry-run 2>&1
 Expected output includes:
 
 ```
-- Those servers are enabled: cve-rag
-  - Running cve-rag-mcp:0.1.0 with [...  -e HELIX_URL ... --add-host host.docker.internal:host-gateway ...]
-  > cve-rag: (4 tools)
+- Those servers are enabled: zagros
+  - Running zagros-mcp:0.1.0 with [...  -e HELIX_URL ... --add-host host.docker.internal:host-gateway ...]
+  > zagros: (4 tools)
 ```
 
 Four tools must be listed: `search_cves`, `get_cve`, `index_status`, `sync_cves`.
@@ -185,7 +185,7 @@ EOF
 
 ## Layer 5 — End-to-end via opencode headless
 
-Tests the full stack: opencode → gateway → cve-rag-mcp container → HelixDB.
+Tests the full stack: opencode → gateway → zagros-mcp container → HelixDB.
 
 ```bash
 export DOCKER_MCP_IN_CONTAINER=1
@@ -241,10 +241,10 @@ kill %1 2>/dev/null
 | Symptom | Cause | Fix |
 |---|---|---|
 | `curl healthz` → connection refused | HelixDB container not running | `docker compose up -d helix` |
-| `cve-rag status` → CVE nodes: 0 | DB empty | `backfill --limit 1000 && source all` |
-| `cve-rag status` → `failed to load CVE nodes` | Wrong `HELIX_URL` | Unset `HELIX_URL` to use default `localhost:47474` |
+| `zagros status` → CVE nodes: 0 | DB empty | `backfill --limit 1000 && source all` |
+| `zagros status` → `failed to load CVE nodes` | Wrong `HELIX_URL` | Unset `HELIX_URL` to use default `localhost:47474` |
 | `opencode mcp list` → No MCP servers | Config wiped | Restore `MCP_DOCKER` entry in `opencode.json` |
 | `opencode mcp list` → `MCP_DOCKER failed` | Gateway fails to start | Check `DOCKER_MCP_IN_CONTAINER=1` is set |
-| MCP tool call → `-32603` | Container can't reach HelixDB | Check iptables rule; check `docker port cve-rag-helix` shows `0.0.0.0:47474` |
-| MCP tool call → `-32603` | Stale docker image | `docker build -t cve-rag-mcp:0.1.0 .` |
+| MCP tool call → `-32603` | Container can't reach HelixDB | Check iptables rule; check `docker port zagros-helix` shows `0.0.0.0:47474` |
+| MCP tool call → `-32603` | Stale docker image | `docker build -t zagros-mcp:0.1.0 .` |
 | `backfill` returns fewer CVEs than `--limit` | deltaLog parse bug (fixed in current code) | Ensure `src/lib.rs` uses `Vec<DeltaLogEntry>` not `StreamDeserializer` |
