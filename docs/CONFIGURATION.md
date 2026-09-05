@@ -93,8 +93,8 @@ docker compose -f docker/compose.yml ps
 curl -sf http://localhost:47474/healthz
 ```
 
-The Compose healthcheck waits for HelixDB's `/healthz` endpoint to report ready
-before starting the MCP service. The MCP service exposes `/health` on port 8789;
+Compose starts the MCP service after the HelixDB container starts. HelixDB's
+`/healthz` endpoint can be checked from the host with the command above. The MCP service exposes `/health` on port 8789;
 the UI Compose stack checks `/api/status` on port 8788, which also verifies its
 connection to HelixDB.
 
