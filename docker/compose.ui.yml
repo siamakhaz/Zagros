@@ -1,0 +1,16 @@
+name: cve-rag-ui
+
+services:
+  cve-ui:
+    build:
+      context: ..
+      dockerfile: Dockerfile.ui
+    container_name: cve-rag-ui
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8788:8788"
+    environment:
+      HELIX_URL: http://host.docker.internal:47474
+      UI_PORT: 8788
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
