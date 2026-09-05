@@ -1,0 +1,99 @@
+# Docker Compose — CVE RAG + HelixDB + MCP HTTP server
+#
+# Services
+# --------
+#   helix   — HelixDB graph-vector store
+#   mcp     — cve-rag-mcp-http — persistent Streamable HTTP MCP server
+#
+# The stdio cve-rag-mcp binary is still launched on-demand by Docker Desktop's
+# MCP Toolkit as a short-lived subprocess; do NOT add it here.
+#
+# Networking
+# ----------
+# HelixDB is now bound to 127.0.0.1 only (fixes security finding F-01).
+# Host CLI tools still reach it at http://localhost:47474.
+# The mcp container reaches it via the internal cve-rag Docker network
+# at http://helix:8080.
+#
+# The mcp service listens on 0.0.0.0:8789 inside Docker and is published
+# to the host on the same port.  OpenCode connects via:
+#   http://<host-ip>:8789/mcp
+#
+# Usage
+# -----
+#   docker compose -f docker/compose.yml up -d              # start both services
+#   docker compose -f docker/compose.yml up -d helix        # start HelixDB only
+#   docker compose -f docker/compose.yml down               # stop (data kept)
+#   docker compose -f docker/compose.yml down -v            # stop + delete data
+#
+# Environment variables
+#   CVE_RAG_DATA_DIR      Host path for HelixDB data  (default: ./data)
+#   MCP_BIND_ADDR         Bind address for the HTTP MCP server (default: 0.0.0.0:8789)
+#   MCP_ALLOWED_HOSTS     Comma-separated Host header allowlist
+#                         (default: "localhost,127.0.0.1")
+#                         Add your host IP, e.g. "10.100.50.116:8789,localhost"
+
+name: cve-rag
+
+services:
+
+  helix:
+    # Pin: helixdb:latest as of 2026-08-16
+    image: ghcr.io/helixdb/helixdb@sha256:ba41464c42b3cd58edd0f049e15bd7bea673f6abd217eb0ea5f5160b46a4412f
+    container_name: cve-rag-helix
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+          cpus: "1.0"
+    ports:
+      # Bind to 127.0.0.1 only — fixes security finding F-01.
+      # Host CLI tools use http://localhost:47474 as before.
+      # The mcp container reaches HelixDB via the internal network (http://helix:8080).
+      - "127.0.0.1:47474:8080"
+    volumes:
+      - type: bind
+        source: ${CVE_RAG_DATA_DIR:-./data}
+        target: /data
+    networks:
+      - cve-rag
+    healthcheck:
+      test: ["NONE"]
+
+  mcp:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    image: cve-rag-mcp:0.1.0
+    container_name: cve-rag-mcp-http
+    restart: unless-stopped
+    depends_on:
+      - helix
+    deploy:
+      resources:
+        limits:
+          memory: 128m
+          cpus: "1.0"
+    environment:
+      # HelixDB is reachable on the internal Docker network.
+      HELIX_URL: http://helix:8080
+      # Bind address inside the container.
+      MCP_BIND_ADDR: ${MCP_BIND_ADDR:-0.0.0.0:8789}
+      # Adjust MCP_ALLOWED_HOSTS to include the host IP that OpenCode uses.
+      # Example: MCP_ALLOWED_HOSTS=10.100.50.116:8789,localhost
+      MCP_ALLOWED_HOSTS: ${MCP_ALLOWED_HOSTS:-localhost,127.0.0.1}
+    ports:
+      - "8789:8789"
+    volumes:
+      - cve-rag-data:/data
+    networks:
+      - cve-rag
+
+volumes:
+  cve-rag-data:
+
+networks:
+  cve-rag:
+    name: cve-rag
+    driver: bridge
