@@ -7,7 +7,7 @@ RUN cargo build --release --locked --bin zagros-mcp --bin zagros-mcp-http
 
 FROM debian:bookworm-slim@sha256:abd67ffcfa541b485a3dff59865ab629aa048a6c613e639d36e7456b0b229241
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates=20250419~deb12u1 curl=7.88.1-10+deb12u14 \
+    && apt-get install -y --no-install-recommends ca-certificates=20250419~deb12u1 curl=7.88.1-10+deb12u15 \
     && rm -rf /var/lib/apt/lists/* \
     && useradd --system --create-home --uid 10001 zagros \
     && mkdir -p /data \
