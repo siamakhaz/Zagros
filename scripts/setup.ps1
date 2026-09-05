@@ -1,7 +1,7 @@
 #!/usr/bin/env pwsh
 <#
 .SYNOPSIS
-    Full setup, re-setup, and registration helper for the cve-rag MCP server.
+    Full setup, re-setup, and registration helper for the zagros MCP server.
 
 .DESCRIPTION
     Idempotent end-to-end script for a new machine or a clean re-install.
@@ -10,9 +10,9 @@
     Steps
     -----
     1. Preflight  — docker, cargo, pwsh version checks
-    2. HelixDB    — start cve-rag-helix container (port 47474)
+    2. HelixDB    — start zagros-helix container (port 47474)
     3. Build      — cargo build --release
-    4. Image      — docker build cve-rag-mcp:0.1.0
+    4. Image      — docker build zagros-mcp:0.1.0
     5. Register   — docker mcp catalog + profile
     6. Seed       — optional initial CVE backfill (--Seed)
 
@@ -33,13 +33,13 @@
 
 .EXAMPLE
     # Full setup on a new machine, seed 500 CVEs:
-    pwsh cve-rag/scripts/setup.ps1 -Seed
+    pwsh zagros/scripts/setup.ps1 -Seed
 
     # Re-register only (binary and image already exist):
-    pwsh cve-rag/scripts/setup.ps1 -SkipBuild -SkipImage
+    pwsh zagros/scripts/setup.ps1 -SkipBuild -SkipImage
 
     # Custom profile, no seed:
-    pwsh cve-rag/scripts/setup.ps1 -Profile my-team
+    pwsh zagros/scripts/setup.ps1 -Profile my-team
 #>
 param(
     [string] $Profile    = "profile",
@@ -59,16 +59,16 @@ function Warn([string]$msg) { Write-Host "    [warn] $msg" -ForegroundColor Yell
 function Fail([string]$msg) { Write-Host "`n[FAIL] $msg" -ForegroundColor Red; exit 1 }
 
 # ─── Paths ────────────────────────────────────────────────────────────────────
-$repoRoot    = Split-Path $PSScriptRoot -Parent          # cve-rag/
+$repoRoot    = Split-Path $PSScriptRoot -Parent          # zagros/
 $dockerDir   = Join-Path $repoRoot "docker"
 $composeFile = Join-Path $dockerDir "compose.yml"
-$serverYaml  = Join-Path $dockerDir "cve-rag-server.yaml"
+$serverYaml  = Join-Path $dockerDir "zagros-server.yaml"
 $dockerfile  = Join-Path $repoRoot "Dockerfile"
-$binary      = Join-Path $repoRoot "target" "release" "cve-rag-mcp.exe"
+$binary      = Join-Path $repoRoot "target" "release" "zagros-mcp.exe"
 
-$catalogName = "cve-rag-tools:latest"
-$serverRef   = "catalog://$catalogName/cve-rag"
-$imageName   = "cve-rag-mcp:0.1.0"
+$catalogName = "zagros-tools:latest"
+$serverRef   = "catalog://$catalogName/zagros"
+$imageName   = "zagros-mcp:0.1.0"
 $helixPort   = 47474
 $helixUrl    = "http://localhost:$helixPort"
 
@@ -91,11 +91,11 @@ if ($PSVersionTable.PSVersion.Major -lt 7) {
 Ok "pwsh $($PSVersionTable.PSVersion)"
 
 # ─── Step 2: HelixDB ─────────────────────────────────────────────────────────
-Step "Starting HelixDB (cve-rag-helix on port $helixPort)"
+Step "Starting HelixDB (zagros-helix on port $helixPort)"
 
 Push-Location $repoRoot
 try {
-    docker compose -f $composeFile --project-name cve-rag up -d helix 2>&1 | Out-Null
+    docker compose -f $composeFile --project-name zagros up -d helix 2>&1 | Out-Null
 } finally { Pop-Location }
 
 # Wait up to 30 s for /healthz
@@ -108,7 +108,7 @@ while ((Get-Date) -lt $deadline) {
     } catch {}
     Start-Sleep -Seconds 2
 }
-if (-not $ready) { Fail "HelixDB did not become healthy within 30 s. Check: docker logs cve-rag-helix" }
+if (-not $ready) { Fail "HelixDB did not become healthy within 30 s. Check: docker logs zagros-helix" }
 Ok "HelixDB healthy at $helixUrl"
 
 # ─── Step 3: Build binary ─────────────────────────────────────────────────────
@@ -119,7 +119,7 @@ if ($SkipBuild) {
     Step "Building release binary  (cargo build --release)"
     Push-Location $repoRoot
     try {
-        cargo build --release --bin cve-rag-mcp
+        cargo build --release --bin zagros-mcp
         if ($LASTEXITCODE -ne 0) { Fail "cargo build failed." }
     } finally { Pop-Location }
     Ok "Binary: $binary"
@@ -175,9 +175,9 @@ if ($Seed) {
 # ─── Done ─────────────────────────────────────────────────────────────────────
 Write-Host ""
 Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
-Write-Host " cve-rag is ready." -ForegroundColor Green
+Write-Host " zagros is ready." -ForegroundColor Green
 Write-Host ""
-Write-Host " HelixDB  : $helixUrl  (container: cve-rag-helix)"
+Write-Host " HelixDB  : $helixUrl  (container: zagros-helix)"
 Write-Host " Binary   : $binary"
 Write-Host " Image    : $imageName"
 Write-Host " Profile  : $Profile"

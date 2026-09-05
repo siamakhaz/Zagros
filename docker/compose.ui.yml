@@ -1,14 +1,22 @@
-name: cve-rag-ui
+name: zagros-ui
 
 services:
-  cve-ui:
+  zagros-ui:
     build:
       context: ..
       dockerfile: Dockerfile.ui
-    container_name: cve-rag-ui
+    container_name: zagros-ui
     restart: unless-stopped
     ports:
       - "127.0.0.1:8788:8788"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=n8n_default"
+      - "traefik.http.routers.ota.rule=Host(`zagros.example.com`)"
+      - "traefik.http.routers.ota.entrypoints=websecure"
+      - "traefik.http.routers.ota.tls=true"
+      - "traefik.http.routers.ota.tls.certresolver=mytlschallenge"
+      - "traefik.http.services.ota.loadbalancer.server.port=8788"
     environment:
       HELIX_URL: http://host.docker.internal:47474
       UI_PORT: 8788

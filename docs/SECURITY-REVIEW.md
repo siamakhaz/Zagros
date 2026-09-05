@@ -1,4 +1,4 @@
-# Security Review — cve-rag v0.2
+# Security Review — Zagros v0.2
 
 **Date:** 2026-08-16
 **Reviewer:** OpenCode (cybersecurity-expert skill)
@@ -41,7 +41,7 @@ ports:
 ```
 
 This one-character change prevents network-adjacent access at no operational
-cost. The MCP server container reaches HelixDB over the internal `cve-rag-net`
+cost. The MCP server container reaches HelixDB over the internal `zagros-net`
 bridge network (`http://helix:8080`) and is unaffected by this change.
 
 ---
@@ -125,7 +125,7 @@ absent from the index between a failed upsert and the next successful run.
 ### F-04 — `sync_cves` MCP tool has no rate limit
 
 **Severity:** Medium
-**File:** `src/bin/cve-rag-mcp.rs:175–192`
+**File:** `src/bin/zagros-mcp.rs:175–192`
 **Weakness:** CWE-770 (Allocation of Resources Without Limits or Throttling)
 
 The `sync_cves` tool description says it "requires user approval" but that
@@ -164,7 +164,7 @@ drop(guard);
 ### F-05 — `load_all` performs a full table scan on every search
 
 **Severity:** Medium (performance; becomes a reliability issue at scale)
-**File:** `src/db.rs:134–150`, `src/bin/cve-rag-mcp.rs:99–100`
+**File:** `src/db.rs:134–150`, `src/bin/zagros-mcp.rs:99–100`
 
 Every `search_cves` and `index_status` call fetches all nodes from HelixDB
 over HTTP. At 499 records this is fast. The `backfill` command supports up to
@@ -236,8 +236,8 @@ applies to `rank_knowledge`.
 |---|---|
 | MCP tool description | `search_cves` includes an explicit "untrusted reference data" warning in its tool description. Agent consumers receive this at tool-call time, not just in documentation. |
 | `sync_cves` description | The tool description states it "makes network requests" and "clients should request user approval." This is the correct pattern for write/network tools. |
-| CVE ID validation | `valid_cve_id` in `cve-rag-mcp.rs` correctly rejects path traversal inputs (tested), malformed IDs, and short year strings. |
-| Container hardening | Dockerfile creates a non-root system user (`cverag`, uid 10001), copies only the compiled binary into the final image, and uses `debian:bookworm-slim`. |
+| CVE ID validation | `valid_cve_id` in `zagros-mcp.rs` correctly rejects path traversal inputs (tested), malformed IDs, and short year strings. |
+| Container hardening | Dockerfile creates a non-root system user (`zagros`, uid 10001), copies only the compiled binary into the final image, and uses `debian:bookworm-slim`. |
 | Idempotent ingestion | All `source` and `ingest` commands upsert rather than append. Re-running any ingestion command is safe. |
 | Tokenizer design | Hyphens are preserved in tokenization, which is required for CVE IDs (`CVE-2026-17061`) to match as a single token rather than three unrelated terms. |
 | BM25 field weights | ID weight ×8, title ×3, description ×1 — ensures an exact CVE ID lookup always outranks a partial description match. The `+100.0` exact-match bonus guarantees the correct record is ranked first. |
@@ -267,6 +267,6 @@ risk and should be prioritized within Phase 2:
 | F-01 | High | `docker/compose.yml:27` | Open |
 | F-02 | High | `src/lib.rs:141–254` | Open |
 | F-03 | Medium | `src/db.rs:56–101` | Open |
-| F-04 | Medium | `src/bin/cve-rag-mcp.rs:175` | Open |
-| F-05 | Medium | `src/db.rs:134`, `cve-rag-mcp.rs:99` | Open |
+| F-04 | Medium | `src/bin/zagros-mcp.rs:175` | Open |
+| F-05 | Medium | `src/db.rs:134`, `zagros-mcp.rs:99` | Open |
 | F-06 | Low | `src/lib.rs:445` | Open — defer until corpus > 5K |

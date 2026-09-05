@@ -1,18 +1,18 @@
-# Docker Compose — CVE RAG + HelixDB + MCP HTTP server
+# Docker Compose — Zagros + HelixDB + MCP HTTP server
 #
 # Services
 # --------
 #   helix   — HelixDB graph-vector store
-#   mcp     — cve-rag-mcp-http — persistent Streamable HTTP MCP server
+#   mcp     — zagros-mcp-http — persistent Streamable HTTP MCP server
 #
-# The stdio cve-rag-mcp binary is still launched on-demand by Docker Desktop's
+# The stdio zagros-mcp binary is still launched on-demand by Docker Desktop's
 # MCP Toolkit as a short-lived subprocess; do NOT add it here.
 #
 # Networking
 # ----------
 # HelixDB is now bound to 127.0.0.1 only (fixes security finding F-01).
 # Host CLI tools still reach it at http://localhost:47474.
-# The mcp container reaches it via the internal cve-rag Docker network
+# The mcp container reaches it via the internal zagros Docker network
 # at http://helix:8080.
 #
 # The mcp service listens on 0.0.0.0:8789 inside Docker and is published
@@ -27,20 +27,20 @@
 #   docker compose -f docker/compose.yml down -v            # stop + delete data
 #
 # Environment variables
-#   CVE_RAG_DATA_DIR      Host path for HelixDB data  (default: ./data)
+#   ZAGROS_DATA_DIR      Host path for HelixDB data  (default: ./data)
 #   MCP_BIND_ADDR         Bind address for the HTTP MCP server (default: 0.0.0.0:8789)
 #   MCP_ALLOWED_HOSTS     Comma-separated Host header allowlist
 #                         (default: "localhost,127.0.0.1")
 #                         Add your host IP, e.g. "10.0.0.5:8789,localhost"
 
-name: cve-rag
+name: zagros
 
 services:
 
   helix:
     # Pin: helixdb:latest as of 2026-08-16
     image: ghcr.io/helixdb/helixdb@sha256:ba41464c42b3cd58edd0f049e15bd7bea673f6abd217eb0ea5f5160b46a4412f
-    container_name: cve-rag-helix
+    container_name: zagros-helix
     restart: unless-stopped
     deploy:
       resources:
@@ -54,10 +54,10 @@ services:
       - "127.0.0.1:47474:8080"
     volumes:
       - type: bind
-        source: ${CVE_RAG_DATA_DIR:-./data}
+        source: ${ZAGROS_DATA_DIR:-./data}
         target: /data
     networks:
-      - cve-rag
+      - zagros
     healthcheck:
       test: ["NONE"]
 
@@ -65,9 +65,17 @@ services:
     build:
       context: ..
       dockerfile: Dockerfile
-    image: cve-rag-mcp:0.1.0
-    container_name: cve-rag-mcp-http
+    image: zagros-mcp:0.1.0
+    container_name: zagros-mcp-http
     restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=n8n_default"
+      - "traefik.http.routers.ota.rule=Host(`Zagros-mcp.example.com`)"
+      - "traefik.http.routers.ota.entrypoints=websecure"
+      - "traefik.http.routers.ota.tls=true"
+      - "traefik.http.routers.ota.tls.certresolver=mytlschallenge"
+      - "traefik.http.services.ota.loadbalancer.server.port=8789"
     depends_on:
       - helix
     deploy:
@@ -86,14 +94,14 @@ services:
     ports:
       - "8789:8789"
     volumes:
-      - cve-rag-data:/data
+      - zagros-data:/data
     networks:
-      - cve-rag
+      - zagros
 
 volumes:
-  cve-rag-data:
+  zagros-data:
 
 networks:
-  cve-rag:
-    name: cve-rag
+  zagros:
+    name: zagros
     driver: bridge

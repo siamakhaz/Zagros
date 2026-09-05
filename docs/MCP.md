@@ -1,8 +1,10 @@
 # MCP Server Reference
 
-The `cve-rag-mcp` binary (`src/bin/cve-rag-mcp.rs`) is an MCP stdio server built
+The `zagros-mcp` binary (`src/bin/zagros-mcp.rs`) is an MCP stdio server built
 with `rmcp` 3.1.2. It is launched on demand by the Docker Desktop MCP Toolkit when
-an AI agent client connects.
+an AI agent client connects. A second binary, `zagros-mcp-http`
+(`src/bin/zagros-mcp-http.rs`), exposes the same four tools over Streamable HTTP
+for clients that cannot use the Toolkit transport.
 
 ---
 
@@ -12,12 +14,12 @@ an AI agent client connects.
 
 - Docker Desktop with the MCP Toolkit extension
 - HelixDB running locally (see [CONFIGURATION.md](CONFIGURATION.md))
-- Populated HelixDB (run `cve-rag.exe backfill` and `cve-rag.exe source all` first)
+- Populated HelixDB (run `zagros.exe backfill` and `zagros.exe source all` first)
 
 ### Build the image
 
 ```powershell
-docker build -t cve-rag-mcp:0.1.0 .
+docker build -t zagros-mcp:0.1.0 .
 ```
 
 ### Register with Docker Desktop
@@ -189,9 +191,14 @@ Calls within the window return:
 
 ## Transport
 
-The server uses stdio transport (stdin/stdout JSON-RPC). It is not a persistent
+The stdio server uses stdin/stdout JSON-RPC. It is not a persistent
 HTTP service; Docker Desktop MCP Toolkit spawns it as a subprocess per client
 connection.
+
+The `zagros-mcp-http` binary serves the same tools as a persistent HTTP service
+(`POST /mcp`, plus `GET /health`). It binds to `MCP_BIND_ADDR` (default
+`0.0.0.0:8789`) and validates the `Host` header against `MCP_ALLOWED_HOSTS`
+(default `localhost,127.0.0.1`; set to `*` to disable validation).
 
 ---
 
@@ -200,7 +207,7 @@ connection.
 All data is stored in HelixDB. The MCP server connects to the URL specified by
 the `HELIX_URL` environment variable (default: `http://localhost:47474`).
 
-When running inside Docker with `docker/cve-rag-server.yaml`, set:
+When running inside Docker with `docker/zagros-server.yaml`, set:
 
 ```yaml
 environment:
@@ -230,15 +237,15 @@ environment:
 allowHosts:
   - raw.githubusercontent.com:443
 volumes:
-  - cve-rag-data:/data
+  - zagros-data:/data
 ```
 
 The server is allowed to reach only `raw.githubusercontent.com` (CVE delta feed).
-HelixDB access is via `host.docker.internal` (declared in `cve-rag-server.yaml`).
+HelixDB access is via `host.docker.internal` (declared in `zagros-server.yaml`).
 
 ### Docker image hardening
 
-- Runs as system user `cverag` (uid 10001, no shell, no home directory).
+- Runs as system user `zagros` (uid 10001, no shell, no home directory).
 - Base image: `debian:bookworm-slim` (pinned SHA256 digest).
 - Only `ca-certificates` is installed at runtime.
 - Binary copied as root-owned 755; non-root user cannot replace it.

@@ -1,12 +1,12 @@
 use anyhow::Result;
 use clap::{Parser, Subcommand, builder::TypedValueParser};
-use cve_rag::{
-    backfill_from_history, db, ingest_asvs, ingest_attack, ingest_capec, ingest_cwe, owned_hit,
-    rank_documents, rank_knowledge, sync_cves_to_helix,
-};
 use std::{
     convert::TryFrom,
     io::{self, Write},
+};
+use zagros::{
+    backfill_from_history, db, ingest_asvs, ingest_attack, ingest_capec, ingest_cwe, owned_hit,
+    rank_documents, rank_knowledge, sync_cves_to_helix,
 };
 
 #[derive(Parser)]

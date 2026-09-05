@@ -2,15 +2,16 @@
 
 ## Overview
 
-cve-rag is a three-binary Rust project:
+Zagros is a four-binary Rust project:
 
 | Binary | Source | Role |
 |---|---|---|
-| `cve-rag` | `src/main.rs` | CLI — ingestion, search, interactive REPL, status |
-| `cve-rag-mcp` | `src/bin/cve-rag-mcp.rs` | MCP stdio server — AI agent integration |
-| `cve-ui` | `src/bin/cve-ui.rs` | Web UI — browse/search CVEs and knowledge docs |
+| `zagros` | `src/main.rs` | CLI — ingestion, search, interactive REPL, status |
+| `zagros-mcp` | `src/bin/zagros-mcp.rs` | MCP stdio server — AI agent integration |
+| `zagros-mcp-http` | `src/bin/zagros-mcp-http.rs` | MCP Streamable HTTP server — remote agent integration |
+| `zagros-ui` | `src/bin/zagros-ui.rs` | Web UI — browse/search CVEs and knowledge docs |
 
-Both binaries share the library crate defined in `src/lib.rs`, `src/db.rs`, and `src/sources.rs`.
+All four binaries share the library crate defined in `src/lib.rs`, `src/db.rs`, and `src/sources.rs`.
 
 ---
 
@@ -25,7 +26,7 @@ Both binaries share the library crate defined in `src/lib.rs`, `src/db.rs`, and 
                   Docker MCP Toolkit
                           │  spawns on demand
 ┌─────────────────────────▼────────────────────────────────────────────┐
-│  cve-rag-mcp  (src/bin/cve-rag-mcp.rs)                               │
+│  zagros-mcp[-http]  (src/bin/zagros-mcp{,-http}.rs)                 │
 │  search_cves  get_cve  index_status  sync_cves                        │
 │  DocCache (5-min TTL)  last_sync rate-limit guard                     │
 └──────────┬───────────────────────────────────────────────────────────┘
@@ -44,10 +45,10 @@ Both binaries share the library crate defined in `src/lib.rs`, `src/db.rs`, and 
 │  Cve nodes           Knowledge nodes                                  │
 │  499+ CVE records    2,624 CWE/ASVS/CAPEC/ATT&CK records             │
 │  No graph edges yet  No vector embeddings yet                         │
-│  Volume: cve-rag_helix-data                                           │
+│  Volume: zagros_helix-data                                           │
 └──────────────────────────────────────────────────────────────────────┘
 
-Web UI Binary (src/bin/cve-ui.rs)
+Web UI Binary (src/bin/zagros-ui.rs)
   /api/status  /api/cves  /api/knowledge  /api/search
   Default port 8788 via UI_PORT
 
@@ -61,18 +62,18 @@ CLI Binary  (src/main.rs)
 ## Source layout
 
 ```
-cve-rag/
-├── Cargo.toml                  # dependencies, edition 2024, two bin targets
+zagros/
+├── Cargo.toml                  # dependencies, edition 2024
 ├── Cargo.lock                  # pinned dependency graph
 ├── Dockerfile                  # two-stage build → debian:bookworm-slim
 ├── assets/
-│   └── cve-rag.png
+│   └── zagros.png
 ├── data/
 │   └── cves.json               # legacy flat-file cache (gitignored)
 ├── docker/
 │   ├── compose.yml             # HelixDB sidecar, port 127.0.0.1:47474:8080
 │   ├── server.yaml             # Docker MCP Toolkit registration
-│   ├── cve-rag-server.yaml     # alternate registration with HELIX_URL env
+│   ├── zagros-server.yaml     # alternate registration with HELIX_URL env
 │   ├── tools.json              # machine-readable tool catalog
 │   └── register.ps1            # idempotent MCP catalog + profile registration
 ├── docs/                       # documentation (you are here)
@@ -84,8 +85,9 @@ cve-rag/
     ├── sources.rs              # KnowledgeDoc + four source parsers
     ├── main.rs                 # CLI entry point
     └── bin/
-        ├── cve-rag-mcp.rs      # MCP server entry point
-        └── cve-ui.rs           # web UI entry point
+        ├── zagros-mcp.rs      # MCP server entry point (stdio)
+        ├── zagros-mcp-http.rs # MCP server entry point (Streamable HTTP)
+        └── zagros-ui.rs       # web UI entry point
 ```
 
 ---
@@ -191,7 +193,7 @@ record is absent from the index until the next successful upsert of the same ID.
 
 ## MCP server internals
 
-`cve-rag-mcp` is a stdio-transport MCP server built with `rmcp` 3.1.2.
+`zagros-mcp` is a stdio-transport MCP server built with `rmcp` 3.1.2.
 Docker Desktop MCP Toolkit spawns it as a subprocess when an agent client
 connects.
 
@@ -221,16 +223,16 @@ return `McpError::invalid_params`.
 The `Dockerfile` uses a two-stage build:
 
 **Stage 1 — builder** (`rust:1.95-bookworm`, pinned SHA256)
-- Compiles only the `cve-rag-mcp` binary with `--release --locked`.
+- Compiles the `zagros-mcp` and `zagros-mcp-http` binaries with `--release --locked`.
 
 **Stage 2 — runtime** (`debian:bookworm-slim`, pinned SHA256)
 - Installs only `ca-certificates`.
-- Creates system user `cverag` (uid 10001, no shell, no home).
+- Creates system user `zagros` (uid 10001, no shell, no home).
 - Copies binary as root-owned 755.
-- Sets `CVE_RAG_DATA_DIR=/data` and declares `/data` as a Docker volume.
-- Runs as `USER cverag`.
+- Sets `ZAGROS_DATA_DIR=/data` and declares `/data` as a Docker volume.
+- Runs as `USER zagros`.
 
-The CLI binary (`cve-rag`) is not included in the Docker image.
+The CLI binary (`zagros`) is not included in the Docker image.
 
 ---
 

@@ -1,6 +1,6 @@
 # Data Sources
 
-cve-rag ingests five data sources into HelixDB. CVE records use the `Cve` node label.
+Zagros ingests five data sources into HelixDB. CVE records use the `Cve` node label.
 All security knowledge sources use the `Knowledge` node label with a `source` field
 distinguishing them.
 
@@ -20,7 +20,7 @@ distinguishing them.
 
 ## CVE Project delta feed
 
-**Command:** `cve-rag ingest` / `cve-rag backfill`
+**Command:** `zagros ingest` / `zagros backfill`
 
 **Source:**
 - Delta URL: `https://raw.githubusercontent.com/CVEProject/cvelistV5/main/cves/delta.json`
@@ -75,7 +75,7 @@ before fetching. Allows loading a much larger historical corpus.
 
 ## MITRE CWE
 
-**Command:** `cve-rag source cwe`
+**Command:** `zagros source cwe`
 
 **Source URL:** `https://cwe.mitre.org/data/xml/cwec_latest.xml.zip`
 
@@ -125,7 +125,7 @@ db::upsert_knowledge_batch(helix, docs)
 
 ## OWASP ASVS 5.0.0
 
-**Command:** `cve-rag source asvs`
+**Command:** `zagros source asvs`
 
 **Source URL:** `https://raw.githubusercontent.com/OWASP/ASVS/v5.0.0/5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.csv`
 
@@ -173,7 +173,7 @@ db::upsert_knowledge_batch(helix, docs)
 
 ## MITRE CAPEC
 
-**Command:** `cve-rag source capec`
+**Command:** `zagros source capec`
 
 **Source URL:** `https://capec.mitre.org/data/xml/capec_latest.xml`
 
@@ -222,7 +222,7 @@ db::upsert_knowledge_batch(helix, docs)
 
 ## MITRE ATT&CK Enterprise
 
-**Command:** `cve-rag source attack`
+**Command:** `zagros source attack`
 
 **Source URL:** `https://raw.githubusercontent.com/mitre-attack/attack-stix-data/master/enterprise-attack/enterprise-attack.json`
 

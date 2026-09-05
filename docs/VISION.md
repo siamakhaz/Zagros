@@ -32,7 +32,7 @@ decision is treated as a learning opportunity first, a production feature second
 | CLI | `ingest`, `backfill`, `source <name\|all>`, `search`, `know`, `interactive`, `status` |
 | MCP server | `search_cves`, `get_cve`, `index_status`, `sync_cves` (CVE-only tools) |
 | Docker Compose | `docker/compose.yml` starts HelixDB + MCP server as a stack |
-| Docker MCP | `docker/cve-rag-server.yaml` registers the MCP server with Docker MCP Toolkit |
+| Docker MCP | `docker/zagros-server.yaml` registers the MCP server with Docker MCP Toolkit |
 | Tests | 4 unit tests for BM25 ranking and CVE ID validation |
 
 ### Knowledge corpus in HelixDB (verified 2026-08-16)
@@ -317,12 +317,12 @@ compliance.
 ### Current
 
 ```
-cve-rag/
+zagros/
 ├── Cargo.toml                     # helix-db, quick-xml, csv, zip, rmcp, reqwest, …
-├── Dockerfile                     # builds cve-rag-mcp image
+├── Dockerfile                     # builds zagros-mcp image
 ├── docker/
 │   ├── compose.yml                # HelixDB + MCP server stack
-│   ├── cve-rag-server.yaml        # Docker MCP server registration
+│   ├── zagros-server.yaml        # Docker MCP server registration
 │   └── tools.json
 ├── src/
 │   ├── lib.rs                     # Public API: ingest_*, rank_*, sync_*, backfill_*
@@ -330,7 +330,7 @@ cve-rag/
 │   ├── db.rs                      # HelixDB client: Cve + Knowledge node CRUD
 │   ├── sources.rs                 # KnowledgeDoc type + CWE/ASVS/CAPEC/ATT&CK parsers
 │   └── bin/
-│       └── cve-rag-mcp.rs         # MCP server (CVE tools only for now)
+│       └── zagros-mcp.rs         # MCP server (CVE tools only for now)
 └── docs/
     ├── VISION.md                  # This document
     ├── README.md

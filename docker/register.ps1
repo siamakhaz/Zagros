@@ -1,10 +1,10 @@
 #!/usr/bin/env pwsh
 <#
 .SYNOPSIS
-    Register the cve-rag MCP server with Docker Desktop.
+    Register the zagros MCP server with Docker Desktop.
 
 .DESCRIPTION
-    1. Creates (or recreates) the local catalog  cve-rag-tools:latest
+    1. Creates (or recreates) the local catalog  zagros-tools:latest
        from docker/server.yaml using the absolute path of this script's
        own directory — so it works on any machine regardless of where
        the repo is cloned.
@@ -16,10 +16,10 @@
 
 .EXAMPLE
     # From any directory:
-    pwsh cve-rag/docker/register.ps1
+    pwsh zagros/docker/register.ps1
 
     # With a custom profile name:
-    pwsh cve-rag/docker/register.ps1 -Profile my-team
+    pwsh zagros/docker/register.ps1 -Profile my-team
 #>
 param(
     [string]$Profile = "profile"
@@ -31,8 +31,8 @@ $ErrorActionPreference = "Stop"
 # ── Paths ────────────────────────────────────────────────────────────────────
 $scriptDir   = $PSScriptRoot                          # always the docker/ folder
 $serverYaml  = Join-Path $scriptDir "server.yaml"
-$catalogName = "cve-rag-tools:latest"
-$serverRef   = "catalog://$catalogName/cve-rag"
+$catalogName = "zagros-tools:latest"
+$serverRef   = "catalog://$catalogName/zagros"
 $title       = "CVE & Security Knowledge RAG"
 
 # Normalise path separators for the file:// URI (forward slashes on all platforms)
@@ -84,5 +84,5 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host ""
-Write-Host "Done. cve-rag is registered in Docker Desktop."
+Write-Host "Done. zagros is registered in Docker Desktop."
 Write-Host "Open Docker Desktop -> MCP Toolkit to confirm."

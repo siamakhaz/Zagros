@@ -250,15 +250,15 @@ docker mcp profile tools my-profile --enable grafana.search_dashboards
 
 ---
 
-## cve-rag MCP Server on Linux
+## Zagros MCP Server on Linux
 
-The `cve-rag-mcp` server in this project uses the same Docker MCP mechanism.
+The `zagros-mcp` server in this project uses the same Docker MCP mechanism.
 To register it manually on Linux instead of using `register.ps1`:
 
 ### 1. Build the Image
 
 ```bash
-docker build -t cve-rag-mcp:0.1.0 .
+docker build -t zagros-mcp:0.1.0 .
 ```
 
 ### 2. Create a Local Server Definition
@@ -266,28 +266,28 @@ docker build -t cve-rag-mcp:0.1.0 .
 Create `docker/server-linux.yaml`:
 
 ```yaml
-name: cve-rag
-description: CVE RAG search and retrieval tools
-image: cve-rag-mcp:0.1.0
+name: zagros
+description: Zagros search and retrieval tools
+image: zagros-mcp:0.1.0
 environment:
   HELIX_URL: http://host.docker.internal:47474
 allowHosts:
   - raw.githubusercontent.com:443
 volumes:
-  - cve-rag-data:/data
+  - zagros-data:/data
 ```
 
 ### 3. Add to a Profile
 
 ```bash
-docker mcp profile create --name cve-profile \
+docker mcp profile create --name zagros-profile \
   --server file://./docker/server-linux.yaml
 ```
 
 ### 4. Run the Gateway
 
 ```bash
-DOCKER_MCP_IN_CONTAINER=1 docker mcp gateway run --profile cve-profile
+DOCKER_MCP_IN_CONTAINER=1 docker mcp gateway run --profile zagros-profile
 ```
 
 ---
@@ -384,6 +384,6 @@ DOCKER_MCP_IN_CONTAINER=1 docker mcp gateway run --profile my-profile --log-leve
 
 ## See Also
 
-- [MCP.md](MCP.md) — cve-rag MCP server tool reference
+- [MCP.md](MCP.md) — Zagros MCP server tool reference
 - [CONFIGURATION.md](CONFIGURATION.md) — HelixDB and environment setup
 - [docker/mcp-gateway on GitHub](https://github.com/docker/mcp-gateway) — upstream source

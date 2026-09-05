@@ -1,10 +1,10 @@
 # CLI Reference
 
-The `cve-rag` binary is built from `src/main.rs`. It provides seven subcommands
+The `zagros` binary is built from `src/main.rs`. It provides seven subcommands
 covering CVE ingestion, knowledge ingestion, search, and status reporting.
 
 ```
-cve-rag.exe <COMMAND>
+zagros.exe <COMMAND>
 
 Commands:
   ingest       Fetch latest changed CVEs and store them in HelixDB
@@ -25,7 +25,7 @@ Fetch the latest changed CVEs from the official CVE Project delta feed and
 upsert them into HelixDB.
 
 ```powershell
-cve-rag.exe ingest [OPTIONS]
+zagros.exe ingest [OPTIONS]
 ```
 
 **Options:**
@@ -37,7 +37,7 @@ cve-rag.exe ingest [OPTIONS]
 **Example:**
 
 ```powershell
-.\target\debug\cve-rag.exe ingest --limit 100
+.\target\debug\zagros.exe ingest --limit 100
 # ingested 97 changed CVEs; 596 total in HelixDB
 ```
 
@@ -58,7 +58,7 @@ Walk the full `deltaLog.json` history and load up to N unique CVEs into HelixDB.
 Use this on first setup to build a useful starting corpus.
 
 ```powershell
-cve-rag.exe backfill [OPTIONS]
+zagros.exe backfill [OPTIONS]
 ```
 
 **Options:**
@@ -71,10 +71,10 @@ cve-rag.exe backfill [OPTIONS]
 **Example:**
 
 ```powershell
-.\target\debug\cve-rag.exe backfill --limit 500
+.\target\debug\zagros.exe backfill --limit 500
 # fetched 499 CVEs; 499 total in HelixDB
 
-.\target\debug\cve-rag.exe backfill --limit 1000 --verbose
+.\target\debug\zagros.exe backfill --limit 1000 --verbose
 # skipping already-seen https://raw.githubusercontent.com/...
 ```
 
@@ -91,7 +91,7 @@ cve-rag.exe backfill [OPTIONS]
 Ingest one or all authoritative security knowledge sources into HelixDB.
 
 ```powershell
-cve-rag.exe source <NAME>
+zagros.exe source <NAME>
 ```
 
 **Argument:**
@@ -107,14 +107,14 @@ cve-rag.exe source <NAME>
 **Examples:**
 
 ```powershell
-.\target\debug\cve-rag.exe source all
+.\target\debug\zagros.exe source all
 # ingested 969 CWE records; 969 total
 # ingested 345 ASVS records; 345 total
 # ingested 613 CAPEC records; 613 total
 # ingested 697 ATT&CK records; 697 total
 
-.\target\debug\cve-rag.exe source cwe
-.\target\debug\cve-rag.exe source asvs
+.\target\debug\zagros.exe source cwe
+.\target\debug\zagros.exe source asvs
 ```
 
 **Behavior:**
@@ -132,7 +132,7 @@ See [DATA-SOURCES.md](DATA-SOURCES.md) for source URLs, formats, and record ID s
 Search CVE records stored in HelixDB using ranked lexical retrieval.
 
 ```powershell
-cve-rag.exe search <QUERY> [OPTIONS]
+zagros.exe search <QUERY> [OPTIONS]
 ```
 
 **Arguments:**
@@ -151,13 +151,13 @@ cve-rag.exe search <QUERY> [OPTIONS]
 **Examples:**
 
 ```powershell
-.\target\debug\cve-rag.exe search "remote code execution" --top-k 5
+.\target\debug\zagros.exe search "remote code execution" --top-k 5
 
-.\target\debug\cve-rag.exe search CVE-2026-17061
+.\target\debug\zagros.exe search CVE-2026-17061
 
-.\target\debug\cve-rag.exe search "buffer overflow in nginx" --top-k 20
+.\target\debug\zagros.exe search "buffer overflow in nginx" --top-k 20
 
-.\target\debug\cve-rag.exe search "authentication bypass" --json
+.\target\debug\zagros.exe search "authentication bypass" --json
 ```
 
 **Text output format:**
@@ -199,7 +199,7 @@ Search the security knowledge base (CWE, ASVS, CAPEC, ATT&CK) using ranked
 lexical retrieval.
 
 ```powershell
-cve-rag.exe know <QUERY> [OPTIONS]
+zagros.exe know <QUERY> [OPTIONS]
 ```
 
 **Arguments:**
@@ -217,11 +217,11 @@ cve-rag.exe know <QUERY> [OPTIONS]
 **Examples:**
 
 ```powershell
-.\target\debug\cve-rag.exe know "SQL injection"
-.\target\debug\cve-rag.exe know "hardcoded credentials"
-.\target\debug\cve-rag.exe know "lateral movement"
-.\target\debug\cve-rag.exe know CWE-89
-.\target\debug\cve-rag.exe know "ASVS-v5.0.0-1.2.5"
+.\target\debug\zagros.exe know "SQL injection"
+.\target\debug\zagros.exe know "hardcoded credentials"
+.\target\debug\zagros.exe know "lateral movement"
+.\target\debug\zagros.exe know CWE-89
+.\target\debug\zagros.exe know "ASVS-v5.0.0-1.2.5"
 ```
 
 **Output format:**
@@ -248,7 +248,7 @@ Open an interactive search REPL that keeps HelixDB data loaded in memory
 across queries.
 
 ```powershell
-cve-rag.exe interactive [OPTIONS]
+zagros.exe interactive [OPTIONS]
 ```
 
 **Options:**
@@ -292,7 +292,7 @@ knowledge base.
 Show HelixDB connection details and record counts.
 
 ```powershell
-cve-rag.exe status
+zagros.exe status
 ```
 
 No options.
@@ -338,6 +338,6 @@ Error messages are printed to stderr. All normal output goes to stdout.
 | Variable | Default | Effect |
 |---|---|---|
 | `HELIX_URL` | `http://localhost:47474` | HelixDB instance used by all commands |
-| `CVE_RAG_DATA_DIR` | `data/` relative to CWD | Directory for legacy flat-file cache (`cves.json`) |
+| `ZAGROS_DATA_DIR` | `data/` relative to CWD | Directory for legacy flat-file cache (`cves.json`) |
 
 See [CONFIGURATION.md](CONFIGURATION.md) for full configuration reference.
