@@ -141,6 +141,20 @@ services:
       retries: 5
       start_period: 10s
 
+  cli:
+    build:
+      context: ..
+      dockerfile: Dockerfile.cli
+    image: zagros-cli:0.1.0
+    profiles: ["cli"]
+    networks:
+      - zagros
+    environment:
+      HELIX_URL: http://helix:8080
+    volumes:
+      - zagros-data:/data
+    restart: "no"
+
 volumes:
   zagros-data:
 
