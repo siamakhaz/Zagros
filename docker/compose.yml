@@ -1,27 +1,29 @@
-# Docker Compose — Zagros + HelixDB + MCP HTTP server
+# Docker Compose — Zagros + HelixDB + MCP HTTP server + UI
 #
 # Services
 # --------
-#   helix   — HelixDB graph-vector store
-#   mcp     — zagros-mcp-http — persistent Streamable HTTP MCP server
+#   helix     — HelixDB graph-vector store
+#   mcp       — zagros-mcp-http — persistent Streamable HTTP MCP server
+#   zagros-ui — zagros-ui web UI (axum, port 8788)
 #
 # The stdio zagros-mcp binary is still launched on-demand by Docker Desktop's
 # MCP Toolkit as a short-lived subprocess; do NOT add it here.
 #
 # Networking
 # ----------
-# HelixDB is now bound to 127.0.0.1 only (fixes security finding F-01).
+# HelixDB is bound to 127.0.0.1 only (fixes security finding F-01).
 # Host CLI tools still reach it at http://localhost:47474.
-# The mcp container reaches it via the internal zagros Docker network
-# at http://helix:8080.
+# The mcp and zagros-ui containers reach it via the internal zagros Docker
+# network at http://helix:8080.
 #
-# The mcp service listens on 0.0.0.0:8789 inside Docker and is published
-# to the host on the same port.  OpenCode connects via:
-#   http://<host-ip>:8789/mcp
+# Traefik (n8n-traefik on n8n_default) routes:
+#   Zagros-mcp.example.com -> mcp:8789
+#   zagros.example.com     -> zagros-ui:8788
+# Both containers must be attached to n8n_default for Traefik to reach them.
 #
 # Usage
 # -----
-#   docker compose -f docker/compose.yml up -d              # start both services
+#   docker compose -f docker/compose.yml up -d              # start all services
 #   docker compose -f docker/compose.yml up -d helix        # start HelixDB only
 #   docker compose -f docker/compose.yml down               # stop (data kept)
 #   docker compose -f docker/compose.yml down -v            # stop + delete data
@@ -50,7 +52,7 @@ services:
     ports:
       # Bind to 127.0.0.1 only — fixes security finding F-01.
       # Host CLI tools use http://localhost:47474 as before.
-      # The mcp container reaches HelixDB via the internal network (http://helix:8080).
+      # Containers reach HelixDB via the internal network (http://helix:8080).
       - "127.0.0.1:47474:8080"
     volumes:
       - type: bind
@@ -71,11 +73,11 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=n8n_default"
-      - "traefik.http.routers.ota.rule=Host(`Zagros-mcp.example.com`)"
-      - "traefik.http.routers.ota.entrypoints=websecure"
-      - "traefik.http.routers.ota.tls=true"
-      - "traefik.http.routers.ota.tls.certresolver=mytlschallenge"
-      - "traefik.http.services.ota.loadbalancer.server.port=8789"
+      - "traefik.http.routers.zagros-mcp.rule=Host(`Zagros-mcp.example.com`)"
+      - "traefik.http.routers.zagros-mcp.entrypoints=websecure"
+      - "traefik.http.routers.zagros-mcp.tls=true"
+      - "traefik.http.routers.zagros-mcp.tls.certresolver=mytlschallenge"
+      - "traefik.http.services.zagros-mcp.loadbalancer.server.port=8789"
     depends_on:
       helix:
         condition: service_started
@@ -85,12 +87,8 @@ services:
           memory: 128m
           cpus: "1.0"
     environment:
-      # HelixDB is reachable on the internal Docker network.
       HELIX_URL: http://helix:8080
-      # Bind address inside the container.
       MCP_BIND_ADDR: ${MCP_BIND_ADDR:-0.0.0.0:8789}
-      # Adjust MCP_ALLOWED_HOSTS to include the host IP that OpenCode uses.
-      # Example: MCP_ALLOWED_HOSTS=10.0.0.5:8789,localhost
       MCP_ALLOWED_HOSTS: ${MCP_ALLOWED_HOSTS:-localhost,127.0.0.1}
     ports:
       - "8789:8789"
@@ -98,10 +96,48 @@ services:
       - zagros-data:/data
     networks:
       - zagros
+      - n8n_default
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://localhost:8789/health"]
       interval: 10s
       timeout: 3s
+      retries: 5
+      start_period: 10s
+
+  zagros-ui:
+    build:
+      context: ..
+      dockerfile: Dockerfile.ui
+    container_name: zagros-ui
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=n8n_default"
+      - "traefik.http.routers.zagros-ui.rule=Host(`zagros.example.com`)"
+      - "traefik.http.routers.zagros-ui.entrypoints=websecure"
+      - "traefik.http.routers.zagros-ui.tls=true"
+      - "traefik.http.routers.zagros-ui.tls.certresolver=mytlschallenge"
+      - "traefik.http.services.zagros-ui.loadbalancer.server.port=8788"
+    depends_on:
+      helix:
+        condition: service_started
+    deploy:
+      resources:
+        limits:
+          memory: 128m
+          cpus: "1.0"
+    environment:
+      HELIX_URL: http://helix:8080
+      UI_PORT: 8788
+    ports:
+      - "0.0.0.0:8788:8788"
+    networks:
+      - zagros
+      - n8n_default
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8788/api/status"]
+      interval: 10s
+      timeout: 5s
       retries: 5
       start_period: 10s
 
@@ -112,3 +148,6 @@ networks:
   zagros:
     name: zagros
     driver: bridge
+  n8n_default:
+    external: true
+    name: n8n_default
