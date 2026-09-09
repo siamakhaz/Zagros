@@ -1,0 +1,96 @@
+# zagros-skill — cybersecurity skill + Zagros MCP wiring
+
+Pairs the `cybersecurity-expert` skill (guidance derived from ISC2 CC study
+notes — security principles, risk, resilience, access control, network defense,
+operations) with your own [Zagros](../README.md) CVE MCP server.
+
+- **No PII, no phone-home defaults.** The installer targets your self-hosted
+  Zagros at `http://localhost:8789/mcp` unless you pass `--mcp-url` / `-McpUrl`
+  (or `ZAGROS_MCP_URL`).
+- **Two install paths:** paste `INSTALL-PROMPT.md` to any agent harness, or run
+  the one-liner URL installers below (Linux/macOS/WSL + Windows).
+- **Releases carry the binaries.** `dist/` is git-ignored; `build-dist.py`
+  builds `zagros-skill.tar.gz + .sha256` for a `zagros-skill-v<version>`
+  GitHub Release. Installers fetch from your Release base URL.
+
+## Layout
+
+| Path | What it is |
+|---|---|
+| `.apm/skills/cybersecurity-expert/` | Skill source: `SKILL.md`, `references/` (domains 1–5 + `zagros-mcp.md`), `evals/` |
+| `apm.yml` / `skill-meta.yml` | APM package metadata (no personal data; MCP default = localhost) |
+| `install.sh` / `install.ps1` | Standalone installers: fetch tarball, verify SHA256, install skill, wire MCP into `opencode.json` |
+| `INSTALL-PROMPT.md` | Copy-paste prompt for agent-harness installs (script path + manual fallback) |
+| `build-dist.py` | Builds the versioned distributable from `apm.yml` |
+
+## Path 1 — URL install (modern one-liners)
+
+Replace `<release>` with your published Release base, e.g.
+`https://github.com/<org>/zagros/releases/download/zagros-skill-v0.1.0`.
+
+**Linux / macOS / WSL / git-bash** (defaults to localhost MCP):
+
+```bash
+curl -fsSL <release>/install.sh | bash
+# user scope:
+curl -fsSL <release>/install.sh | bash -s -- --global
+# your deployed instance instead of localhost:
+curl -fsSL <release>/install.sh | bash -s -- --mcp-url https://mcp.example.com/mcp
+```
+
+**Windows PowerShell** (run in the project directory):
+
+```powershell
+irm <release>/install.ps1 | iex
+# user scope:
+irm <release>/install.ps1 | iex  # then re-run with -UserScope after download-verify (see file header)
+# deployed instance:
+$env:ZAGROS_MCP_URL = "https://mcp.example.com/mcp"; irm <release>/install.ps1 | iex
+```
+
+Safer variant (download, verify hash, then run) is documented in each script's
+header. Every run backs up `opencode.json → opencode.json.bak`, refuses to
+clobber JSONC configs, and is idempotent (re-run safe; `--force` / `-Force` to
+overwrite the MCP entry).
+
+Then: restart your harness and verify with `opencode mcp list`
+(expect `Zagros: connected`), plus `GET http://localhost:8789/health → ok`.
+
+## Path 2 — agent prompt install
+
+Copy the whole of `INSTALL-PROMPT.md` into any agent harness (opencode,
+copilot, generic). It instructs the agent to do the fast script path with hash
+verification and approval gates, with a manual download → verify → extract →
+JSON-merge fallback when piping scripts is not allowed.
+
+## Self-host Zagros (what the default MCP URL expects)
+
+```powershell
+docker compose -f docker/compose.yml up -d helix
+.\target\debug\zagros.exe backfill --limit 500
+.\target\debug\zagros.exe source all
+cargo run --bin zagros-mcp-http   # serves POST /mcp on 0.0.0.0:8789
+curl http://localhost:8789/health
+```
+
+LAN access: add your host IP to `MCP_ALLOWED_HOSTS`. Full reference:
+`docs/MCP.md`.
+
+## Publishing a release
+
+```bash
+cd skill
+python build-dist.py            # reads version from apm.yml → dist/
+# attach dist/zagros-skill.tar.gz + .sha256 with install.sh / install.ps1
+# to GitHub Release zagros-skill-v<version>, then update the BASE_URL
+# defaults in both installers to that Release base.
+```
+
+`ZAGROS_MCP_URL` at build time is recorded in `META.json` for provenance only;
+the install-time `--mcp-url` always wins.
+
+## Provenance
+
+Cybersecurity guidance derived from ISC2 CC study notes (the `CC-Skill`
+package), rebranded for Zagros under MIT. The generic CVE rules in `SKILL.md`
+stay harness-neutral; `references/zagros-mcp.md` binds them to Zagros.

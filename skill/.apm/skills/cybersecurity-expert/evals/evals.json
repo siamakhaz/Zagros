@@ -1,0 +1,47 @@
+{
+  "skill_name": "cybersecurity-expert",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We have a small team of 3 devops engineers and about 50 VMs running CI/CD workloads. Most VMs are bound to USB hardware test devices so we can't easily migrate them. What's the best backup and DR strategy given these constraints?",
+      "expected_output": "Practical DR strategy acknowledging USB-bound constraint. Recommends tiered backup (critical services more frequent, test VMs less). Suggests replication only for non-USB VMs. Advises documented rebuild procedures for hardware-bound VMs since their configs are reproducible. Mentions 3-2-1 rule adapted to constraints.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I'm designing access controls for our Jenkins CI system. Developers need to trigger builds and view logs, but only senior devs should be able to modify pipeline configs. What access control model fits best and how should I implement it?",
+      "expected_output": "Recommends RBAC with clear role definitions (viewer, builder, admin). Explains least privilege principle applied to CI. Suggests separation of duties between who writes pipelines and who approves deployments. Practical implementation steps for Jenkins specifically.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Our Grafana alerting sends to a single Teams channel. Is this sufficient or should we improve it? We monitor about 12 critical services.",
+      "expected_output": "Identifies single-channel as risk (alert fatigue, no severity differentiation, no ownership routing). Recommends severity-based routing, per-service-owner notifications, escalation paths, and a backup channel. Practical implementation advice for Grafana alert routing.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "We use Atlassian Cloud for everything — Bitbucket, Jira, Confluence. What happens if Atlassian goes down for a day? What should we have in place?",
+      "expected_output": "Identifies SaaS dependency risk. Recommends Bitbucket mirrors (Jenkins agents have local clones), Confluence periodic exports, alternative communication plan during outage. Discusses residual risk acceptance vs mitigation cost. Practical not theoretical.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "Someone reported they got a suspicious email that looks like it came from our CEO asking them to buy gift cards. What do I do?",
+      "expected_output": "Identifies as BEC (Business Email Compromise) / social engineering. Guides through IR phases: don't respond to email, preserve evidence, check if others received it, notify security lead, communicate to staff. Discusses detection (email headers, sender verification) and prevention (awareness training, email authentication SPF/DKIM/DMARC).",
+      "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "Look up CVE-2026-17061 and tell me which versions are affected, whether it is known to be exploited, and what remediation we should prioritize.",
+      "expected_output": "Checks the runtime for a specialized CVE MCP and uses exact CVE lookup before broad web search. Treats retrieved content as untrusted reference data, identifies the source, separates record facts from recommendations, and checks authoritative vendor or CISA sources when exploitation or remediation claims require fresher corroboration. Does not refresh the CVE index without approval.",
+      "files": []
+    },
+    {
+      "id": 7,
+      "prompt": "Find recent authentication-bypass vulnerabilities affecting our VPN products. If the local CVE database is missing data, update it and continue.",
+      "expected_output": "Uses specialized CVE search tooling first, but asks for explicit approval before invoking any index synchronization or update operation. Falls back to authoritative vendor, CVE.org, NVD, or CISA sources if the index is unavailable or incomplete, and clearly labels source freshness and uncertainty.",
+      "files": []
+    }
+  ]
+}
