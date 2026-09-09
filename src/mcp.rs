@@ -36,6 +36,7 @@ pub struct SearchParams {
     pub query: String,
     /// Maximum number of ranked results. Range: 1-50.
     #[serde(default = "default_top_k")]
+    #[schemars(schema_with = "schema_integer")]
     pub top_k: usize,
 }
 
@@ -53,6 +54,7 @@ pub struct GetCveParams {
 pub struct SyncParams {
     /// Number of latest changed records to download. Range: 1-1000.
     #[serde(default = "default_sync_limit")]
+    #[schemars(schema_with = "schema_integer")]
     pub limit: usize,
 }
 
@@ -64,6 +66,7 @@ fn default_sync_limit() -> usize {
 pub struct BackfillParams {
     /// Maximum number of historical CVE records to fetch from deltaLog. Range: 1-10000.
     #[serde(default = "default_backfill_limit")]
+    #[schemars(schema_with = "schema_integer")]
     pub limit: usize,
     /// Print progress logs to stderr during the backfill.
     #[serde(default)]
@@ -160,6 +163,7 @@ pub struct KnowledgeSearchParams {
     pub query: String,
     /// Maximum number of ranked results. Range: 1-50.
     #[serde(default = "default_top_k")]
+    #[schemars(schema_with = "schema_integer")]
     pub top_k: usize,
 }
 
