@@ -86,9 +86,9 @@ docker build -t zagros-mcp:0.1.0 .   # two-stage build, uses Cargo.lock --locked
 .\scripts\setup.ps1 -Seed -SeedLimit 500  # full automated setup (build + register + seed)
 ```
 
-The MCP server runs as stdio transport. It has an in-process doc cache (5-minute TTL) and a rate-limit guard on `sync_cves` (5-minute cooldown). Both guards reset on process restart.
+The MCP server runs as stdio transport. It has in-process CVE + knowledge caches (5-minute TTL) and rate-limit guards on `sync_cves` / `backfill_cves` / `sync_knowledge_source` (5-minute cooldown). All guards reset on process restart.
 
-MCP tools: `search_cves`, `get_cve`, `index_status`, `sync_cves`.
+MCP tools: `search_cves`, `get_cve`, `index_status` (+ knowledge counts), `sync_cves`, `search_knowledge`, `sync_knowledge_source` (incl. `all`), `backfill_cves`.
 
 ---
 

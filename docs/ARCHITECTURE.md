@@ -28,7 +28,8 @@ All four binaries share the library crate defined in `src/lib.rs`, `src/db.rs`, 
 ┌─────────────────────────▼────────────────────────────────────────────┐
 │  zagros-mcp[-http]  (src/bin/zagros-mcp{,-http}.rs)                 │
 │  search_cves  get_cve  index_status  sync_cves                        │
-│  DocCache (5-min TTL)  last_sync rate-limit guard                     │
+│  search_knowledge  sync_knowledge_source  backfill_cves                │
+│  DocCache + KnowledgeCache (5-min TTL)  write-tool rate-limit guards    │
 └──────────┬───────────────────────────────────────────────────────────┘
             │                              │ sync_cves only
             │                    raw.githubusercontent.com
