@@ -1,0 +1,18 @@
+owner: community
+status: beta
+tags:
+  - cybersecurity
+  - risk-management
+  - incident-response
+  - network-security
+  - access-control
+  - business-continuity
+  - compliance
+  - zagros
+  - cve
+review:
+  security_required: true
+  security_reason: "Declares a user-configured remote CVE MCP endpoint (default http://localhost:8789/mcp); review its trust boundary, availability, authentication, and returned-data handling"
+provenance:
+  source: derived
+  license_notes: "Cybersecurity guidance derived from ISC2 CC study notes (CC-Skill); MIT. Rebranded for Zagros."
