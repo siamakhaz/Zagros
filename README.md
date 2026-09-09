@@ -15,15 +15,16 @@ A Rust CLI and MCP server for ingesting, storing, and searching official CVE rec
 - Exposes four MCP tools to AI agent clients via stdio and Streamable HTTP.
 - Includes a web UI for browsing and searching CVE and knowledge records.
 
-Current corpus (v0.2, 2026-08-16):
+Corpus after full seed (`backfill --limit 500` + `source all`) — v0.2, 2026-09-08 (fresh DB is `0` until seeded):
 
-| Store | Count |
-|---|---|
-| CVE nodes | 499+ |
-| CWE weaknesses | 969 |
-| OWASP ASVS requirements | 345 |
-| CAPEC attack patterns | 613 |
-| ATT&CK Enterprise techniques | 697 |
+| Store | Count | Source |
+|---|---|---|
+| CVE nodes | 499+ | `cvelistV5` deltaLog (hourly history) |
+| CWE weaknesses | 969 | MITRE CWE 4.15 |
+| OWASP ASVS requirements | 345 | OWASP ASVS 5.0 |
+| CAPEC attack patterns | 613 | MITRE CAPEC 3.9 |
+| ATT&CK Enterprise techniques | 697 | MITRE ATT&CK v16.1 |
+| **Total** | **~3,123** | verify with `cli status` / `GET /api/status` |
 
 ---
 
