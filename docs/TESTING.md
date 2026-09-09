@@ -103,10 +103,10 @@ Expected output includes:
 ```
 - Those servers are enabled: zagros
   - Running zagros-mcp:0.1.0 with [...  -e HELIX_URL ... --add-host host.docker.internal:host-gateway ...]
-  > zagros: (4 tools)
+  > zagros: (7 tools)
 ```
 
-Four tools must be listed: `search_cves`, `get_cve`, `index_status`, `sync_cves`.
+Seven tools must be listed: `search_cves`, `get_cve`, `index_status`, `sync_cves`, `search_knowledge`, `sync_knowledge_source`, `backfill_cves`.
 
 If `-e HELIX_URL` or `--add-host` is missing the profile snapshot is stale —
 re-run `setup.sh` or recreate the profile manually.

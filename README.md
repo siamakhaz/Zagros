@@ -12,7 +12,7 @@ A Rust CLI and MCP server for ingesting, storing, and searching official CVE rec
 - Ingests four Tier-1 security knowledge corpora: MITRE CWE, OWASP ASVS, MITRE CAPEC, MITRE ATT&CK.
 - Stores all records in HelixDB as typed nodes (`Cve`, `Knowledge`).
 - Searches with an in-process BM25 engine with field weights, exact-match bonuses, and phrase bonuses.
-- Exposes four MCP tools to AI agent clients via stdio and Streamable HTTP.
+- Exposes seven MCP tools to AI agent clients via stdio and Streamable HTTP.
 - Includes a web UI for browsing and searching CVE and knowledge records.
 
 Corpus after full seed (`backfill --limit 500` + `source all`) — v0.2, 2026-09-08 (fresh DB is `0` until seeded):
@@ -32,7 +32,7 @@ Corpus after full seed (`backfill --limit 500` + `source all`) — v0.2, 2026-09
 
 - [Rust](https://rustup.rs/) 1.85+
 - [Docker](https://www.docker.com/) with Compose v2
-- Traefik `n8n_default` network + `mytlschallenge` certresolver (for TLS hosts)
+- Optional reverse proxy (e.g. Traefik) on an external Docker network with a TLS certresolver — `docker/compose.yml` shows example values (`proxy_default`, `letsencrypt`); substitute your own
 
 ---
 
@@ -53,10 +53,10 @@ Services:
 | Service | Container | Host port | Internal | Traefik host |
 |---|---|---|---|---|
 | `helix` | `zagros-helix` | `127.0.0.1:47474` → `8080` | `http://helix:8080` | — |
-| `mcp` | `zagros-mcp-http` | `8789` | `http://helix:8080` | `https://Zagros-mcp.example.com/mcp` |
+| `mcp` | `zagros-mcp-http` | `8789` | `http://helix:8080` | `https://mcp.example.com/mcp` |
 | `zagros-ui` | `zagros-ui` | `0.0.0.0:8788` | `http://helix:8080` | `https://zagros.example.com` |
 
-HelixDB binds `127.0.0.1:47474:8080` (F-01). Host CLI uses `http://localhost:47474`; containers use `http://helix:8080` on `zagros` network. Both `mcp`/`zagros-ui` also join `n8n_default` (external) for Traefik.
+HelixDB binds `127.0.0.1:47474:8080` (F-01). Host CLI uses `http://localhost:47474`; containers use `http://helix:8080` on `zagros` network. Both `mcp`/`zagros-ui` also join `proxy_default` (external) for Traefik.
 
 Verify:
 
@@ -166,7 +166,7 @@ Docker (already in stack):
 ```powershell
 docker compose -f docker/compose.yml up -d --build zagros-ui
 # open http://localhost:8788
-# open https://zagros.example.com  (TLS via mytlschallenge)
+# open https://zagros.example.com  (TLS via letsencrypt)
 ```
 
 `UI_PORT` env changes the port (default `8788`).
@@ -175,7 +175,7 @@ docker compose -f docker/compose.yml up -d --build zagros-ui
 
 ## MCP server (AI agent integration)
 
-Two binaries, same 4 tools:
+Two binaries, same 7 tools:
 
 | Binary | Transport | Source |
 |---|---|---|
@@ -197,10 +197,10 @@ docker build -f Dockerfile.ui -t zagros-ui:0.1.0 .
 ```powershell
 curl http://localhost:8789/health
 # via Traefik (Host header validated — must be in MCP_ALLOWED_HOSTS):
-curl -H "Accept: application/json, text/event-stream" https://Zagros-mcp.example.com/mcp
+curl -H "Accept: application/json, text/event-stream" https://mcp.example.com/mcp
 ```
 
-`docker/compose.yml` default `MCP_ALLOWED_HOSTS=Zagros-mcp.example.com,zagros-mcp.example.com,localhost,127.0.0.1`. Set `MCP_ALLOWED_HOSTS=*` to disable.
+`docker/compose.yml` default `MCP_ALLOWED_HOSTS=localhost,127.0.0.1` (add your own domain/IP when exposing via a reverse proxy). Set `MCP_ALLOWED_HOSTS=*` to disable.
 
 Client config examples:
 
@@ -211,7 +211,7 @@ Client config examples:
   "mcpServers": {
     "zagros": {
       "type": "streamable-http",
-      "url": "https://Zagros-mcp.example.com/mcp"
+      "url": "https://mcp.example.com/mcp"
     }
   }
 }
@@ -244,10 +244,13 @@ Or automated:
 |---|---|
 | `search_cves` | BM25 search over CVE records; returns ranked hits with score and source URL |
 | `get_cve` | Exact lookup by CVE ID (e.g. `CVE-2026-17061`) |
-| `index_status` | HelixDB URL, total CVE count, and newest update timestamp |
+| `index_status` | CVE count, newest update, knowledge counts by source |
 | `sync_cves` | Download latest CVE delta (1..1000) and upsert into HelixDB — **requires user approval**, 5-min rate limit |
+| `search_knowledge` | BM25 search over CWE / ASVS / CAPEC / ATT&CK |
+| `sync_knowledge_source` | Ingest `cwe` \| `asvs` \| `capec` \| `attack` \| `all` — **requires user approval**, 5-min rate limit |
+| `backfill_cves` | Walk deltaLog history (1..10000) and upsert — **requires user approval**, 5-min rate limit |
 
-* `sync_cves` fetches `delta.json` (latest), not `deltaLog.json` (history). For historical bulk use CLI `backfill --limit 10000`, not MCP.
+* `sync_cves` fetches `delta.json` (latest), not `deltaLog.json` (history). For historical bulk via MCP use `backfill_cves`; via CLI use `backfill --limit 10000`.
 
 ### Agent guidance
 
@@ -256,6 +259,14 @@ Or automated:
 - Do not assert affected-product scope beyond what the CVE description states.
 - Call `index_status` before `sync_cves` when only metadata is needed.
 - `sync_cves` accesses the network and modifies persistent data; always require explicit user approval.
+
+### Skill (`skill/`)
+
+The `cybersecurity-expert` skill (guidance derived from ISC2 CC study notes)
+pairs with your own Zagros instance — see [`skill/README.md`](skill/README.md).
+Two install paths: paste [`skill/INSTALL-PROMPT.md`](skill/INSTALL-PROMPT.md)
+to any agent harness, or run the URL installers (`install.sh` / `install.ps1`,
+default MCP `http://localhost:8789/mcp`, `--mcp-url` to override).
 
 ---
 
@@ -267,9 +278,9 @@ Or automated:
 | `ZAGROS_DATA_DIR` | `data/` / `/data` (container) | Legacy flat-file cache (`cves.json`) |
 | `UI_PORT` | `8788` | Web UI port |
 | `MCP_BIND_ADDR` | `0.0.0.0:8789` | MCP HTTP bind |
-| `MCP_ALLOWED_HOSTS` | `Zagros-mcp.example.com,zagros-mcp.example.com,localhost,127.0.0.1` | Host allowlist for `POST /mcp` |
+| `MCP_ALLOWED_HOSTS` | `localhost,127.0.0.1` | Host allowlist for `POST /mcp` |
 
-Compose networks: `zagros` (bridge, internal `helix:8080`) + `n8n_default` (external, Traefik). `cli` uses `profiles: ["cli"]` so `up -d` does not start it.
+Compose networks: `zagros` (bridge, internal `helix:8080`) + `proxy_default` (external, Traefik). `cli` uses `profiles: ["cli"]` so `up -d` does not start it.
 
 ---
 
@@ -310,3 +321,9 @@ Compose networks: `zagros` (bridge, internal `helix:8080`) + `n8n_default` (exte
 - Does not replace Semgrep or CodeQL.
 - Does not certify compliance with any standard.
 - Is not a runtime intrusion detection system.
+
+---
+
+## License
+
+Apache-2.0 — see [LICENSE](LICENSE). Security disclosures: see [SECURITY.md](SECURITY.md).
