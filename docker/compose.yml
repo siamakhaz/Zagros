@@ -89,7 +89,7 @@ services:
     environment:
       HELIX_URL: http://helix:8080
       MCP_BIND_ADDR: ${MCP_BIND_ADDR:-0.0.0.0:8789}
-      MCP_ALLOWED_HOSTS: ${MCP_ALLOWED_HOSTS:-localhost,127.0.0.1}
+      MCP_ALLOWED_HOSTS: ${MCP_ALLOWED_HOSTS:-Zagros-mcp.example.com,zagros-mcp.example.com,localhost,127.0.0.1}
     ports:
       - "8789:8789"
     volumes:
