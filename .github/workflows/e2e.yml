@@ -1,0 +1,66 @@
+name: E2E smoke
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: "41 6 * * 2"
+
+permissions:
+  contents: read
+
+jobs:
+  helix-cli-mcp:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build pinned HelixDB server from source
+        run: |
+          git init /tmp/helix-db
+          git -C /tmp/helix-db remote add origin https://github.com/HelixDB/helix-db.git
+          git -C /tmp/helix-db fetch --depth 1 origin 995f682c3fe48db66d2e21fd20a2808da776c67f
+          git -C /tmp/helix-db checkout --detach FETCH_HEAD
+          cargo build --manifest-path /tmp/helix-db/Cargo.toml --release -p server
+      - name: Start HelixDB
+        env:
+          HELIX_HTTP_ADDR: 127.0.0.1:47474
+          HELIX_GRPC_ADDR: 127.0.0.1:47475
+        run: |
+          /tmp/helix-db/target/release/server > /tmp/helix.log 2>&1 &
+          echo $! > /tmp/helix.pid
+      - name: Wait for HelixDB
+        run: |
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:47474/healthz >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/helix.log
+          exit 1
+      - name: Build Zagros CLI and MCP
+        run: cargo build --locked --bin zagros --bin zagros-mcp
+      - name: Seed deterministic fixture
+        env:
+          HELIX_URL: http://127.0.0.1:47474
+        run: cargo test --test e2e_seed -- --ignored --nocapture
+      - name: Verify CLI query
+        env:
+          HELIX_URL: http://127.0.0.1:47474
+        run: |
+          output="$(target/debug/zagros search CVE-2099-0001 --json)"
+          echo "$output"
+          grep -q 'CVE-2099-0001' <<<"$output"
+      - name: Verify MCP query
+        env:
+          HELIX_URL: http://127.0.0.1:47474
+        run: python scripts/e2e_mcp.py
+      - name: HelixDB logs
+        if: failure()
+        run: cat /tmp/helix.log
+      - name: Stop HelixDB
+        if: always()
+        run: |
+          if [ -f /tmp/helix.pid ]; then kill "$(cat /tmp/helix.pid)" || true; fi
