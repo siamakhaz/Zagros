@@ -1,0 +1,1 @@
+{"servers":{"MCP_DOCKER":{"command":"docker","args":["mcp","gateway","run","--profile","zagros_test"],"env":{"LOCALAPPDATA":"${env:LOCALAPPDATA}","ProgramData":"C:\\ProgramData","ProgramFiles":"C:\\Program Files"},"type":"stdio"}}}

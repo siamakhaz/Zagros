@@ -1,0 +1,31 @@
+services:
+  mcp:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=${TRAEFIK_NETWORK:-proxy_default}"
+      - "traefik.http.routers.zagros-mcp.rule=Host(`${TRAEFIK_MCP_HOST:-mcp.example.com}`)"
+      - "traefik.http.routers.zagros-mcp.entrypoints=${TRAEFIK_ENTRYPOINT:-websecure}"
+      - "traefik.http.routers.zagros-mcp.tls=true"
+      - "traefik.http.routers.zagros-mcp.tls.certresolver=${TRAEFIK_CERTRESOLVER:-letsencrypt}"
+      - "traefik.http.services.zagros-mcp.loadbalancer.server.port=8789"
+    networks:
+      - zagros
+      - proxy_default
+
+  zagros-ui:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=${TRAEFIK_NETWORK:-proxy_default}"
+      - "traefik.http.routers.zagros-ui.rule=Host(`${TRAEFIK_UI_HOST:-zagros.example.com}`)"
+      - "traefik.http.routers.zagros-ui.entrypoints=${TRAEFIK_ENTRYPOINT:-websecure}"
+      - "traefik.http.routers.zagros-ui.tls=true"
+      - "traefik.http.routers.zagros-ui.tls.certresolver=${TRAEFIK_CERTRESOLVER:-letsencrypt}"
+      - "traefik.http.services.zagros-ui.loadbalancer.server.port=8788"
+    networks:
+      - zagros
+      - proxy_default
+
+networks:
+  proxy_default:
+    external: true
+    name: ${TRAEFIK_NETWORK:-proxy_default}

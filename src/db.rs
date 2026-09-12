@@ -14,6 +14,7 @@ use crate::CveDocument;
 /// Search loads all nodes of the requested label and ranks them in-process
 /// with BM25 (`lib.rs`). HelixDB is the canonical persistence layer; the
 /// old flat JSON file is no longer used.
+use crate::provenance::legacy_provenance;
 use crate::sources::KnowledgeDoc;
 use anyhow::{Context, Result};
 use chrono::{DateTime, Utc};
@@ -364,12 +365,23 @@ fn row_to_knowledge(row: KnowledgeRow) -> Option<KnowledgeDoc> {
     if id.is_empty() {
         return None;
     }
+    let source = row.source.unwrap_or_default();
+    let url = row.url.unwrap_or_default();
+    let provenance = legacy_provenance(
+        if source.is_empty() {
+            "unknown"
+        } else {
+            &source
+        },
+        &url,
+    );
     Some(KnowledgeDoc {
         id,
         name: row.name.unwrap_or_default(),
         description: row.description.unwrap_or_default(),
-        source: row.source.unwrap_or_default(),
-        url: row.url.unwrap_or_default(),
+        source,
+        url,
         tags: row.tags.unwrap_or_default(),
+        provenance,
     })
 }

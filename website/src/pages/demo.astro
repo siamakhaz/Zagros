@@ -1,0 +1,68 @@
+---
+import Base from '../layouts/Base.astro';
+import data from '../data/sample.json';
+const base = import.meta.env.BASE_URL;
+const payload = JSON.stringify(data);
+---
+<Base title="Try a search — Zagros" description="Static interactive demo: BM25-style search over sample CVE + knowledge records, plus MCP tool preview.">
+<div class="wrap">
+  <section class="block" style="padding-top:40px">
+    <div class="kicker">Try a search · static, offline</div>
+    <h2>Search like it's HelixDB.</h2>
+    <p class="sub">This page runs 100% in your browser over a tiny sample (8 records). The real CLI / MCP server runs the same BM25 logic over ~3,100 nodes. Try <span class="mono">rce</span>, <span class="mono">CVE-2026-17061</span>, <span class="mono">sql injection</span>, <span class="mono">credentials</span>.</p>
+    <div class="demo-grid">
+      <div class="searchbox">
+        <input id="q" type="search" value="remote code execution" autocomplete="off" spellcheck="false" aria-label="Search sample records" />
+        <button id="go">Search</button>
+      </div>
+      <div class="chips" id="chips">
+        <button data-q="remote code execution">rce</button>
+        <button data-q="CVE-2026-17061">exact id</button>
+        <button data-q="sql injection">sql injection</button>
+        <button data-q="hardcoded credentials">credentials</button>
+        <button data-q="buffer overflow">overflow</button>
+      </div>
+      <div id="results" class="demo-grid"></div>
+      <div class="note">Static demo — scores are illustrative. Full ranking (field weights, exact-match + phrase bonuses, <span class="mono">MIN_SCORE 1.0</span>) runs in-process in the Rust binary. Point the real thing at <span class="mono">zagros search "…" --top-k 5</span> or MCP <span class="mono">search_cves</span>.</div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="kicker">MCP preview</div>
+    <h2>What your agent sees.</h2>
+    <div class="steps">
+      <div class="step"><div class="n">→</div><div><h3 class="mono">search_cves — query + top_k <button class="copy-lite" data-copy='{"tool": "search_cves", "query": "buffer overflow", "top_k": 5}'>copy</button></h3><pre class="code"><span class="cm">// POST /mcp — Streamable HTTP</span>
+&#123;"tool": <span class="hl">"search_cves"</span>, "query": "buffer overflow", "top_k": 5&#125;
+<span class="cm">// → ranked hits: id, score, description, source_url</span></pre></div></div>
+      <div class="step"><div class="n">→</div><div><h3 class="mono">get_cve — exact id <button class="copy-lite" data-copy='{"tool": "get_cve", "cve_id": "CVE-2026-17061"}'>copy</button></h3><pre class="code">&#123;"tool": <span class="hl">"get_cve"</span>, "cve_id": "CVE-2026-17061"&#125;</pre></div></div>
+    </div>
+    <div class="cta-row" style="justify-content:flex-start">
+      <a class="btn btn-ghost mono" href={`${base}docs/mcp/`}>MCP reference →</a>
+    </div>
+  </section>
+</div>
+<script define:vars={{ payload }}>
+  const docs = JSON.parse(payload);
+  const q = document.getElementById('q'), go = document.getElementById('go');
+  const box = document.getElementById('results');
+  const tok = (s) => (s.toLowerCase().match(/[a-z0-9]+(?:-[a-z0-9]+)*/g) || []);
+  function search(query) {
+    const terms = tok(query); const exact = query.trim().toUpperCase();
+    const out = docs.map((d) => {
+      const hay = (d.id + ' ' + d.title + ' ' + d.description).toLowerCase();
+      const ht = tok(hay); let s = 0;
+      for (const t of terms) { const f = ht.filter((x) => x === t).length; if (f) s += (1 + Math.log(f)) * (t.startsWith('cve-') ? 6 : t.length > 5 ? 2 : 1); }
+      if (exact && d.id.toUpperCase() === exact) s += 25;
+      if (terms.length > 1 && terms.every((t) => hay.includes(t))) s += 4;
+      return { d, s };
+    }).filter((r) => r.s >= 1).sort((a, b) => b.s - a.s);
+    box.innerHTML = out.length ? out.map((r) =>
+      `<div class="result"><span class="score">score ${r.s.toFixed(1)}</span><div class="rid">${r.d.id} · ${r.d.source}</div><h3>${r.d.title}</h3><p>${r.d.description}</p></div>`
+    ).join('') : `<div class="result"><h3>No hits above MIN_SCORE 1.0</h3><p class="muted">Try “rce”, “overflow”, or a full CVE id.</p></div>`;
+  }
+  go.onclick = () => search(q.value);
+  q.onkeydown = (e) => { if (e.key === 'Enter') search(q.value); };
+  document.getElementById('chips').onclick = (e) => { const b = e.target.closest('button'); if (!b) return; q.value = b.dataset.q; search(q.value); };
+  search(q.value);
+</script>
+</Base>

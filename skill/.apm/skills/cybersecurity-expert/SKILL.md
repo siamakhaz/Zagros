@@ -14,7 +14,7 @@ description: >
   to real infrastructure and organizations.
 ---
 
-<!-- Derived from ISC2 CC study notes (CC-Skill), rebranded for Zagros. MIT license. -->
+<!-- Independently authored from the maintainer's personal cybersecurity study notes. ISC2 CC influenced topic coverage; no official ISC2 courseware or exam content is included. Apache-2.0. -->
 
 # Cybersecurity Expert Skill
 
@@ -83,6 +83,8 @@ When the user asks about a CVE, affected product version, vulnerability class, e
    - CISA Known Exploited Vulnerabilities catalog for exploitation status
 7. Cross-check high-impact claims such as affected versions, active exploitation, severity, and remediation deadlines against an authoritative source when the decision is consequential.
 8. State the retrieval source and distinguish confirmed record facts from analysis or recommendations. Mention possible index staleness when freshness cannot be established.
+9. Structure investigation conclusions as **Evidence**, **Analysis**, and **Recommendation**. Evidence must name the retrieved record ID and canonical source URL; never present model inference as retrieved fact.
+10. If authoritative sources disagree, report the disagreement explicitly. Prefer the affected vendor for product-specific scope/remediation, CVE.org for the canonical CVE record, CISA KEV for known exploitation status, and the named standard's official publisher for control requirements. Do not silently merge conflicting claims.
 
 Use the web directly when the request requires information outside the CVE record, such as a newly published vendor patch, current exploitation reporting, or implementation-specific remediation guidance. Do not invoke CVE tooling for general security questions that do not concern vulnerabilities.
 

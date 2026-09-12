@@ -16,7 +16,7 @@
 // The HELIX_URL variable (default http://localhost:47474) is read by
 // the shared db::client() in zagros::db.
 
-use axum::{Router, routing::any};
+use axum::{Router, http::StatusCode, routing::any};
 use rmcp::transport::streamable_http_server::session::local::LocalSessionManager;
 use rmcp::transport::streamable_http_server::tower::{
     StreamableHttpServerConfig, StreamableHttpService,
@@ -71,6 +71,12 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-async fn health() -> &'static str {
-    "ok"
+async fn health() -> (StatusCode, &'static str) {
+    match zagros::db::client() {
+        Ok(client) => match zagros::db::count(&client).await {
+            Ok(_) => (StatusCode::OK, "ok"),
+            Err(_) => (StatusCode::SERVICE_UNAVAILABLE, "helix unavailable"),
+        },
+        Err(_) => (StatusCode::SERVICE_UNAVAILABLE, "helix unavailable"),
+    }
 }

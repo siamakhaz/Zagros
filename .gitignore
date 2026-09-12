@@ -1,2 +1,16 @@
 /target
 /data
+website/node_modules
+website/dist
+website/.astro
+/skill/dist
+# Machine-specific / secret-adjacent files — never commit
+.vscode/mcp.json
+graphify-out/.graphify_python
+temp_remote_*.ps1
+.env*
+!.env.example
+graphify-out/.graphify_labels.json
+graphify-out/.graphify_labels.json.sig
+graphify-out/.graphify_root
+graphify-out/cache/

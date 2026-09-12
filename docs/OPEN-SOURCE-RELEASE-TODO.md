@@ -1,0 +1,202 @@
+﻿
+# Zagros Open-Source Release TODO
+
+Goal: prepare Zagros for public open-source release as a local-first, secure, trusted source of truth for AI-agent security investigations.
+
+Project scope:
+- **Zagros Core** â€” ingestion, HelixDB, retrieval/RAG, CLI, MCP servers, UI.
+- **Zagros Skills** â€” agent guidance for using Zagros correctly during security investigations.
+
+## P0 â€” Release blockers
+
+- [x] Resolve skill copyright/provenance before publishing.
+  - Skill content is independently authored from the maintainer's personal cybersecurity study notes and practical experience.
+  - ISC2 CC influenced topic coverage, but no official ISC2 courseware or exam content is included.
+  - Added explicit non-affiliation/provenance wording and third-party notices.
+
+- [x] Reconcile repository licensing.
+  - Zagros-authored Core, documentation, and Skills use Apache-2.0.
+  - Standalone skill packages include the Apache-2.0 license.
+  - Third-party security datasets retain their upstream terms; see `THIRD_PARTY_NOTICES.md`.
+
+- [x] Update stale documentation.
+  - VISION.md now reflects the local-first trusted-source mission, the Core + Skills model, and all seven current MCP tools.
+  - Website copies of README, VISION, and SECURITY-REVIEW were synchronized.
+
+- [x] Refresh the security review against current code.
+  - F-01, F-02, F-04, F-05, and F-06 are fixed.
+  - F-03 is mitigated/documented as a HelixDB v3 limitation.
+  - No unresolved High-severity finding remains from the previous review.
+
+## P1 â€” Trusted-source guarantees
+
+- [ ] Store publisher/source, source version, canonical URL, license, retrieved timestamp, and content hash per record/chunk.
+  - Partial: shared `Provenance` model and hashing are implemented; CWE/ASVS/CAPEC/ATT&CK ingestion populate it. CVE persistence + MCP output still need completion.
+- [ ] Define trust tiers and source-selection policy.
+  - Partial: `TrustTier` is implemented and all current first-party corpus sources are classified `authoritative`; claim-specific source-selection policy still needs to be finalized/documented.
+- [x] Document freshness/staleness behavior.
+- [x] Make source updates explicit and auditable.
+- [x] Validate upstream source origins.
+- [x] Enforce response/download size limits.
+- [ ] Preserve raw-source provenance where licensing permits.
+  - Partial: source manifests include raw SHA-256 hashes; optional raw snapshots are implemented behind `ZAGROS_PRESERVE_RAW_SOURCES`. CVE source-manifest integration remains.
+- [x] Distinguish source evidence from Zagros metadata and agent interpretation.
+- [x] Require source IDs/URLs in investigation outputs.
+- [x] Document prompt-injection handling for retrieved security text.
+- [x] Document behavior when authoritative sources disagree.
+
+## P1 â€” Deployment and usability
+
+- [x] Provide one canonical 5-minute local Docker quick start.
+- [x] Provide separate cloud/self-hosted deployment guidance.
+- [x] Make Traefik optional rather than required by the default Compose setup.
+- [x] Add .env.example with safe placeholders.
+- [x] Verify Windows, Linux, and macOS/WSL installation paths.
+- [x] Document recovery/no-backup policy, upgrade, and uninstall.
+- [x] Document bounded CPU/RAM/PID requirements for the current corpus; Zagros data is rebuildable and disk use is corpus-dependent.
+- [x] Clarify which ports are local-only and which may be exposed.
+- [x] Add authentication guidance for internet-facing MCP deployments.
+- [x] Add/verify health and readiness checks for runtime services.
+
+## P1 â€” CI and release engineering
+
+- [ ] Add CI for cargo fmt --all -- --check.
+- [ ] Add CI for cargo clippy --all-targets --all-features -- -D warnings.
+- [ ] Add CI for cargo test --all-targets.
+- [ ] Add CI for website npm ci + npm run build.
+- [ ] Add Docker image build tests for MCP, CLI, and UI.
+- [ ] Add end-to-end smoke test: HelixDB -> seed -> CLI query -> MCP query.
+- [ ] Add Rust/npm/container/GitHub Actions dependency scanning.
+- [ ] Pin important release dependencies/actions where practical.
+- [ ] Define semantic versioning and CHANGELOG policy.
+- [ ] Create reproducible GitHub Releases with checksums.
+- [ ] Publish container images with immutable version tags/digests.
+- [ ] Automate skill package release and checksum verification.
+
+## P1 â€” Repository and contributor readiness
+
+- [ ] Add CONTRIBUTING.md.
+- [ ] Add CODE_OF_CONDUCT.md.
+- [ ] Add CHANGELOG.md.
+- [ ] Add ROADMAP.md.
+- [x] Add THIRD_PARTY_NOTICES.md.
+- [ ] Add issue templates: bug, feature, data-source request.
+- [ ] Add pull-request template with tests/docs/security checklist.
+- [ ] Enable GitHub private vulnerability reporting.
+- [ ] Add branch protection and required CI checks.
+- [ ] Confirm no secrets, private endpoints, personal paths, or machine-specific files exist in Git history.
+- [ ] Remove/ignore generated artifacts that should not be versioned.
+
+## P1 â€” Supply-chain security
+
+- [ ] Add Rust dependency audit.
+- [ ] Add npm dependency audit.
+- [ ] Add Dependabot or Renovate.
+- [ ] Add CodeQL.
+- [ ] Add container vulnerability scanning.
+- [ ] Generate SBOMs for releases.
+- [ ] Use immutable Docker digests for production examples.
+- [ ] Sign release artifacts where practical.
+- [ ] Publish SHA256 checksums for binaries and skill packages.
+
+## P1 Review â€” 2026-09-12
+
+Status legend: **Done** = implemented and documented; **Partial** = useful pieces exist but release requirement is not fully closed; **Open** = not implemented or not yet verified.
+
+### Trusted-source guarantees
+
+| Item | Status | Review |
+|---|---|---|
+| Full provenance fields per record/chunk | **Open** | Current knowledge schema stores id/name/description/source/url/tags, but not publisher, source version, license, retrieved timestamp, content hash, or trust tier. |
+| Trust tiers and source-selection policy | **Open** | Tier-1 terminology exists in VISION, but there is no explicit selection/conflict policy enforced or documented. |
+| Freshness/staleness behavior | **Done** | Daily refresh runs in the MCP container; `index_status` exposes refresh state/last attempt/last success and refresh history is persisted. |
+| Explicit/auditable source updates | **Done** | Scheduled refreshes and successful manual MCP sync/backfill operations append to `/data/refresh-history.jsonl`. |
+| Validate upstream source origins | **Done** | Knowledge sources use fixed canonical URLs; dynamic CVE links are restricted to the CVE Project raw GitHub origin. |
+| Enforce response/download size limits | **Done** | Limits exist for delta.json, deltaLog, individual CVEs, CWE ZIP/decompressed XML, ASVS CSV, CAPEC XML, and ATT&CK STIX. |
+| Preserve raw-source provenance | **Open** | Canonical URLs are retained, but immutable raw snapshots/content hashes are not persisted. |
+| Separate evidence from interpretation | **Done** | MCP guidance and the cybersecurity skill require Evidence / Analysis / Recommendation separation and prohibit presenting inference as retrieved fact. |
+| Require source IDs/URLs in investigation outputs | **Done** | MCP/skill guidance requires record IDs and canonical source URLs for evidence-backed claims. |
+| Prompt-injection handling | **Done** | MCP responses and docs explicitly classify retrieved third-party text as untrusted data, never instructions. |
+| Authoritative-source disagreement policy | **Open** | No documented precedence/conflict workflow yet. |
+
+### Deployment and usability
+
+| Item | Status | Review |
+|---|---|---|
+| Canonical 5-minute local Docker quick start | **Done** | Base Compose is self-contained and local-safe; MCP/UI default to loopback bindings. |
+| Cloud/self-hosted deployment guide | **Done** | `DEPLOYMENT.md` documents local/cloud deployment, reverse proxies, authentication boundary, recovery, upgrade, and uninstall. |
+| Traefik optional in default Compose | **Done** | Base Compose has no Traefik dependency; `docker/compose.traefik.yml` is an optional override. |
+| `.env.example` | **Done** | Safe local defaults and optional Traefik settings are provided. |
+| Windows/Linux/macOS or WSL verification | **Done** | Docker Compose is the supported cross-platform path; Windows, Linux, macOS, and WSL2 behavior is documented. |
+| Recovery/no-backup/upgrade/uninstall docs | **Done** | Zagros is documented as a rebuildable derived index; recovery, upgrade, and uninstall procedures are documented. |
+| Resource requirements | **Done** | CPU, RAM, and PID ceilings are enforced for each Compose service; disk use is corpus-dependent because the index is rebuildable. |
+| Port exposure documentation | **Done** | README/configuration document HelixDB, MCP, and UI bindings and intended exposure. |
+| Authentication guidance for public MCP | **Done** | `DEPLOYMENT.md` requires an authenticated reverse proxy/access gateway for non-local MCP exposure; host allowlisting is explicitly not authentication. |
+| Health/readiness checks | **Done** | MCP `/health` verifies HelixDB connectivity; UI `/api/status` remains the UI readiness check. |
+
+### CI and release engineering
+
+Most items remain **Open**. The website has a GitHub Pages build workflow, and the skill build script generates SHA256 checksums, but there is no general Rust CI, Docker build CI, automated E2E test, dependency scanning, release pipeline, container publishing pipeline, or documented semantic-versioning/CHANGELOG policy yet.
+
+### Repository and contributor readiness
+
+- **Done:** `THIRD_PARTY_NOTICES.md`, `SECURITY.md`.
+- **Open:** CONTRIBUTING, CODE_OF_CONDUCT, CHANGELOG, ROADMAP, issue templates, PR template.
+- **Not yet verifiable:** GitHub branch protection/private-vulnerability-reporting settings through the current integration.
+- **Partial:** repository-history hygiene. No credential was found in the historical `.vscode/mcp.json`, but old commits contain a maintainer Windows username/path and obsolete local MCP profile names. Clean history before public release if a pristine public history is desired.
+- **Partial:** generated-file hygiene. Common build outputs are ignored, but Graphify-generated artifacts are still being reviewed separately.
+
+### Supply-chain security
+
+This section is largely **Open**. Docker/Helix base images are pinned in important places, but there is currently no automated Rust/npm audit, Dependabot/Renovate, CodeQL, container scan, SBOM workflow, signing workflow, or public immutable-image release process.
+
+---
+
+## P2 â€” Skills ecosystem
+
+- [ ] Define a stable Zagros Skill Contract.
+- [ ] Keep generic security guidance harness-neutral.
+- [ ] Keep Zagros-specific MCP mappings in a separate reference.
+- [ ] Document Microsoft APM install, upgrade, uninstall, and compatibility.
+- [ ] Add skill evaluation cases with expected behavior.
+- [ ] Add examples for OpenCode, Copilot, Claude-compatible clients, and generic MCP clients.
+- [ ] Define how community-contributed skills are reviewed and trusted.
+- [ ] Version skills independently from Zagros Core when needed.
+- [ ] Consider changing skill/ to skills/ for future multi-skill growth.
+
+## P2 â€” Quality and project confidence
+
+- [ ] Add architecture decision records for major design choices.
+- [ ] Add threat model for local, LAN, and public-cloud deployments.
+- [ ] Add retrieval-quality benchmarks and regression tests.
+- [ ] Add corpus integrity/freshness metrics.
+- [ ] Publish a roadmap and label experimental features clearly.
+- [ ] Add screenshots/demo flow for a real security investigation.
+- [ ] State non-goals clearly: evidence source, not compliance certification or autonomous remediation.
+
+## P2 â€” Graphify cleanup
+
+- [ ] Add .graphifyignore.
+- [ ] Exclude website/.astro, website/dist, node_modules, target, and other generated files.
+- [ ] Investigate/remove stale references to C:/Projects/RAG/cve-rag.
+- [ ] Rebuild Graphify with --force after cleanup.
+- [ ] Run multigraph diagnostics.
+- [ ] Decide which Graphify artifacts should be committed publicly.
+## Current verified baseline â€” 2026-09-11
+
+- [x] Graphify refreshed: 1,739 nodes / 2,169 edges / 186 communities.
+- [x] cargo fmt --all -- --check passes.
+- [x] cargo test --all-targets passes: 4 tests total.
+- [x] cargo clippy --all-targets --all-features -- -D warnings passes.
+- [x] Astro website builds successfully.
+- [x] Quick tracked-file scan found no obvious committed API keys/private keys or generated target/node_modules/dist content.
+- [ ] Graphify parser noise remains around Astro/generated files.
+
+## First public-release gate
+
+Do not tag the first public release until:
+1. Skill licensing/provenance is resolved.
+2. Current security review has no unresolved High findings.
+3. Fresh clone -> local Docker deployment works without a personal Traefik environment.
+4. CI and end-to-end tests are green.
+5. Documentation accurately describes the current implementation.

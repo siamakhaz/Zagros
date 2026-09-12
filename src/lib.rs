@@ -1,5 +1,6 @@
 pub mod db;
 pub mod mcp;
+pub mod provenance;
 pub mod sources;
 
 use anyhow::{Context, Result};

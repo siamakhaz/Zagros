@@ -1,8 +1,8 @@
 name: zagros-skill
 version: 0.1.0
-description: Cybersecurity expert skill (ISC2 CC study notes) paired with the Zagros CVE MCP server. Practical guidance grounded in NIST, ISC2 CBK, CIS, and CISA frameworks, with live CVE lookup via your own Zagros instance.
+description: Cybersecurity investigation skill paired with the Zagros security knowledge MCP server. Independently authored guidance with live CVE and security-knowledge retrieval through your own Zagros instance.
 author: Zagros contributors
-license: MIT
+license: Apache-2.0
 type: skill
 targets:
   - opencode
