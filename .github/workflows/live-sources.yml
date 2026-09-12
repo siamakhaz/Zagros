@@ -1,0 +1,29 @@
+name: Live source compatibility
+
+on:
+  schedule:
+    - cron: "17 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build source/provenance tests
+        run: cargo test --lib provenance::tests -- --nocapture
+      - name: Validate configured source URLs
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSI https://cwe.mitre.org/data/xml/cwec_latest.xml.zip >/dev/null
+          curl -fsSI https://raw.githubusercontent.com/OWASP/ASVS/v5.0.0/5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.csv >/dev/null
+          curl -fsSI https://capec.mitre.org/data/xml/capec_latest.xml >/dev/null
+          curl -fsSI https://raw.githubusercontent.com/mitre-attack/attack-stix-data/master/enterprise-attack/enterprise-attack.json >/dev/null
+          curl -fsSI https://raw.githubusercontent.com/CVEProject/cvelistV5/main/cves/delta.json >/dev/null

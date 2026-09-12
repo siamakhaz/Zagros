@@ -1,0 +1,83 @@
+name: Security
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "23 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  dependency-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+      - name: Rust audit
+        run: |
+          cargo install cargo-audit --locked
+          cargo audit
+      - name: npm audit
+        working-directory: website
+        run: |
+          npm ci
+          npm audit --audit-level=high
+
+  codeql:
+    name: CodeQL
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v4
+        with:
+          languages: rust,javascript-typescript
+      - uses: github/codeql-action/autobuild@v4
+      - uses: github/codeql-action/analyze@v4
+
+  filesystem-scan:
+    name: Trivy repository scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Scan repository
+        run: |
+          docker run --rm -v "$PWD:/work" -w /work \
+            aquasec/trivy:0.74.0 fs \
+            --scanners vuln,secret,misconfig \
+            --severity HIGH,CRITICAL \
+            --exit-code 1 .
+
+  container-scan:
+    name: Container scan - ${{ matrix.image }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image: mcp
+            dockerfile: Dockerfile
+          - image: cli
+            dockerfile: Dockerfile.cli
+          - image: ui
+            dockerfile: Dockerfile.ui
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -f "${{ matrix.dockerfile }}" -t "zagros-${{ matrix.image }}:scan" .
+      - name: Scan image
+        run: |
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+            aquasec/trivy:0.74.0 image \
+            --severity HIGH,CRITICAL \
+            --ignore-unfixed \
+            --exit-code 1 "zagros-${{ matrix.image }}:scan"

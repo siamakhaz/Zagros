@@ -1,4 +1,4 @@
-# Configuration
+﻿# Configuration
 
 ## Environment variables
 
@@ -111,7 +111,7 @@ and `down` commands. Use `down -v` to also delete the volume.
 
 | Setting | Value | Notes |
 |---|---|---|
-| Image | `ghcr.io/helixdb/helixdb` (pinned SHA256) | Exact digest — upgrade by updating the digest |
+| Image | `ghcr.io/helixdb/helixdb` (pinned SHA256) | Exact digest â€” upgrade by updating the digest |
 | Port | `127.0.0.1:47474:8080` | Loopback-only; not exposed to the network |
 | Memory limit | `256m` | Sufficient for the current corpus size |
 | CPU limit | `1.0` | One vCPU |
@@ -148,7 +148,7 @@ docker mcp tools ls --gateway-arg=--profile --gateway-arg=profile
 
 ### Scripted registration (`docker/register.ps1`)
 
-The script is idempotent — it removes a stale registration before re-adding:
+The script is idempotent â€” it removes a stale registration before re-adding:
 
 ```powershell
 .\docker\register.ps1 -Profile profile
@@ -173,8 +173,8 @@ Two YAML files are provided:
 
 The MCP server is permitted to reach only:
 
-- `raw.githubusercontent.com:443` — CVE delta feed
-- `host.docker.internal:47474` — HelixDB on the Docker host (zagros-server.yaml only)
+- `raw.githubusercontent.com:443` â€” CVE delta feed
+- `host.docker.internal:47474` â€” HelixDB on the Docker host (zagros-server.yaml only)
 
 ---
 
@@ -198,12 +198,12 @@ The setup script runs all configuration steps in order and is safe to re-run.
 
 **Steps performed:**
 
-1. **Preflight** — verifies `docker`, `cargo`, and `pwsh` ≥ 7 are available.
-2. **HelixDB** — starts HelixDB with Docker Compose; polls until responsive (up to 30 s).
-3. **Build** — `cargo build --release --bin zagros-mcp`.
-4. **Image** — `docker build -t zagros-mcp:0.1.0 .`
-5. **Register** — runs `docker/register.ps1` to create catalog entry and add to profile.
-6. **Seed** (if `-Seed`) — runs `zagros-mcp backfill --limit $SeedLimit`.
+1. **Preflight** â€” verifies `docker`, `cargo`, and `pwsh` â‰¥ 7 are available.
+2. **HelixDB** â€” starts HelixDB with Docker Compose; polls until responsive (up to 30 s).
+3. **Build** â€” `cargo build --release --bin zagros-mcp`.
+4. **Image** â€” `docker build -t zagros-mcp:0.1.0 .`
+5. **Register** â€” runs `docker/register.ps1` to create catalog entry and add to profile.
+6. **Seed** (if `-Seed`) â€” runs `zagros-mcp backfill --limit $SeedLimit`.
 
 **Example:**
 
@@ -263,12 +263,12 @@ This updates the latest CVE delta and fully refreshes CWE, ASVS, CAPEC, and ATT&
 | `ZAGROS_DAILY_CVE_LIMIT` | `1000` | Maximum changed CVEs processed per daily refresh |
 | `ZAGROS_PRESERVE_RAW_SOURCES` | `false` | Optionally retain raw source snapshots under `/data/snapshots`; disabled by default because Zagros is a rebuildable index |
 
-The scheduler uses Supercronic v0.2.48 and runs as the non-root `zagros` user. The binary is version-pinned and SHA-256 verified during image build.
+The scheduler uses Supercronic v0.2.49 and runs as the non-root `zagros` user. The binary is version-pinned and SHA-256 verified during image build.
 
 Refresh state is persisted under the MCP data volume:
 
-- `/data/refresh-status.json` — latest attempt/success status.
-- `/data/refresh-history.jsonl` — append-only refresh event history.
+- `/data/refresh-status.json` â€” latest attempt/success status.
+- `/data/refresh-history.jsonl` â€” append-only refresh event history.
 
 A failed refresh does not stop the MCP server. The previous indexed corpus remains available and the failure is recorded for investigation.
 
