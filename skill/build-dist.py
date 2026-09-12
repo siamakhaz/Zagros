@@ -51,7 +51,7 @@ def main() -> None:
         "version": version,
         "built_at": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
         "mcp": {"name": "Zagros", "url": mcp_url()},
-        "provenance": "ISC2 CC study notes (CC-Skill), rebranded for Zagros",
+        "provenance": "Independently authored cybersecurity study notes; ISC2 CC influenced topic coverage, but no official ISC2 courseware or exam content is included",
         "layout": f"{SKILL}/SKILL.md (+ evals/, references/) at tarball root",
     }
     files = sorted(p for p in PKG.rglob("*") if p.is_file())

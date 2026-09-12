@@ -12,7 +12,12 @@
 /// | MITRE CAPEC 3.x | `Knowledge` | https://capec.mitre.org/data/xml/capec_latest.xml |
 /// | MITRE ATT&CK Enterprise | `Knowledge` | attack-stix-data GitHub |
 use crate::http_client;
+use crate::provenance::{
+    Provenance, append_source_manifest, build_provenance, normalized_record_hash,
+    preserve_raw_snapshot, sha256_hex,
+};
 use anyhow::{Context, Result, ensure};
+use chrono::{DateTime, Utc};
 use quick_xml::escape::unescape;
 use serde::{Deserialize, Serialize};
 use std::io::{Cursor, Read};
@@ -34,6 +39,82 @@ pub struct KnowledgeDoc {
     pub url: String,
     /// Optional extra context (platforms, level, tactic, etc.).
     pub tags: String,
+    /// Provenance required for newly ingested records; legacy rows get a migration-safe fallback.
+    #[serde(default)]
+    pub provenance: Provenance,
+}
+
+fn apply_provenance(
+    docs: &mut [KnowledgeDoc],
+    source: &str,
+    source_version: &str,
+    retrieved_at: DateTime<Utc>,
+) {
+    for doc in docs {
+        let hash = normalized_record_hash(&doc.id, &doc.name, &doc.description, &doc.tags);
+        doc.provenance =
+            build_provenance(source, source_version, &doc.url, retrieved_at, hash, None);
+    }
+}
+
+fn record_source_snapshot(
+    docs: &[KnowledgeDoc],
+    raw_bytes: &[u8],
+    raw_extension: &str,
+    source: &str,
+    retrieved_at: DateTime<Utc>,
+) {
+    let raw_hash = sha256_hex(raw_bytes);
+    if let Some(first) = docs.first() {
+        append_source_manifest(&first.provenance, &raw_hash, docs.len());
+    }
+    preserve_raw_snapshot(source, raw_bytes, raw_extension, retrieved_at);
+}
+
+fn xml_catalog_version(xml: &[u8], root_local_name: &[u8]) -> Option<String> {
+    use quick_xml::Reader;
+    use quick_xml::events::Event;
+
+    let mut reader = Reader::from_reader(xml);
+    let mut buf = Vec::new();
+    loop {
+        match reader.read_event_into(&mut buf) {
+            Ok(Event::Start(ref e)) | Ok(Event::Empty(ref e))
+                if e.local_name().as_ref() == root_local_name =>
+            {
+                for attr in e.attributes().flatten() {
+                    if attr.key.local_name().as_ref() == b"Version" {
+                        return Some(String::from_utf8_lossy(&attr.value).into_owned());
+                    }
+                }
+                return None;
+            }
+            Ok(Event::Eof) => return None,
+            Err(_) => return None,
+            _ => {}
+        }
+        buf.clear();
+    }
+}
+
+fn attack_source_version(json: &[u8]) -> String {
+    let Ok(value) = serde_json::from_slice::<serde_json::Value>(json) else {
+        return "master".to_string();
+    };
+    value
+        .get("objects")
+        .and_then(|v| v.as_array())
+        .and_then(|objects| {
+            objects.iter().find_map(|obj| {
+                let is_collection =
+                    obj.get("type").and_then(|v| v.as_str()) == Some("x-mitre-collection");
+                is_collection
+                    .then(|| obj.get("x_mitre_version").and_then(|v| v.as_str()))
+                    .flatten()
+            })
+        })
+        .unwrap_or("master")
+        .to_string()
 }
 
 // ── CWE ──────────────────────────────────────────────────────────────────────
@@ -76,7 +157,13 @@ pub async fn ingest_cwe() -> Result<Vec<KnowledgeDoc>> {
         xml_bytes.len()
     );
 
-    parse_cwe_xml(&xml_bytes)
+    let retrieved_at = Utc::now();
+    let version = xml_catalog_version(&xml_bytes, b"Weakness_Catalog")
+        .unwrap_or_else(|| "latest".to_string());
+    let mut docs = parse_cwe_xml(&xml_bytes)?;
+    apply_provenance(&mut docs, "cwe", &version, retrieved_at);
+    record_source_snapshot(&docs, bytes.as_ref(), "zip", "cwe", retrieved_at);
+    Ok(docs)
 }
 
 fn parse_cwe_xml(xml: &[u8]) -> Result<Vec<KnowledgeDoc>> {
@@ -107,6 +194,7 @@ fn parse_cwe_xml(xml: &[u8]) -> Result<Vec<KnowledgeDoc>> {
                         source: "cwe".into(),
                         url: format!("https://cwe.mitre.org/data/definitions/{current_id}.html"),
                         tags: String::new(),
+                        provenance: Provenance::default(),
                     });
                 }
                 // Reset for next weakness.
@@ -167,6 +255,7 @@ fn parse_cwe_xml(xml: &[u8]) -> Result<Vec<KnowledgeDoc>> {
             source: "cwe".into(),
             url: format!("https://cwe.mitre.org/data/definitions/{current_id}.html"),
             tags: String::new(),
+            provenance: Provenance::default(),
         });
     }
 
@@ -199,7 +288,11 @@ pub async fn ingest_asvs() -> Result<Vec<KnowledgeDoc>> {
 
     let text = String::from_utf8(bytes.to_vec()).context("ASVS CSV is not valid UTF-8")?;
 
-    parse_asvs_csv(&text)
+    let retrieved_at = Utc::now();
+    let mut docs = parse_asvs_csv(&text)?;
+    apply_provenance(&mut docs, "asvs", "5.0.0", retrieved_at);
+    record_source_snapshot(&docs, bytes.as_ref(), "csv", "asvs", retrieved_at);
+    Ok(docs)
 }
 
 /// ASVS CSV columns: chapter_id, chapter_name, section_id, section_name,
@@ -245,6 +338,7 @@ fn parse_asvs_csv(text: &str) -> Result<Vec<KnowledgeDoc>> {
             source: "asvs".into(),
             url: "https://github.com/OWASP/ASVS/tree/v5.0.0".into(),
             tags,
+            provenance: Provenance::default(),
         });
     }
 
@@ -276,7 +370,13 @@ pub async fn ingest_capec() -> Result<Vec<KnowledgeDoc>> {
         bytes.len()
     );
 
-    parse_capec_xml(&bytes)
+    let retrieved_at = Utc::now();
+    let version = xml_catalog_version(&bytes, b"Attack_Pattern_Catalog")
+        .unwrap_or_else(|| "latest".to_string());
+    let mut docs = parse_capec_xml(&bytes)?;
+    apply_provenance(&mut docs, "capec", &version, retrieved_at);
+    record_source_snapshot(&docs, bytes.as_ref(), "xml", "capec", retrieved_at);
+    Ok(docs)
 }
 
 fn parse_capec_xml(xml: &[u8]) -> Result<Vec<KnowledgeDoc>> {
@@ -376,6 +476,7 @@ fn build_capec_doc(id: &str, name: &str, description: &str) -> KnowledgeDoc {
         source: "capec".into(),
         url: format!("https://capec.mitre.org/data/definitions/{id}.html"),
         tags: String::new(),
+        provenance: Provenance::default(),
     }
 }
 
@@ -404,7 +505,12 @@ pub async fn ingest_attack() -> Result<Vec<KnowledgeDoc>> {
         bytes.len()
     );
 
-    parse_attack_stix(&bytes)
+    let retrieved_at = Utc::now();
+    let version = attack_source_version(&bytes);
+    let mut docs = parse_attack_stix(&bytes)?;
+    apply_provenance(&mut docs, "attack", &version, retrieved_at);
+    record_source_snapshot(&docs, bytes.as_ref(), "json", "attack", retrieved_at);
+    Ok(docs)
 }
 
 #[derive(Debug, Deserialize)]
@@ -487,6 +593,7 @@ fn parse_attack_stix(json: &[u8]) -> Result<Vec<KnowledgeDoc>> {
             source: "attack".into(),
             url,
             tags,
+            provenance: Provenance::default(),
         });
     }
 

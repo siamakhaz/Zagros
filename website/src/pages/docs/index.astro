@@ -1,0 +1,32 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+const base = import.meta.env.BASE_URL;
+const docs = (await getCollection('docs')).sort((a, b) => (a.data.order ?? 99) - (b.data.order ?? 99) || a.id.localeCompare(b.id));
+const label = (id: string) => (id.replace(/\.md$/, '').replace(/[-_]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()));
+---
+<Base title="Docs — Zagros" description="Zagros documentation: CLI, MCP server, architecture, data sources, configuration, development, security review.">
+<div class="wrap">
+  <div class="docs-layout">
+    <aside class="docs-side">
+      <a href={`${base}docs/`} aria-current="page">Overview</a>
+      {docs.map((d) => <a href={`${base}docs/${d.id.replace(/\.md$/, '')}/`}>{d.data.title ?? label(d.id)}</a>)}
+    </aside>
+    <article class="prose">
+      <div class="kicker">Docs</div>
+      <h1>Zagros documentation</h1>
+      <p class="muted">Local-first CVE + knowledge search. Start with CLI, then wire up MCP, then read the architecture notes. Source of truth lives in <span class="mono">/docs/*.md</span> — this site renders the same files.</p>
+      <div class="grid">
+        {docs.map((d) => (
+          <a class="card" style="text-decoration:none" href={`${base}docs/${d.id.replace(/\.md$/, '')}/`}>
+            <span class="tag mono">{d.id.replace(/\.md$/, '')}</span>
+            <h3>{d.data.title ?? label(d.id)}</h3>
+            <p>{d.data.description ?? 'Guide →'}</p>
+          </a>
+        ))}
+      </div>
+      <div class="note">Quickstart: <span class="mono">docker compose -f docker/compose.yml up -d helix</span> → <span class="mono">zagros backfill --limit 500</span> → <span class="mono">zagros source all</span> → <span class="mono">zagros search "rce"</span>.</div>
+    </article>
+  </div>
+</div>
+</Base>

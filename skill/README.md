@@ -1,8 +1,10 @@
 # zagros-skill — cybersecurity skill + Zagros MCP wiring
 
-Pairs the `cybersecurity-expert` skill (guidance derived from ISC2 CC study
-notes — security principles, risk, resilience, access control, network defense,
-operations) with your own [Zagros](../README.md) CVE MCP server.
+Pairs the `cybersecurity-expert` skill with your own [Zagros](../README.md)
+security knowledge MCP server. The skill content is independently authored from
+the maintainer's personal cybersecurity study notes prepared while studying for
+the ISC2 Certified in Cybersecurity (CC) exam; it is not ISC2 courseware,
+official exam content, or an ISC2-endorsed derivative work.
 
 - **No PII, no phone-home defaults.** The installer targets your self-hosted
   Zagros at `http://localhost:8789/mcp` unless you pass `--mcp-url` / `-McpUrl`
@@ -91,6 +93,11 @@ the install-time `--mcp-url` always wins.
 
 ## Provenance
 
-Cybersecurity guidance derived from ISC2 CC study notes (the `CC-Skill`
-package), rebranded for Zagros under MIT. The generic CVE rules in `SKILL.md`
-stay harness-neutral; `references/zagros-mcp.md` binds them to Zagros.
+Cybersecurity guidance in this package is independently authored from the
+maintainer's personal study notes and practical experience. Studying for the
+ISC2 Certified in Cybersecurity (CC) exam influenced the topic coverage, but no
+ISC2 courseware or official exam content is included. Zagros and this skill are
+not affiliated with or endorsed by ISC2. Zagros-authored skill content is
+licensed under Apache-2.0; upstream standards and trademarks remain subject to
+their respective owners' terms. The generic rules in `SKILL.md` stay
+harness-neutral; `references/zagros-mcp.md` binds them to Zagros.

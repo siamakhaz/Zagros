@@ -32,7 +32,7 @@ Corpus after full seed (`backfill --limit 500` + `source all`) — v0.2, 2026-09
 
 - [Rust](https://rustup.rs/) 1.85+
 - [Docker](https://www.docker.com/) with Compose v2
-- Optional reverse proxy (e.g. Traefik) on an external Docker network with a TLS certresolver — `docker/compose.yml` shows example values (`proxy_default`, `letsencrypt`); substitute your own
+- Optional reverse proxy (e.g. Traefik) only for remote/public access. The default Compose stack requires no reverse proxy and binds MCP/UI to loopback. Use `docker/compose.traefik.yml` as an optional override.
 
 ---
 
@@ -53,10 +53,10 @@ Services:
 | Service | Container | Host port | Internal | Traefik host |
 |---|---|---|---|---|
 | `helix` | `zagros-helix` | `127.0.0.1:47474` → `8080` | `http://helix:8080` | — |
-| `mcp` | `zagros-mcp-http` | `8789` | `http://helix:8080` | `https://mcp.example.com/mcp` |
-| `zagros-ui` | `zagros-ui` | `0.0.0.0:8788` | `http://helix:8080` | `https://zagros.example.com` |
+| `mcp` | `zagros-mcp-http` | `127.0.0.1:8789` | `http://helix:8080` | optional via Traefik override |
+| `zagros-ui` | `zagros-ui` | `127.0.0.1:8788` | `http://helix:8080` | optional via Traefik override |
 
-HelixDB binds `127.0.0.1:47474:8080` (F-01). Host CLI uses `http://localhost:47474`; containers use `http://helix:8080` on `zagros` network. Both `mcp`/`zagros-ui` also join `proxy_default` (external) for Traefik.
+HelixDB binds `127.0.0.1:47474:8080` (F-01). MCP and UI also bind to loopback by default. Containers communicate only on the internal `zagros` network. For Traefik, start Compose with the optional `docker/compose.traefik.yml` override.
 
 Verify:
 
@@ -166,7 +166,9 @@ Docker (already in stack):
 ```powershell
 docker compose -f docker/compose.yml up -d --build zagros-ui
 # open http://localhost:8788
-# open https://zagros.example.com  (TLS via letsencrypt)
+
+# Optional Traefik/TLS deployment:
+docker compose -f docker/compose.yml -f docker/compose.traefik.yml up -d
 ```
 
 `UI_PORT` env changes the port (default `8788`).
@@ -262,8 +264,11 @@ Or automated:
 
 ### Skill (`skill/`)
 
-The `cybersecurity-expert` skill (guidance derived from ISC2 CC study notes)
-pairs with your own Zagros instance — see [`skill/README.md`](skill/README.md).
+The `cybersecurity-expert` skill is independently authored guidance built from
+the maintainer's personal cybersecurity study notes and practical experience;
+ISC2 CC influenced topic coverage, but no official ISC2 courseware or exam
+content is included. It pairs with your own Zagros instance — see
+[`skill/README.md`](skill/README.md).
 Two install paths: paste [`skill/INSTALL-PROMPT.md`](skill/INSTALL-PROMPT.md)
 to any agent harness, or run the URL installers (`install.sh` / `install.ps1`,
 default MCP `http://localhost:8789/mcp`, `--mcp-url` to override).
@@ -280,7 +285,7 @@ default MCP `http://localhost:8789/mcp`, `--mcp-url` to override).
 | `MCP_BIND_ADDR` | `0.0.0.0:8789` | MCP HTTP bind |
 | `MCP_ALLOWED_HOSTS` | `localhost,127.0.0.1` | Host allowlist for `POST /mcp` |
 
-Compose networks: `zagros` (bridge, internal `helix:8080`) + `proxy_default` (external, Traefik). `cli` uses `profiles: ["cli"]` so `up -d` does not start it.
+Default Compose uses only the internal `zagros` bridge network. `proxy_default` is introduced only by the optional Traefik override. `cli` uses `profiles: ["cli"]` so `up -d` does not start it.
 
 ---
 
@@ -295,7 +300,9 @@ Compose networks: `zagros` (bridge, internal `helix:8080`) + `proxy_default` (ex
 | [docs/CONFIGURATION.md](docs/CONFIGURATION.md) | Environment variables, Docker Compose, setup script |
 | [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) | Build, test, directory layout, contributing |
 | [docs/SECURITY-REVIEW.md](docs/SECURITY-REVIEW.md) | Security findings F-01 through F-06 and their status |
-| [docs/VISION.md](docs/VISION.md) | Project goals, phased roadmap, design constraints |
+| [docs/VISION.md](docs/VISION.md) | Project goals, Core + Skills model, phased roadmap, design constraints |
+| [docs/OPEN-SOURCE-RELEASE-TODO.md](docs/OPEN-SOURCE-RELEASE-TODO.md) | Open-source release checklist and current readiness review |
+| [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) | Third-party source licenses, attribution, and trademark notices |
 
 ---
 
@@ -326,4 +333,4 @@ Compose networks: `zagros` (bridge, internal `helix:8080`) + `proxy_default` (ex
 
 ## License
 
-Apache-2.0 — see [LICENSE](LICENSE). Security disclosures: see [SECURITY.md](SECURITY.md).
+Zagros-authored code, documentation, and skills are licensed under Apache-2.0 — see [LICENSE](LICENSE). Third-party security datasets retain their original terms and attribution requirements; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Security disclosures: see [SECURITY.md](SECURITY.md).

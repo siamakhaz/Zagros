@@ -1,0 +1,10 @@
+[
+  { "id": "CVE-2026-17061", "title": "Buffer overflow in example network daemon", "description": "A heap-based buffer overflow in the packet parser allows a remote attacker to execute arbitrary code via a crafted length field.", "source": "cvelistV5", "score_hint": "exact-id" },
+  { "id": "CVE-2024-3094", "title": "XZ Utils backdoor (supply-chain)", "description": "Malicious code in xz 5.6.0/5.6.1 enables remote code execution via tampered OpenSSH authentication path on affected Linux systems.", "source": "cvelistV5", "score_hint": "rce" },
+  { "id": "CWE-787", "title": "Out-of-bounds Write", "description": "The product writes data past the end of the intended buffer, commonly enabling remote code execution.", "source": "MITRE CWE 4.15", "score_hint": "weakness" },
+  { "id": "CWE-89", "title": "SQL Injection", "description": "Neutralization of special elements used in an SQL command allows attackers to alter query logic and exfiltrate data.", "source": "MITRE CWE 4.15", "score_hint": "injection" },
+  { "id": "ASVS-2.2.1", "title": "Credential storage", "description": "Verify that passwords are stored using an approved adaptive one-way function with work factor, salt and pepper.", "source": "OWASP ASVS 5.0", "score_hint": "controls" },
+  { "id": "CAPEC-100", "title": "Overflow Buffers", "description": "Adversaries target buffers to overwrite memory and redirect execution flow toward attacker-controlled code.", "source": "MITRE CAPEC 3.9", "score_hint": "attack-pattern" },
+  { "id": "T1190", "title": "Exploit Public-Facing Application", "description": "Adversaries exploit internet-facing software flaws to gain initial access, often chaining RCE into persistence.", "source": "ATT&CK v16.1", "score_hint": "technique" },
+  { "id": "T1078", "title": "Valid Accounts", "description": "Adversaries obtain and abuse credentials, including hardcoded or default accounts, to bypass access controls.", "source": "ATT&CK v16.1", "score_hint": "credentials" }
+]

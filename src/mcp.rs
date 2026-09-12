@@ -15,9 +15,38 @@ use rmcp::{
     tool, tool_router,
 };
 use serde::{Deserialize, Serialize};
+use std::fs::{OpenOptions, create_dir_all};
+use std::io::Write;
+use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 use tokio::sync::Mutex;
+
+fn append_sync_audit(operation: &str, detail: &str, changed: usize, total: usize) {
+    let data_dir = std::env::var("ZAGROS_DATA_DIR").unwrap_or_else(|_| "data".to_string());
+    let data_dir = PathBuf::from(data_dir);
+    if let Err(error) = create_dir_all(&data_dir) {
+        eprintln!("[zagros] failed to create audit directory: {error}");
+        return;
+    }
+    let path = data_dir.join("refresh-history.jsonl");
+    let event = serde_json::json!({
+        "event": "manual_sync_succeeded",
+        "at": chrono::Utc::now().to_rfc3339(),
+        "operation": operation,
+        "detail": detail,
+        "changed": changed,
+        "total": total
+    });
+    match OpenOptions::new().create(true).append(true).open(path) {
+        Ok(mut file) => {
+            if let Err(error) = writeln!(file, "{event}") {
+                eprintln!("[zagros] failed to append audit event: {error}");
+            }
+        }
+        Err(error) => eprintln!("[zagros] failed to open audit log: {error}"),
+    }
+}
 
 // ── schema helpers ────────────────────────────────────────────────────────────
 
@@ -105,6 +134,16 @@ pub struct IndexStatusResponse {
     #[schemars(schema_with = "schema_integer")]
     pub knowledge_total: usize,
     pub knowledge_by_source: Vec<(String, usize)>,
+    pub refresh_status: Option<String>,
+    pub last_refresh_attempt: Option<String>,
+    pub last_refresh_success: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+struct RefreshStatusFile {
+    status: Option<String>,
+    last_attempt: Option<String>,
+    last_success: Option<String>,
 }
 
 #[derive(Debug, Serialize, JsonSchema)]
@@ -370,11 +409,22 @@ impl CveMcpServer {
             .map_err(internal_error)?;
         let knowledge_total: usize = knowledge_by_source.iter().map(|(_, n)| *n).sum();
 
+        let refresh = {
+            let data_dir = std::env::var("ZAGROS_DATA_DIR").unwrap_or_else(|_| "data".to_string());
+            let path = PathBuf::from(data_dir).join("refresh-status.json");
+            std::fs::read_to_string(path)
+                .ok()
+                .and_then(|text| serde_json::from_str::<RefreshStatusFile>(&text).ok())
+        };
+
         Ok(rmcp::Json(IndexStatusResponse {
             records: docs.len(),
             newest_update,
             knowledge_total,
             knowledge_by_source,
+            refresh_status: refresh.as_ref().and_then(|r| r.status.clone()),
+            last_refresh_attempt: refresh.as_ref().and_then(|r| r.last_attempt.clone()),
+            last_refresh_success: refresh.and_then(|r| r.last_success),
         }))
     }
 
@@ -406,6 +456,12 @@ impl CveMcpServer {
             .await
             .map_err(internal_error)?;
         *self.cache.lock().await = None;
+        append_sync_audit(
+            "sync_cves",
+            &format!("limit={}", params.limit),
+            changed_records,
+            total_records,
+        );
         Ok(rmcp::Json(SyncResponse {
             changed_records,
             total_records,
@@ -440,6 +496,12 @@ impl CveMcpServer {
             .await
             .map_err(internal_error)?;
         *self.cache.lock().await = None;
+        append_sync_audit(
+            "backfill_cves",
+            &format!("limit={}", params.limit),
+            fetched,
+            total_records,
+        );
         Ok(rmcp::Json(BackfillResponse {
             fetched,
             total_records,
@@ -514,6 +576,12 @@ impl CveMcpServer {
 
         // Invalidate knowledge cache on success
         *self.knowledge_cache.lock().await = None;
+        append_sync_audit(
+            "sync_knowledge_source",
+            &format!("source={source}"),
+            total_loaded,
+            final_total,
+        );
 
         let response_source = if source == "all" {
             "all".to_string()
