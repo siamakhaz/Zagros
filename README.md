@@ -1,4 +1,4 @@
-﻿# Zagros Ã¢â‚¬â€ Security Knowledge MCP Server
+# Zagros Ã¢â‚¬â€ Security Knowledge MCP Server
 
 A Rust CLI and MCP server for ingesting, storing, and searching official CVE records and authoritative security standards, backed by a local **HelixDB** graph-vector store.
 
@@ -304,6 +304,10 @@ Default Compose uses only the internal `zagros` bridge network. `proxy_default` 
 | [docs/VISION.md](docs/VISION.md) | Project goals, Core + Skills model, phased roadmap, design constraints |
 | [docs/OPEN-SOURCE-RELEASE-TODO.md](docs/OPEN-SOURCE-RELEASE-TODO.md) | Open-source release checklist and current readiness review |
 | [docs/RELEASING.md](docs/RELEASING.md) | Semantic versioning, release workflow, checksums, SBOMs, signing, and immutable image deployment |
+| [docs/SKILL-CONTRACT.md](docs/SKILL-CONTRACT.md) | Stable harness-neutral Skill Contract v1 |
+| [docs/SKILL-TRUST-POLICY.md](docs/SKILL-TRUST-POLICY.md) | Community skill trust and review policy |
+| [skills/COMPATIBILITY.md](skills/COMPATIBILITY.md) | Independent skill versioning and Core/APM compatibility |
+| [skills/HARNESSES.md](skills/HARNESSES.md) | OpenCode, Copilot, Claude-compatible, and generic MCP examples |
 | [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) | Third-party source licenses, attribution, and trademark notices |
 
 ---

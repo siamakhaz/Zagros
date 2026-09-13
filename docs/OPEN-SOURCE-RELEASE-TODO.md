@@ -151,14 +151,14 @@ Status legend: **Done** = implemented and documented; **Partial** = useful piece
 
 ## P2 â€” Skills ecosystem
 
-- [ ] Define a stable Zagros Skill Contract.
+- [x] Define a stable Zagros Skill Contract. Contract v1 is documented in `docs/SKILL-CONTRACT.md` and enforced by `skills/validate.py`.
 - [x] Keep generic security guidance harness-neutral. `SKILL.md` remains generic; harness/Zagros wiring is kept outside the core guidance.
 - [x] Keep Zagros-specific MCP mappings in a separate reference. Current mapping: `skills/.apm/skills/cybersecurity-expert/references/zagros-mcp.md`.
-- [ ] Document Microsoft APM install, upgrade, uninstall, and compatibility.
-- [ ] Add skill evaluation cases with expected behavior.
-- [ ] Add examples for OpenCode, Copilot, Claude-compatible clients, and generic MCP clients.
-- [ ] Define how community-contributed skills are reviewed and trusted.
-- [ ] Version skills independently from Zagros Core when needed.
+- [x] Document Microsoft APM install, upgrade, uninstall, and compatibility. See `skills/COMPATIBILITY.md`.
+- [x] Add skill evaluation cases with expected behavior. The suite now has 12 cases including injection, source conflict, evidence/inference, stale data, and approval boundaries.
+- [x] Add examples for OpenCode, Copilot, Claude-compatible clients, and generic MCP clients. See `skills/HARNESSES.md`.
+- [x] Define how community-contributed skills are reviewed and trusted. See `docs/SKILL-TRUST-POLICY.md`.
+- [x] Version skills independently from Zagros Core when needed. Skill SemVer and Core compatibility are explicit in package metadata and `skills/COMPATIBILITY.md`.
 - [x] Rename `skill/` to `skills/` for future multi-skill growth and update release/docs/install paths.
 
 ## P2 â€” Quality and project confidence

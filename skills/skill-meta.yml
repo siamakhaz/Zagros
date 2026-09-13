@@ -1,3 +1,4 @@
+contract_version: 1
 owner: community
 status: beta
 tags:
@@ -12,7 +13,10 @@ tags:
   - cve
 review:
   security_required: true
-  security_reason: "Declares a user-configured remote CVE MCP endpoint (default http://localhost:8789/mcp); review its trust boundary, availability, authentication, and returned-data handling"
+  security_reason: "Declares a user-configured remote CVE MCP endpoint; review trust boundary, authentication, returned-data handling, and write capabilities."
+compatibility:
+  minimum_zagros_core: "0.1.0"
+  required_mcp_tools: [search_cves, get_cve, search_knowledge, index_status]
 provenance:
   source: derived
   license_notes: "Independently authored cybersecurity guidance. ISC2 CC influenced topic coverage; no official ISC2 courseware or exam content is included. Apache-2.0."

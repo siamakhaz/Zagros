@@ -39,3 +39,10 @@ agents how to use retrieved evidence safely and correctly.
 | Vector embeddings | Planned Phase 3 |
 | Exact/graph knowledge tools | Planned Phase 3 â€” `get_rule`, `explain_weakness`, `map_to_attack`, `list_sources` |
 | LLM reasoning layer | Planned Phase 4 |
+
+## Skills ecosystem
+
+- [SKILL-CONTRACT.md](SKILL-CONTRACT.md) — stable harness-neutral Skill Contract v1
+- [SKILL-TRUST-POLICY.md](SKILL-TRUST-POLICY.md) — community skill review and trust states
+- [../skills/COMPATIBILITY.md](../skills/COMPATIBILITY.md) — independent skill SemVer, Core/APM compatibility, upgrade and uninstall
+- [../skills/HARNESSES.md](../skills/HARNESSES.md) — OpenCode, Copilot, Claude-compatible, and generic MCP examples
