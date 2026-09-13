@@ -1,4 +1,4 @@
-﻿# zagros-skill â€” cybersecurity skill + Zagros MCP wiring
+# zagros-skill â€” cybersecurity skill + Zagros MCP wiring
 
 Pairs the `cybersecurity-expert` skill with your own [Zagros](../README.md)
 security knowledge MCP server. The skill content is independently authored from
@@ -77,6 +77,21 @@ curl http://localhost:8789/health
 
 LAN access: add your host IP to `MCP_ALLOWED_HOSTS`. Full reference:
 `docs/MCP.md`.
+
+## Contract, compatibility, and harnesses
+
+- [Skill Contract v1](../docs/SKILL-CONTRACT.md) defines the portable package and behavior contract.
+- [Compatibility](COMPATIBILITY.md) defines independent skill SemVer, Core compatibility, upgrade, uninstall, and APM expectations.
+- [Harness examples](HARNESSES.md) cover OpenCode, Copilot-compatible environments, Claude-compatible clients, and generic MCP clients.
+- [Skill trust policy](../docs/SKILL-TRUST-POLICY.md) defines review requirements for community-contributed skills.
+
+Validate the package before release:
+
+```bash
+python skills/validate.py
+```
+
+The validator checks required files and metadata, Contract v1, SemVer, eval structure/unique IDs, and that declared required MCP tools are documented by Zagros Core.
 
 ## Publishing a release
 
