@@ -163,14 +163,14 @@ Status legend: **Done** = implemented and documented; **Partial** = useful piece
 
 ## P2 â€” Quality and project confidence
 
-- [ ] Add architecture decision records for major design choices.
-- [ ] Add threat model for local, LAN, and public-cloud deployments.
+- [x] Add architecture decision records for major design choices. See docs/adr/.
+- [x] Add threat model for local, LAN, and public-cloud deployments. See docs/THREAT-MODEL.md.
 - [ ] Add retrieval-quality benchmarks and regression tests.
 - [ ] Add corpus integrity/freshness metrics.
 - [x] Publish a roadmap (`ROADMAP.md`).
-- [ ] Label experimental vs stable interfaces/features clearly.
+- [x] Label experimental vs stable interfaces/features clearly. See docs/INTERFACE-STATUS.md.
 - [ ] Add screenshots/demo flow for a real security investigation.
-- [ ] State non-goals clearly: evidence source, not compliance certification or autonomous remediation.
+- [x] State non-goals clearly: Zagros is an evidence source, not compliance certification or autonomous remediation.
 
 ## P2 â€” Graphify cleanup
 
