@@ -169,7 +169,7 @@ Status legend: **Done** = implemented and documented; **Partial** = useful piece
 - [x] Add corpus integrity/freshness metrics. `index_status` now reports per-source count thresholds, freshness age/state, and overall health.
 - [x] Publish a roadmap (`ROADMAP.md`).
 - [x] Label experimental vs stable interfaces/features clearly. See docs/INTERFACE-STATUS.md.
-- [ ] Add screenshots/demo flow for a real security investigation.
+- [x] Add screenshots/demo flow for a real security investigation. See `docs/DEMO.md` and the public `/demo/` page.
 - [x] State non-goals clearly: Zagros is an evidence source, not compliance certification or autonomous remediation.
 
 ## P2 â€” Graphify cleanup

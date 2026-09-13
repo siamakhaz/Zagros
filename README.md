@@ -351,3 +351,7 @@ Governance and security references:
 - `docs/adr/README.md` — Architecture Decision Records
 
 Quality confidence is documented in `docs/QUALITY-METRICS.md`, including retrieval regression thresholds and corpus integrity/freshness health.
+
+## Investigation demo
+
+See [`docs/DEMO.md`](docs/DEMO.md) for a screenshot-backed Evidence / Analysis / Recommendation walkthrough, or use the public `/demo/` page.

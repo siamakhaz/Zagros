@@ -60,3 +60,7 @@ Zagros provides security evidence and retrieval. It does not certify compliance 
 ## Quality measurement
 
 - [QUALITY-METRICS.md](QUALITY-METRICS.md) — retrieval regression benchmark and corpus integrity/freshness metrics
+
+## Investigation demo
+
+- [DEMO.md](DEMO.md) — canonical Evidence / Analysis / Recommendation security investigation walkthrough with screenshots
