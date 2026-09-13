@@ -81,7 +81,7 @@ Project scope:
 - [x] Add pull-request template with tests/docs/security checklist.
 - [ ] Enable GitHub private vulnerability reporting. **Blocked while repository is private**; GitHub exposes this for public repositories.
 - [ ] Add branch protection and required CI checks. **Blocked on current private repo**: GitHub API requires Pro or public visibility.
-- [ ] Sanitize public Git history. Scan found no token/private-key patterns, but historical commits contain an old Windows user path and obsolete deployment references; rewrite/squash before visibility changes.
+- [x] Sanitize public Git history. Rewrote reachable history to remove the historical `.vscode/mcp.json`, personal Windows path, and obsolete private deployment domain; post-rewrite scans found no matching token/private-key patterns or those historical identifiers. A pre-rewrite bundle is retained outside the repository for recovery.
 - [x] Remove/ignore generated artifacts that should not be versioned; Graphify caches are untracked while intentional reports remain.
 
 ## P1 â€” Supply-chain security
@@ -140,7 +140,7 @@ Status legend: **Done** = implemented and documented; **Partial** = useful piece
 - **Done:** `THIRD_PARTY_NOTICES.md`, `SECURITY.md`, `CHANGELOG.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `ROADMAP.md`, issue templates, and PR template.
 - **Blocked until public:** private vulnerability reporting returns 404 while the repository is private; GitHub documents repository-level private vulnerability reporting for public repositories.
 - **Blocked until public/Pro:** branch protection API returns 403: “Upgrade to GitHub Pro or make this repository public to enable this feature.”
-- **Open decision:** repository-history hygiene. No secret-token/private-key pattern was found, but reachable history contains an old maintainer Windows path and obsolete deployment references. Before public release, either rewrite/sanitize history or publish from a clean squashed root.
+- **Done:** repository-history hygiene. Reachable history was rewritten to remove the historical `.vscode/mcp.json`, personal Windows path, and obsolete private deployment domain. Post-rewrite scans found no matching token/private-key patterns or those historical identifiers. A recovery bundle is retained locally outside the repository.
 - **Done:** generated-file hygiene for P1. Build outputs and Graphify caches are ignored/untracked; intentional Graphify reports remain versioned.
 
 ### Supply-chain security
