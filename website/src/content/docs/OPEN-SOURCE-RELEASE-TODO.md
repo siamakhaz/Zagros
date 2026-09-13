@@ -30,16 +30,13 @@ Project scope:
 
 ## P1 â€” Trusted-source guarantees
 
-- [ ] Store publisher/source, source version, canonical URL, license, retrieved timestamp, and content hash per record/chunk.
-  - Partial: shared `Provenance` model and hashing are implemented; CWE/ASVS/CAPEC/ATT&CK ingestion populate it. CVE persistence + MCP output still need completion.
-- [ ] Define trust tiers and source-selection policy.
-  - Partial: `TrustTier` is implemented and all current first-party corpus sources are classified `authoritative`; claim-specific source-selection policy still needs to be finalized/documented.
+- [x] Store publisher/source, source version, canonical URL, retrieval URL, license, retrieved timestamp, upstream timestamp, content hash, and trust tier per record/chunk.
+- [x] Define trust tiers and claim-specific source-selection/conflict policy.
 - [x] Document freshness/staleness behavior.
 - [x] Make source updates explicit and auditable.
 - [x] Validate upstream source origins.
 - [x] Enforce response/download size limits.
-- [ ] Preserve raw-source provenance where licensing permits.
-  - Partial: source manifests include raw SHA-256 hashes; optional raw snapshots are implemented behind `ZAGROS_PRESERVE_RAW_SOURCES`. CVE source-manifest integration remains.
+- [x] Preserve raw-source provenance where licensing permits: retrieval URLs + raw SHA-256 manifests; optional snapshots via `ZAGROS_PRESERVE_RAW_SOURCES`.
 - [x] Distinguish source evidence from Zagros metadata and agent interpretation.
 - [x] Require source IDs/URLs in investigation outputs.
 - [x] Document prompt-injection handling for retrieved security text.
@@ -75,17 +72,17 @@ Project scope:
 
 ## P1 â€” Repository and contributor readiness
 
-- [ ] Add CONTRIBUTING.md.
-- [ ] Add CODE_OF_CONDUCT.md.
+- [x] Add CONTRIBUTING.md.
+- [x] Add CODE_OF_CONDUCT.md.
 - [x] Add CHANGELOG.md.
-- [ ] Add ROADMAP.md.
+- [x] Add ROADMAP.md.
 - [x] Add THIRD_PARTY_NOTICES.md.
-- [ ] Add issue templates: bug, feature, data-source request.
-- [ ] Add pull-request template with tests/docs/security checklist.
-- [ ] Enable GitHub private vulnerability reporting.
-- [ ] Add branch protection and required CI checks.
-- [ ] Confirm no secrets, private endpoints, personal paths, or machine-specific files exist in Git history.
-- [ ] Remove/ignore generated artifacts that should not be versioned.
+- [x] Add issue templates: bug, feature, data-source request.
+- [x] Add pull-request template with tests/docs/security checklist.
+- [ ] Enable GitHub private vulnerability reporting. **Blocked while repository is private**; GitHub exposes this for public repositories.
+- [ ] Add branch protection and required CI checks. **Blocked on current private repo**: GitHub API requires Pro or public visibility.
+- [ ] Sanitize public Git history. Scan found no token/private-key patterns, but historical commits contain an old Windows user path and obsolete deployment references; rewrite/squash before visibility changes.
+- [x] Remove/ignore generated artifacts that should not be versioned; Graphify caches are untracked while intentional reports remain.
 
 ## P1 â€” Supply-chain security
 
@@ -107,17 +104,17 @@ Status legend: **Done** = implemented and documented; **Partial** = useful piece
 
 | Item | Status | Review |
 |---|---|---|
-| Full provenance fields per record/chunk | **Open** | Current knowledge schema stores id/name/description/source/url/tags, but not publisher, source version, license, retrieved timestamp, content hash, or trust tier. |
-| Trust tiers and source-selection policy | **Open** | Tier-1 terminology exists in VISION, but there is no explicit selection/conflict policy enforced or documented. |
+| Full provenance fields per record/chunk | **Done** | CVE and Knowledge records persist structured provenance in HelixDB and MCP returns publisher, source/version, canonical/retrieval URLs, license, timestamps, SHA-256 content hash, and trust tier. Legacy rows load as `legacy_unknown` until refreshed. |
+| Trust tiers and source-selection policy | **Done** | `TrustTier` is implemented; current corpus sources are authoritative. `SOURCE-TRUST-POLICY.md` defines claim-specific authority and conflict handling. |
 | Freshness/staleness behavior | **Done** | Daily refresh runs in the MCP container; `index_status` exposes refresh state/last attempt/last success and refresh history is persisted. |
 | Explicit/auditable source updates | **Done** | Scheduled refreshes and successful manual MCP sync/backfill operations append to `/data/refresh-history.jsonl`. |
 | Validate upstream source origins | **Done** | Knowledge sources use fixed canonical URLs; dynamic CVE links are restricted to the CVE Project raw GitHub origin. |
 | Enforce response/download size limits | **Done** | Limits exist for delta.json, deltaLog, individual CVEs, CWE ZIP/decompressed XML, ASVS CSV, CAPEC XML, and ATT&CK STIX. |
-| Preserve raw-source provenance | **Open** | Canonical URLs are retained, but immutable raw snapshots/content hashes are not persisted. |
+| Preserve raw-source provenance | **Done** | Exact retrieval URLs and raw SHA-256 hashes are recorded in source manifests; raw snapshots are optional via `ZAGROS_PRESERVE_RAW_SOURCES`. |
 | Separate evidence from interpretation | **Done** | MCP guidance and the cybersecurity skill require Evidence / Analysis / Recommendation separation and prohibit presenting inference as retrieved fact. |
 | Require source IDs/URLs in investigation outputs | **Done** | MCP/skill guidance requires record IDs and canonical source URLs for evidence-backed claims. |
 | Prompt-injection handling | **Done** | MCP responses and docs explicitly classify retrieved third-party text as untrusted data, never instructions. |
-| Authoritative-source disagreement policy | **Open** | No documented precedence/conflict workflow yet. |
+| Authoritative-source disagreement policy | **Done** | Claim-specific precedence and explicit conflict reporting are documented in `SOURCE-TRUST-POLICY.md` and agent guidance. |
 
 ### Deployment and usability
 
@@ -140,11 +137,11 @@ Status legend: **Done** = implemented and documented; **Partial** = useful piece
 
 ### Repository and contributor readiness
 
-- **Done:** `THIRD_PARTY_NOTICES.md`, `SECURITY.md`, `CHANGELOG.md`.
-- **Open:** CONTRIBUTING, CODE_OF_CONDUCT, ROADMAP, issue templates, PR template.
-- **Not yet verifiable:** GitHub branch protection/private-vulnerability-reporting settings through the current integration.
-- **Partial:** repository-history hygiene. No credential was found in the historical `.vscode/mcp.json`, but old commits contain a maintainer Windows username/path and obsolete local MCP profile names. Clean history before public release if a pristine public history is desired.
-- **Partial:** generated-file hygiene. Common build outputs are ignored, but Graphify-generated artifacts are still being reviewed separately.
+- **Done:** `THIRD_PARTY_NOTICES.md`, `SECURITY.md`, `CHANGELOG.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `ROADMAP.md`, issue templates, and PR template.
+- **Blocked until public:** private vulnerability reporting returns 404 while the repository is private; GitHub documents repository-level private vulnerability reporting for public repositories.
+- **Blocked until public/Pro:** branch protection API returns 403: “Upgrade to GitHub Pro or make this repository public to enable this feature.”
+- **Open decision:** repository-history hygiene. No secret-token/private-key pattern was found, but reachable history contains an old maintainer Windows path and obsolete deployment references. Before public release, either rewrite/sanitize history or publish from a clean squashed root.
+- **Done:** generated-file hygiene for P1. Build outputs and Graphify caches are ignored/untracked; intentional Graphify reports remain versioned.
 
 ### Supply-chain security
 

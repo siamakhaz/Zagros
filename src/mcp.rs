@@ -3,6 +3,7 @@
 // Both the stdio binary (zagros-mcp) and the HTTP binary (zagros-mcp-http)
 // use this module.  Transport-specific code lives in the respective binaries.
 
+use crate::provenance::Provenance;
 use crate::sources::KnowledgeDoc;
 use crate::{
     CveDocument, backfill_from_history, db, ingest_asvs, ingest_attack, ingest_capec, ingest_cwe,
@@ -123,6 +124,7 @@ pub struct CveToolRecord {
     pub published_at: Option<String>,
     pub updated_at: Option<String>,
     pub source_url: String,
+    pub provenance: Provenance,
     pub score: Option<f64>,
 }
 
@@ -213,6 +215,7 @@ pub struct KnowledgeToolRecord {
     pub name: String,
     pub description: String,
     pub url: String,
+    pub provenance: Provenance,
     #[schemars(schema_with = "schema_integer")]
     pub score: f64,
 }
@@ -349,6 +352,7 @@ impl CveMcpServer {
                     published_at: hit.published_at,
                     updated_at: hit.updated_at,
                     source_url: hit.source_url,
+                    provenance: hit.provenance,
                     score: Some(hit.score),
                 }
             })
@@ -387,7 +391,8 @@ impl CveMcpServer {
             description: doc.description.clone(),
             published_at: doc.published_at.map(|v| v.to_rfc3339()),
             updated_at: doc.updated_at.map(|v| v.to_rfc3339()),
-            source_url: format!("https://www.cve.org/CVERecord?id={}", doc.cve_id),
+            source_url: doc.provenance.canonical_url.clone(),
+            provenance: doc.provenance.clone(),
             score: None,
         }))
     }
@@ -633,6 +638,7 @@ impl CveMcpServer {
                 name: doc.name.clone(),
                 description: doc.description.clone(),
                 url: doc.url.clone(),
+                provenance: doc.provenance.clone(),
                 score: *score,
             })
             .collect();

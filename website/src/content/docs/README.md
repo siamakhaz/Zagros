@@ -12,6 +12,7 @@ agents how to use retrieved evidence safely and correctly.
 - [MCP.md](MCP.md) â€” MCP server tools, input/output schemas, safety guidance
 - [ARCHITECTURE.md](ARCHITECTURE.md) â€” Component diagram, BM25 engine, HelixDB schema, Docker image
 - [DATA-SOURCES.md](DATA-SOURCES.md) â€” Ingestion pipeline for each of the five sources
+- [SOURCE-TRUST-POLICY.md](SOURCE-TRUST-POLICY.md) â€” Trust tiers, claim-specific authority, and conflict handling
 - [CONFIGURATION.md](CONFIGURATION.md) â€” Environment variables, Docker Compose, refresh scheduling, resource limits
 - [DEPLOYMENT.md](DEPLOYMENT.md) â€” Local/cloud deployment, authentication boundary, recovery, upgrade, uninstall
 - [DEVELOPMENT.md](DEVELOPMENT.md) â€” Build, test, code structure, common tasks

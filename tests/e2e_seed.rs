@@ -10,6 +10,7 @@ async fn seed_e2e_fixture() {
         description: "Synthetic vulnerability record used only for CI smoke testing.".to_string(),
         published_at: None,
         updated_at: None,
+        provenance: Default::default(),
     };
     db::upsert_document(&client, &doc)
         .await

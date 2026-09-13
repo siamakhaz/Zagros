@@ -297,6 +297,7 @@ Default Compose uses only the internal `zagros` bridge network. `proxy_default` 
 | [docs/MCP.md](docs/MCP.md) | MCP server tools, input/output schemas, safety guidance |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Component diagram, data flow, BM25 engine, HelixDB schema |
 | [docs/DATA-SOURCES.md](docs/DATA-SOURCES.md) | Ingestion pipeline for each knowledge source |
+| [docs/SOURCE-TRUST-POLICY.md](docs/SOURCE-TRUST-POLICY.md) | Trust tiers, claim-specific source authority, and conflict handling |
 | [docs/CONFIGURATION.md](docs/CONFIGURATION.md) | Environment variables, Docker Compose, setup script |
 | [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) | Build, test, directory layout, contributing |
 | [docs/SECURITY-REVIEW.md](docs/SECURITY-REVIEW.md) | Security findings F-01 through F-06 and their status |

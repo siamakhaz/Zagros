@@ -14,7 +14,7 @@ use crate::CveDocument;
 /// Search loads all nodes of the requested label and ranks them in-process
 /// with BM25 (`lib.rs`). HelixDB is the canonical persistence layer; the
 /// old flat JSON file is no longer used.
-use crate::provenance::legacy_provenance;
+use crate::provenance::{Provenance, legacy_provenance};
 use crate::sources::KnowledgeDoc;
 use anyhow::{Context, Result};
 use chrono::{DateTime, Utc};
@@ -96,6 +96,12 @@ pub async fn upsert_document(client: &Client, doc: &CveDocument) -> Result<()> {
                 doc.updated_at.map(|d| d.to_rfc3339()).unwrap_or_default(),
             )),
         ),
+        (
+            "provenance_json",
+            PropertyInput::Value(PropertyValue::String(
+                serde_json::to_string(&doc.provenance).unwrap_or_default(),
+            )),
+        ),
     ];
 
     for attempt in 0..2 {
@@ -144,6 +150,7 @@ struct CveRow {
     description: Option<String>,
     published_at: Option<String>,
     updated_at: Option<String>,
+    provenance_json: Option<String>,
 }
 
 /// Wrapper that HelixDB returns for a `returning(["nodes"])` query.
@@ -215,12 +222,20 @@ fn row_to_doc(row: CveRow) -> Option<CveDocument> {
         .filter(|s| !s.is_empty())
         .and_then(|s| s.parse::<DateTime<Utc>>().ok());
 
+    let canonical_url = format!("https://www.cve.org/CVERecord?id={cve_id}");
+    let provenance = row
+        .provenance_json
+        .as_deref()
+        .and_then(|value| serde_json::from_str::<Provenance>(value).ok())
+        .unwrap_or_else(|| legacy_provenance("cve", &canonical_url));
+
     Some(CveDocument {
         cve_id,
         title,
         description,
         published_at,
         updated_at,
+        provenance,
     })
 }
 
@@ -275,6 +290,12 @@ pub async fn upsert_knowledge(client: &Client, doc: &KnowledgeDoc) -> Result<()>
             "tags",
             PropertyInput::Value(PropertyValue::String(doc.tags.clone())),
         ),
+        (
+            "provenance_json",
+            PropertyInput::Value(PropertyValue::String(
+                serde_json::to_string(&doc.provenance).unwrap_or_default(),
+            )),
+        ),
     ];
 
     for attempt in 0..2 {
@@ -323,6 +344,7 @@ struct KnowledgeRow {
     source: Option<String>,
     url: Option<String>,
     tags: Option<String>,
+    provenance_json: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -367,14 +389,20 @@ fn row_to_knowledge(row: KnowledgeRow) -> Option<KnowledgeDoc> {
     }
     let source = row.source.unwrap_or_default();
     let url = row.url.unwrap_or_default();
-    let provenance = legacy_provenance(
-        if source.is_empty() {
-            "unknown"
-        } else {
-            &source
-        },
-        &url,
-    );
+    let provenance = row
+        .provenance_json
+        .as_deref()
+        .and_then(|value| serde_json::from_str::<Provenance>(value).ok())
+        .unwrap_or_else(|| {
+            legacy_provenance(
+                if source.is_empty() {
+                    "unknown"
+                } else {
+                    &source
+                },
+                &url,
+            )
+        });
     Some(KnowledgeDoc {
         id,
         name: row.name.unwrap_or_default(),
