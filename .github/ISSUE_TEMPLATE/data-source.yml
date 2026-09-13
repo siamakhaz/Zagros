@@ -1,0 +1,20 @@
+name: Data-source request
+description: Propose an authoritative security data source
+title: "[Source] "
+labels: ["data-source"]
+body:
+  - type: input
+    id: source
+    attributes: {label: Source/publisher}
+    validations: {required: true}
+  - type: input
+    id: url
+    attributes: {label: Canonical upstream URL}
+    validations: {required: true}
+  - type: textarea
+    id: value
+    attributes: {label: Security value and claim types}
+  - type: textarea
+    id: licensing
+    attributes: {label: License, terms, provenance, update cadence}
+    validations: {required: true}

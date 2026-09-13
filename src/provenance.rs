@@ -17,12 +17,25 @@ pub enum TrustTier {
     LegacyUnknown,
 }
 
+impl TrustTier {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Authoritative => "authoritative",
+            Self::Curated => "curated",
+            Self::Secondary => "secondary",
+            Self::Community => "community",
+            Self::LegacyUnknown => "legacy_unknown",
+        }
+    }
+}
+
 #[derive(Debug, Clone, Default, Serialize, Deserialize, JsonSchema)]
 pub struct Provenance {
     pub publisher: String,
     pub source_name: String,
     pub source_version: String,
     pub canonical_url: String,
+    pub retrieval_url: String,
     pub license: String,
     pub retrieved_at: String,
     pub upstream_updated_at: Option<String>,
@@ -34,6 +47,7 @@ pub struct Provenance {
 pub struct SourceDefinition {
     pub publisher: &'static str,
     pub source_name: &'static str,
+    pub retrieval_url: &'static str,
     pub license: &'static str,
     pub trust_tier: TrustTier,
 }
@@ -43,30 +57,35 @@ pub fn source_definition(source: &str) -> Option<SourceDefinition> {
         "cve" => Some(SourceDefinition {
             publisher: "CVE Program",
             source_name: "CVE List V5",
+            retrieval_url: "https://raw.githubusercontent.com/CVEProject/cvelistV5/",
             license: "CVE Program Terms of Use",
             trust_tier: TrustTier::Authoritative,
         }),
         "cwe" => Some(SourceDefinition {
             publisher: "The MITRE Corporation",
             source_name: "CWE",
+            retrieval_url: "https://cwe.mitre.org/data/xml/cwec_latest.xml.zip",
             license: "MITRE CWE Terms of Use",
             trust_tier: TrustTier::Authoritative,
         }),
         "asvs" => Some(SourceDefinition {
             publisher: "OWASP Foundation",
             source_name: "OWASP ASVS",
+            retrieval_url: "https://raw.githubusercontent.com/OWASP/ASVS/v5.0.0/5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.csv",
             license: "CC BY-SA 4.0",
             trust_tier: TrustTier::Authoritative,
         }),
         "capec" => Some(SourceDefinition {
             publisher: "The MITRE Corporation",
             source_name: "CAPEC",
+            retrieval_url: "https://capec.mitre.org/data/xml/capec_latest.xml",
             license: "MITRE CAPEC Terms of Use",
             trust_tier: TrustTier::Authoritative,
         }),
         "attack" => Some(SourceDefinition {
             publisher: "The MITRE Corporation",
             source_name: "MITRE ATT&CK Enterprise",
+            retrieval_url: "https://raw.githubusercontent.com/mitre-attack/attack-stix-data/master/enterprise-attack/enterprise-attack.json",
             license: "MITRE ATT&CK Terms of Use",
             trust_tier: TrustTier::Authoritative,
         }),
@@ -101,6 +120,7 @@ pub fn build_provenance(
     let definition = source_definition(source).unwrap_or(SourceDefinition {
         publisher: "Unknown",
         source_name: "Unknown",
+        retrieval_url: "",
         license: "Unknown",
         trust_tier: TrustTier::LegacyUnknown,
     });
@@ -109,12 +129,34 @@ pub fn build_provenance(
         source_name: definition.source_name.to_string(),
         source_version: source_version.to_string(),
         canonical_url: canonical_url.to_string(),
+        retrieval_url: definition.retrieval_url.to_string(),
         license: definition.license.to_string(),
         retrieved_at: retrieved_at.to_rfc3339(),
         upstream_updated_at: upstream_updated_at.map(|v| v.to_rfc3339()),
         content_sha256,
         trust_tier: definition.trust_tier,
     }
+}
+
+pub fn build_provenance_with_retrieval(
+    source: &str,
+    source_version: &str,
+    canonical_url: &str,
+    retrieval_url: &str,
+    retrieved_at: DateTime<Utc>,
+    content_sha256: String,
+    upstream_updated_at: Option<DateTime<Utc>>,
+) -> Provenance {
+    let mut provenance = build_provenance(
+        source,
+        source_version,
+        canonical_url,
+        retrieved_at,
+        content_sha256,
+        upstream_updated_at,
+    );
+    provenance.retrieval_url = retrieval_url.to_string();
+    provenance
 }
 
 pub fn legacy_provenance(source: &str, canonical_url: &str) -> Provenance {
@@ -142,6 +184,7 @@ pub fn append_source_manifest(provenance: &Provenance, raw_sha256: &str, record_
         "source": provenance.source_name,
         "source_version": provenance.source_version,
         "canonical_url": provenance.canonical_url,
+        "retrieval_url": provenance.retrieval_url,
         "license": provenance.license,
         "retrieved_at": provenance.retrieved_at,
         "raw_sha256": raw_sha256,

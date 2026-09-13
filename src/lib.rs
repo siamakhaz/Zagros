@@ -3,6 +3,10 @@ pub mod mcp;
 pub mod provenance;
 pub mod sources;
 
+use crate::provenance::{
+    Provenance, append_source_manifest, build_provenance_with_retrieval, preserve_raw_snapshot,
+    sha256_hex,
+};
 use anyhow::{Context, Result};
 use chrono::{DateTime, Utc};
 use reqwest::header::{HeaderMap, HeaderValue, USER_AGENT};
@@ -37,9 +41,15 @@ struct CveDeltaEntry {
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 struct CveRecord {
+    #[serde(rename = "dataVersion", default = "default_cve_data_version")]
+    data_version: String,
     #[serde(rename = "cveMetadata")]
     metadata: CveMetadata,
     containers: CveContainers,
+}
+
+fn default_cve_data_version() -> String {
+    "5.x".to_string()
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -81,6 +91,8 @@ pub struct CveDocument {
     pub description: String,
     pub published_at: Option<DateTime<Utc>>,
     pub updated_at: Option<DateTime<Utc>>,
+    #[serde(default)]
+    pub provenance: Provenance,
 }
 
 #[derive(Debug)]
@@ -97,6 +109,7 @@ pub struct OwnedSearchHit {
     pub published_at: Option<String>,
     pub updated_at: Option<String>,
     pub source_url: String,
+    pub provenance: Provenance,
     pub score: f64,
 }
 
@@ -162,7 +175,9 @@ async fn fetch_latest_cves(client: &reqwest::Client, limit: usize) -> Result<Vec
                     Ok(bytes) => {
                         anyhow::ensure!(bytes.len() < 10 * 1024 * 1024, "CVE record too large");
                         match serde_json::from_slice::<CveRecord>(&bytes) {
-                            Ok(cve) if cve.metadata.state == "PUBLISHED" => docs.push(to_doc(cve)),
+                            Ok(cve) if cve.metadata.state == "PUBLISHED" => {
+                                docs.push(to_doc(cve, &bytes, &entry.github_link, Utc::now()))
+                            }
                             Ok(_) => {}
                             Err(error) => eprintln!("skipping invalid CVE record: {error}"),
                         }
@@ -286,7 +301,9 @@ pub async fn backfill_from_history(limit: usize, verbose: bool) -> Result<(usize
                     Ok(bytes) => {
                         anyhow::ensure!(bytes.len() < 10 * 1024 * 1024, "CVE record too large");
                         match serde_json::from_slice::<CveRecord>(&bytes) {
-                            Ok(cve) if cve.metadata.state == "PUBLISHED" => docs.push(to_doc(cve)),
+                            Ok(cve) if cve.metadata.state == "PUBLISHED" => {
+                                docs.push(to_doc(cve, &bytes, url, Utc::now()))
+                            }
                             Ok(_) => {}
                             Err(e) => {
                                 if verbose {
@@ -323,7 +340,12 @@ pub async fn backfill_from_history(limit: usize, verbose: bool) -> Result<(usize
     Ok((fetched, total))
 }
 
-fn to_doc(cve: CveRecord) -> CveDocument {
+fn to_doc(
+    cve: CveRecord,
+    raw_bytes: &[u8],
+    _raw_source_url: &str,
+    retrieved_at: DateTime<Utc>,
+) -> CveDocument {
     let description = cve
         .containers
         .cna
@@ -337,13 +359,27 @@ fn to_doc(cve: CveRecord) -> CveDocument {
     } else {
         description.clone()
     };
-
+    let cve_id = cve.metadata.cve_id;
+    let canonical_url = format!("https://www.cve.org/CVERecord?id={cve_id}");
+    let raw_hash = sha256_hex(raw_bytes);
+    let provenance = build_provenance_with_retrieval(
+        "cve",
+        &cve.data_version,
+        &canonical_url,
+        _raw_source_url,
+        retrieved_at,
+        raw_hash.clone(),
+        cve.metadata.date_updated,
+    );
+    append_source_manifest(&provenance, &raw_hash, 1);
+    preserve_raw_snapshot("cve", raw_bytes, "json", retrieved_at);
     CveDocument {
-        cve_id: cve.metadata.cve_id,
+        cve_id,
         title,
         description,
         published_at: cve.metadata.date_published,
         updated_at: cve.metadata.date_updated,
+        provenance,
     }
 }
 
@@ -593,7 +629,8 @@ pub fn owned_hit(hit: &SearchHit<'_>) -> OwnedSearchHit {
         description: doc.description.clone(),
         published_at: doc.published_at.map(|value| value.to_rfc3339()),
         updated_at: doc.updated_at.map(|value| value.to_rfc3339()),
-        source_url: format!("https://www.cve.org/CVERecord?id={}", doc.cve_id),
+        source_url: doc.provenance.canonical_url.clone(),
+        provenance: doc.provenance.clone(),
         score: hit.score,
     }
 }
@@ -624,6 +661,7 @@ mod tests {
             description: text.to_string(),
             published_at: None,
             updated_at: None,
+            provenance: Provenance::default(),
         }
     }
 
@@ -651,5 +689,30 @@ mod tests {
     fn unrelated_documents_are_not_returned() {
         let docs = vec![document("CVE-2026-1000", "SQL injection")];
         assert!(rank_documents(&docs, "buffer overflow", 10).is_empty());
+    }
+
+    #[test]
+    fn cve_record_gets_complete_provenance() {
+        let raw = br#"{"dataVersion":"5.2","cveMetadata":{"cveId":"CVE-2099-0001","state":"PUBLISHED","datePublished":null,"dateUpdated":null},"containers":{"cna":{"descriptions":[{"value":"fixture"}],"references":[]}}}"#;
+        let cve: CveRecord = serde_json::from_slice(raw).unwrap();
+        let doc = to_doc(
+            cve,
+            raw,
+            "https://raw.githubusercontent.com/CVEProject/cvelistV5/main/cves/2099/0xxx/CVE-2099-0001.json",
+            Utc::now(),
+        );
+        assert_eq!(doc.provenance.source_name, "CVE List V5");
+        assert_eq!(doc.provenance.source_version, "5.2");
+        assert_eq!(
+            doc.provenance.trust_tier,
+            crate::provenance::TrustTier::Authoritative
+        );
+        assert_eq!(doc.provenance.content_sha256.len(), 64);
+        assert!(doc.provenance.canonical_url.contains("CVE-2099-0001"));
+        assert!(
+            doc.provenance
+                .retrieval_url
+                .contains("CVEProject/cvelistV5")
+        );
     }
 }

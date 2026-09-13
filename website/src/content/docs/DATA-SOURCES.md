@@ -4,11 +4,13 @@ Zagros ingests five data sources into HelixDB. CVE records use the `Cve` node la
 All security knowledge sources use the `Knowledge` node label with a `source` field
 distinguishing them.
 
-## Provenance status
+## Provenance and trust
 
-Zagros is introducing first-class provenance for trusted-source guarantees. The current implementation already defines a shared provenance model and populates it for newly ingested CWE, ASVS, CAPEC, and ATT&CK records. CVE persistence and MCP output wiring are still in progress and must be completed before the P1 provenance guarantees are marked done.
+Every newly ingested CVE and Knowledge record carries structured provenance persisted in HelixDB and returned through MCP: publisher, source name/version, canonical evidence URL, exact retrieval URL, license, retrieval timestamp, upstream update timestamp when available, SHA-256 content fingerprint, and trust tier.
 
-Each completed provenance record is designed to carry publisher, source name/version, canonical URL, license, retrieval timestamp, upstream update timestamp when available, SHA-256 content fingerprint, and trust tier. Source-level raw download hashes are written to a manifest; optional raw snapshot retention is disabled by default and controlled by `ZAGROS_PRESERVE_RAW_SOURCES`.
+Source manifests record raw retrieval SHA-256 values and record counts. Optional raw snapshot retention is disabled by default and controlled by `ZAGROS_PRESERVE_RAW_SOURCES`. Legacy Helix rows without provenance remain readable as `legacy_unknown` until their source is refreshed.
+
+See [SOURCE-TRUST-POLICY.md](SOURCE-TRUST-POLICY.md) for claim-specific source authority and conflict handling.
 
 ---
 
