@@ -1,0 +1,11 @@
+.git/
+target/
+website/node_modules/
+website/dist/
+website/.astro/
+website/.vite/
+skills/dist/
+graphify-out/
+src/graphify-out/
+data/
+*.astro

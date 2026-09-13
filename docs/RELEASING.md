@@ -15,7 +15,7 @@ The version in `Cargo.toml` is the Zagros Core release version. Release tags mus
 
 1. Update `CHANGELOG.md` and move relevant entries from **Unreleased** into the new version.
 2. Update `Cargo.toml` and `Cargo.lock`.
-3. Ensure the skill version in `skill/apm.yml` is intentionally set; skills may version independently later.
+3. Ensure the skill version in `skills/apm.yml` is intentionally set; skills may version independently later.
 4. Merge with CI/security workflows green.
 5. Create and push the exact version tag.
 6. The release workflow rebuilds binaries, containers, and the skill from the tagged commit.

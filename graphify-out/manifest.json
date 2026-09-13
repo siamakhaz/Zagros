@@ -1,524 +1,644 @@
 {
   "Cargo.toml": {
-    "mtime": 1788926816.9793856,
-    "seen": 1789162203.0672371,
-    "ast_hash": "ecd1f1a71ace7ebe36ae1fb69e4b9630",
+    "mtime": 1789226253.607172,
+    "seen": 1789266555.60647,
+    "ast_hash": "246d88aa4cb0daba51c59da50ce98678",
     "semantic_hash": ""
   },
   "docker/register.ps1": {
     "mtime": 1788580985.9345584,
-    "seen": 1789162203.067241,
+    "seen": 1789266555.6064768,
     "ast_hash": "24ecf248fc7b1465ce19b7f07b29b51b",
     "semantic_hash": ""
   },
   "scripts/setup.ps1": {
     "mtime": 1788580985.940558,
-    "seen": 1789162203.0672424,
+    "seen": 1789266555.6064796,
     "ast_hash": "b37841f8bf9b76f303bde56a58a6fcd5",
     "semantic_hash": ""
   },
   "scripts/setup.sh": {
     "mtime": 1788580985.9415567,
-    "seen": 1789162203.0672433,
+    "seen": 1789266555.6064801,
     "ast_hash": "c9ed66396a31bd9955760c376b68eeea",
     "semantic_hash": ""
   },
-  "skill/apm.yml": {
-    "mtime": 1788922254.3079562,
-    "seen": 1789162203.0672438,
-    "ast_hash": "643f67eee9be87930e19ff9d5aebb251",
-    "semantic_hash": ""
-  },
-  "skill/build-dist.py": {
-    "mtime": 1788922309.7803564,
-    "seen": 1789162203.0672443,
-    "ast_hash": "44f90780c83df3ffcaf4ff67dd67859f",
-    "semantic_hash": ""
-  },
-  "skill/install.ps1": {
-    "mtime": 1788926659.167098,
-    "seen": 1789162203.067245,
-    "ast_hash": "4070bd75bc2d04dc005d18224298cc33",
-    "semantic_hash": ""
-  },
-  "skill/install.sh": {
-    "mtime": 1788926659.167098,
-    "seen": 1789162203.0672452,
-    "ast_hash": "40856ba0917ea595534a8e8db608e314",
-    "semantic_hash": ""
-  },
   "src/bin/zagros-mcp-http.rs": {
-    "mtime": 1788580985.9415567,
-    "seen": 1789162203.0672457,
-    "ast_hash": "baa08a527cc4a6872faa6243d1076770",
+    "mtime": 1789196757.9293177,
+    "seen": 1789266555.606483,
+    "ast_hash": "9cd386b59935bd340509a6bb1621a561",
     "semantic_hash": ""
   },
   "src/bin/zagros-mcp.rs": {
     "mtime": 1788580985.942557,
-    "seen": 1789162203.0672464,
+    "seen": 1789266555.6064837,
     "ast_hash": "5b9731060bf309e38bb72e8989bbe865",
     "semantic_hash": ""
   },
   "src/bin/zagros-ui.rs": {
     "mtime": 1788580985.942557,
-    "seen": 1789162203.0672472,
+    "seen": 1789266555.6064842,
     "ast_hash": "035054c2ef3a46afce96865d3916e020",
     "semantic_hash": ""
   },
   "src/db.rs": {
-    "mtime": 1787592972.0,
-    "seen": 1789162203.0672476,
-    "ast_hash": "4f216a298e4ec746cb3fb68547d25789",
+    "mtime": 1789257742.9965432,
+    "seen": 1789266555.606485,
+    "ast_hash": "551f6fe7e9888670f8b692132357a835",
     "semantic_hash": ""
   },
   "src/lib.rs": {
-    "mtime": 1788580985.943564,
-    "seen": 1789162203.067248,
-    "ast_hash": "03377908703a4d75679b51eb83409bdf",
+    "mtime": 1789258748.5045822,
+    "seen": 1789266555.6064858,
+    "ast_hash": "ea1c42aa346631b54609fff58d44d0aa",
     "semantic_hash": ""
   },
   "src/main.rs": {
     "mtime": 1788580985.943564,
-    "seen": 1789162203.0672486,
+    "seen": 1789266555.6064863,
     "ast_hash": "cc5a6c4af7a3a0d8de36a62e5d6af65a",
     "semantic_hash": ""
   },
   "src/mcp.rs": {
-    "mtime": 1788929602.0190463,
-    "seen": 1789162203.067249,
-    "ast_hash": "4cb348234c2b428dace0f44183eb6045",
+    "mtime": 1789257848.0778985,
+    "seen": 1789266555.6064868,
+    "ast_hash": "1e1eaa819cac9933e826ed557d752714",
     "semantic_hash": ""
   },
   "src/sources.rs": {
-    "mtime": 1788580985.9445567,
-    "seen": 1789162203.0672493,
-    "ast_hash": "58c9202bdfa1d937687201a53566df42",
-    "semantic_hash": ""
-  },
-  "website/.astro/collections/docs.schema.json": {
-    "mtime": 1788926206.14994,
-    "seen": 1789162203.0672503,
-    "ast_hash": "d516e26993181ed2e7089a2413de0f39",
-    "semantic_hash": ""
-  },
-  "website/.astro/content-assets.mjs": {
-    "mtime": 1788925204.4848113,
-    "seen": 1789162203.0672507,
-    "ast_hash": "76d3c407481bea9cd4d5063cbb6721ea",
-    "semantic_hash": ""
-  },
-  "website/.astro/content-modules.mjs": {
-    "mtime": 1788921778.8304996,
-    "seen": 1789162203.0672512,
-    "ast_hash": "8aeea624d36ca2b4c7d0e0748b76ba28",
-    "semantic_hash": ""
-  },
-  "website/.astro/content.d.ts": {
-    "mtime": 1788926206.1676776,
-    "seen": 1789162203.0672517,
-    "ast_hash": "09ad5f4e8e3a07d65401a170e367078c",
-    "semantic_hash": ""
-  },
-  "website/.astro/types.d.ts": {
-    "mtime": 1788926206.1686778,
-    "seen": 1789162203.0672522,
-    "ast_hash": "f3d48b2aa569815a445d3509aa161559",
+    "mtime": 1789226616.8098924,
+    "seen": 1789266555.6064878,
+    "ast_hash": "4e8e73e7b7dd6413dac0a8137375da94",
     "semantic_hash": ""
   },
   "website/astro.config.mjs": {
     "mtime": 1788925197.961252,
-    "seen": 1789162203.0672524,
+    "seen": 1789266555.606489,
     "ast_hash": "8450b2c93e7c182020679bc44b864dd0",
     "semantic_hash": ""
   },
   "website/package.json": {
-    "mtime": 1788921666.2402527,
-    "seen": 1789162203.0672536,
-    "ast_hash": "1da811a05e58f50b97d5c5d07f4516a4",
+    "mtime": 1789251293.5020828,
+    "seen": 1789266555.6064894,
+    "ast_hash": "bfe9ca09d7e4e3961f6f720a79e5a9f3",
     "semantic_hash": ""
   },
   "website/src/content.config.ts": {
     "mtime": 1788921666.2444272,
-    "seen": 1789162203.067254,
+    "seen": 1789266555.60649,
     "ast_hash": "11f39bbeafa15d27fb22db7e89e1011e",
-    "semantic_hash": ""
-  },
-  "website/src/layouts/Base.astro": {
-    "mtime": 1788926162.1480045,
-    "seen": 1789162203.0672543,
-    "ast_hash": "c8f63ca2999519eca12fa62d460cfc9f",
-    "semantic_hash": ""
-  },
-  "website/src/pages/demo.astro": {
-    "mtime": 1788926186.7030494,
-    "seen": 1789162203.0672548,
-    "ast_hash": "a1844638ce51c60c82fe5a46bec71246",
-    "semantic_hash": ""
-  },
-  "website/src/pages/docs/[...id].astro": {
-    "mtime": 1788922428.4378016,
-    "seen": 1789162203.067255,
-    "ast_hash": "8f89798b22e226f288e17fff2ae19bd3",
-    "semantic_hash": ""
-  },
-  "website/src/pages/docs/index.astro": {
-    "mtime": 1788921744.5660655,
-    "seen": 1789162203.0672553,
-    "ast_hash": "a5e335ead92b5a4a3f2c2971b4525b19",
-    "semantic_hash": ""
-  },
-  "website/src/pages/index.astro": {
-    "mtime": 1788926197.9962883,
-    "seen": 1789162203.0672557,
-    "ast_hash": "16cbd38c08769953694f4375f7b72df6",
     "semantic_hash": ""
   },
   "website/tsconfig.json": {
     "mtime": 1788921666.2402527,
-    "seen": 1789162203.0672562,
+    "seen": 1789266555.6064906,
     "ast_hash": "f5a3fa4ecfa431d87ab7ded7826ed29f",
     "semantic_hash": ""
   },
   ".github/workflows/pages.yml": {
-    "mtime": 1788921744.5728564,
-    "seen": 1789162203.0672567,
-    "ast_hash": "3bc19cb18023843f7c5b77679822a461",
+    "mtime": 1789231049.9004126,
+    "seen": 1789266555.6064959,
+    "ast_hash": "9bc01af6612add727eafa5ae62c62aad",
     "semantic_hash": ""
   },
   "AGENTS.md": {
     "mtime": 1788925174.682944,
-    "seen": 1789162203.0672572,
+    "seen": 1789266555.6064973,
     "ast_hash": "d72f445a601b18e49ee2f0dca70047b0",
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1788926903.3784606,
-    "seen": 1789162203.0672574,
-    "ast_hash": "0a27ec75324b6960f8f2db8a4fd49d42",
+    "mtime": 1789266416.5883596,
+    "seen": 1789266555.6064994,
+    "ast_hash": "e7835a24f0872eb75567ab38aa5a0b48",
     "semantic_hash": ""
   },
   "SECURITY.md": {
     "mtime": 1788926846.3254404,
-    "seen": 1789162203.067258,
+    "seen": 1789266555.6065004,
     "ast_hash": "62dafab56687c74ee5fb08e7ad5bf001",
     "semantic_hash": ""
   },
   "docker/compose.yml": {
-    "mtime": 1788926708.2818482,
-    "seen": 1789162203.0672581,
-    "ast_hash": "f6f13d63cfa67f30f218437823511208",
+    "mtime": 1789196926.1350045,
+    "seen": 1789266555.6065018,
+    "ast_hash": "60a567f5b99dcff3ca668d35b46e690e",
     "semantic_hash": ""
   },
   "docker/server.yaml": {
     "mtime": 1788580985.9345584,
-    "seen": 1789162203.0672586,
+    "seen": 1789266555.6065023,
     "ast_hash": "05562dff38a3b44e7b9f7f9c7f4e8256",
     "semantic_hash": ""
   },
   "docker/zagros-server.yaml": {
     "mtime": 1788580985.9345584,
-    "seen": 1789162203.0672588,
+    "seen": 1789266555.606503,
     "ast_hash": "e17715b6a3b85bc257a11552420b8da6",
     "semantic_hash": ""
   },
   "docs/ARCHITECTURE.md": {
     "mtime": 1788925191.2108831,
-    "seen": 1789162203.0672593,
+    "seen": 1789266555.6065035,
     "ast_hash": "4e35ad88e3ac553a53486f330022ffcd",
     "semantic_hash": ""
   },
   "docs/CLI.md": {
     "mtime": 1788580985.9355576,
-    "seen": 1789162203.0672598,
+    "seen": 1789266555.6065037,
     "ast_hash": "b2140f358d03ddd7253e62368dd0e80e",
     "semantic_hash": ""
   },
   "docs/CONFIGURATION.md": {
-    "mtime": 1788582050.1838555,
-    "seen": 1789162203.0672603,
-    "ast_hash": "f81e144456dd012a81fa8225edd22866",
+    "mtime": 1789251637.209828,
+    "seen": 1789266555.6065042,
+    "ast_hash": "3e0da46da56b08ed04b705e5ab7fefd9",
     "semantic_hash": ""
   },
   "docs/DATA-SOURCES.md": {
-    "mtime": 1788580985.9365573,
-    "seen": 1789162203.0672607,
-    "ast_hash": "dcc0f48cb9835cc38e1560f580c0adaa",
+    "mtime": 1789259780.049721,
+    "seen": 1789266555.6065047,
+    "ast_hash": "2c1a74eaf287dd3793252564a610fc19",
     "semantic_hash": ""
   },
   "docs/DEVELOPMENT.md": {
     "mtime": 1788580985.9375587,
-    "seen": 1789162203.067261,
+    "seen": 1789266555.6065054,
     "ast_hash": "4b1b48ab3e9459d5535c11405a6ad1bc",
     "semantic_hash": ""
   },
   "docs/DOCKER-MCP-LINUX.md": {
     "mtime": 1788580985.9375587,
-    "seen": 1789162203.0672612,
+    "seen": 1789266555.6065066,
     "ast_hash": "d5f885349811a6ac348be92fc2d36bd8",
     "semantic_hash": ""
   },
   "docs/DOCKER-MCP-WINDOWS.md": {
     "mtime": 1788580985.938557,
-    "seen": 1789162203.0672622,
+    "seen": 1789266555.606507,
     "ast_hash": "fb896a2524dbdbe3a28107bc00135676",
     "semantic_hash": ""
   },
   "docs/MCP.md": {
-    "mtime": 1788925153.1483114,
-    "seen": 1789162203.0672624,
-    "ast_hash": "ed2c5a6253723a2e4146dd2eca267a66",
+    "mtime": 1789197780.0284913,
+    "seen": 1789266555.6065075,
+    "ast_hash": "5f737abd1f47d86d531f553702e5b2fd",
     "semantic_hash": ""
   },
   "docs/README.md": {
-    "mtime": 1788580985.9395573,
-    "seen": 1789162203.0672626,
-    "ast_hash": "b2c11b8ec9f1a6185758c1a2b31b60a7",
+    "mtime": 1789260045.3771217,
+    "seen": 1789266555.6065085,
+    "ast_hash": "dfd049d174da1e3dd56d448ddaad24ce",
     "semantic_hash": ""
   },
   "docs/SECURITY-REVIEW.md": {
-    "mtime": 1788580985.9395573,
-    "seen": 1789162203.067263,
-    "ast_hash": "baacef3a5f93e6d4f09d529c3a1e8c60",
+    "mtime": 1789194087.0802822,
+    "seen": 1789266555.6065097,
+    "ast_hash": "a999f56e6b653dc1dffefea3db8533c4",
     "semantic_hash": ""
   },
   "docs/TESTING.md": {
     "mtime": 1788925182.5489042,
-    "seen": 1789162203.0672636,
+    "seen": 1789266555.6065109,
     "ast_hash": "9b9c909ee7078198f4f2488b2cdda368",
     "semantic_hash": ""
   },
   "docs/VISION.md": {
-    "mtime": 1788580985.940558,
-    "seen": 1789162203.067264,
-    "ast_hash": "8fec9a082207758feafa61a5db62e571",
-    "semantic_hash": ""
-  },
-  "skill/.apm/skills/cybersecurity-expert/SKILL.md": {
-    "mtime": 1788922632.7770333,
-    "seen": 1789162203.0672643,
-    "ast_hash": "b1e059734f3de578e86bff3d9ef9cff6",
-    "semantic_hash": ""
-  },
-  "skill/.apm/skills/cybersecurity-expert/references/domain-1/1.1-Information-Assurance.md": {
-    "mtime": 1782050234.0,
-    "seen": 1789162203.0672648,
-    "ast_hash": "59881c57a02dfab74b7b0c76dd17665c",
-    "semantic_hash": ""
-  },
-  "skill/.apm/skills/cybersecurity-expert/references/domain-1/1.2-Risk-Management.md": {
-    "mtime": 1782050298.0,
-    "seen": 1789162203.0672653,
-    "ast_hash": "4112097bb22094eb293d8d8adeb63a1c",
-    "semantic_hash": ""
-  },
-  "skill/.apm/skills/cybersecurity-expert/references/domain-1/1.3-Security-Controls.md": {
-    "mtime": 1782050360.0,
-    "seen": 1789162203.0672655,
-    "ast_hash": "a2f08849819f62643a7075f676afc662",
-    "semantic_hash": ""
-  },
-  "skill/.apm/skills/cybersecurity-expert/references/domain-1/1.4-Ethics.md": {
-    "mtime": 1782050406.0,
-    "seen": 1789162203.0672657,
-    "ast_hash": "dd345964a20d477ac61192305342784e",
-    "semantic_hash": ""
-  },
-  "skill/.apm/skills/cybersecurity-expert/references/domain-1/1.5-Governance.md": {
-    "mtime": 1782050464.0,
-    "seen": 1789162203.0672662,
-    "ast_hash": "235c7c6c71e82656fb93a9b019fffa82",
-    "semantic_hash": ""
-  },
-  "skill/.apm/skills/cybersecurity-expert/references/domain-2/2.1-Business-Continuity.md": {
-    "mtime": 1782050590.0,
-    "seen": 1789162203.0672667,
-    "ast_hash": "24e1265bed9eafb84e3f1a30822b33bb",
-    "semantic_hash": ""
-  },
-  "skill/.apm/skills/cybersecurity-expert/references/domain-2/2.2-Disaster-Recovery.md": {
-    "mtime": 1782050590.0,
-    "seen": 1789162203.0672674,
-    "ast_hash": "79f5746f4d2d0de0ba6c917a3366482b",
-    "semantic_hash": ""
-  },
-  "skill/.apm/skills/cybersecurity-expert/references/domain-2/2.3-Incident-Response.md": {
-    "mtime": 1782050590.0,
-    "seen": 1789162203.0672677,
-    "ast_hash": "e9861b2c7af7e20b6db5771f3f2ba940",
-    "semantic_hash": ""
-  },
-  "skill/.apm/skills/cybersecurity-expert/references/domain-3/3.1-Physical-Access-Controls.md": {
-    "mtime": 1782050872.0,
-    "seen": 1789162203.0672681,
-    "ast_hash": "e15a56c030f78d9d778c2e19100f751d",
-    "semantic_hash": ""
-  },
-  "skill/.apm/skills/cybersecurity-expert/references/domain-3/3.2-Logical-Access-Controls.md": {
-    "mtime": 1782050872.0,
-    "seen": 1789162203.0672686,
-    "ast_hash": "51aff685974953c2537d10c7af91f8e8",
-    "semantic_hash": ""
-  },
-  "skill/.apm/skills/cybersecurity-expert/references/domain-4/4.1-Computer-Networking.md": {
-    "mtime": 1782050630.0,
-    "seen": 1789162203.067269,
-    "ast_hash": "c0a1e7d5f1f52adeb8140b09fc3e5e11",
-    "semantic_hash": ""
-  },
-  "skill/.apm/skills/cybersecurity-expert/references/domain-4/4.2-Network-Threats-Attacks.md": {
-    "mtime": 1782050630.0,
-    "seen": 1789162203.0672693,
-    "ast_hash": "320944802348dcbc16601ec6e95682a2",
-    "semantic_hash": ""
-  },
-  "skill/.apm/skills/cybersecurity-expert/references/domain-4/4.3-Network-Infrastructure.md": {
-    "mtime": 1782050630.0,
-    "seen": 1789162203.0672696,
-    "ast_hash": "b04f3dea86b18b7061fd3acfc42cf1a3",
-    "semantic_hash": ""
-  },
-  "skill/.apm/skills/cybersecurity-expert/references/domain-5/5.1-Data-Security.md": {
-    "mtime": 1782050642.0,
-    "seen": 1789162203.06727,
-    "ast_hash": "ac943a7dcc48d03e45bc7bf26e2796fd",
-    "semantic_hash": ""
-  },
-  "skill/.apm/skills/cybersecurity-expert/references/domain-5/5.2-System-Hardening.md": {
-    "mtime": 1782050734.0,
-    "seen": 1789162203.0672708,
-    "ast_hash": "aa6882800e9e2d7d55f51e379b043c91",
-    "semantic_hash": ""
-  },
-  "skill/.apm/skills/cybersecurity-expert/references/domain-5/5.3-Security-Policies.md": {
-    "mtime": 1782050750.0,
-    "seen": 1789162203.067271,
-    "ast_hash": "051b63be05d8ee09ac661467c434ac37",
-    "semantic_hash": ""
-  },
-  "skill/.apm/skills/cybersecurity-expert/references/domain-5/5.4-Security-Awareness.md": {
-    "mtime": 1782050718.0,
-    "seen": 1789162203.0672715,
-    "ast_hash": "a533a395b7ddccaedabb2eec8bb91d54",
-    "semantic_hash": ""
-  },
-  "skill/.apm/skills/cybersecurity-expert/references/zagros-mcp.md": {
-    "mtime": 1788929628.8166525,
-    "seen": 1789162203.0672717,
-    "ast_hash": "75a2ca445291f8fe00997295d70a1877",
-    "semantic_hash": ""
-  },
-  "skill/INSTALL-PROMPT.md": {
-    "mtime": 1788926659.167098,
-    "seen": 1789162203.0672722,
-    "ast_hash": "67eaed6207f85b446011428abd890b93",
-    "semantic_hash": ""
-  },
-  "skill/README.md": {
-    "mtime": 1788926682.1819568,
-    "seen": 1789162203.0672727,
-    "ast_hash": "f9eb1b30ee631a975d7fa34e5c8b0828",
-    "semantic_hash": ""
-  },
-  "skill/skill-meta.yml": {
-    "mtime": 1788922254.3079562,
-    "seen": 1789162203.0672731,
-    "ast_hash": "90d74e92e5f8a67ada4b0e7c298b3e4e",
+    "mtime": 1789188850.2225053,
+    "seen": 1789266555.606511,
+    "ast_hash": "3d5ba3868aa3ddf769a592e8bc6564ec",
     "semantic_hash": ""
   },
   "website/src/content/docs/ARCHITECTURE.md": {
     "mtime": 1788925191.2108831,
-    "seen": 1789162203.0672734,
+    "seen": 1789266555.6065228,
     "ast_hash": "4e35ad88e3ac553a53486f330022ffcd",
     "semantic_hash": ""
   },
   "website/src/content/docs/CLI.md": {
     "mtime": 1788580985.9355576,
-    "seen": 1789162203.0672736,
+    "seen": 1789266555.6065233,
     "ast_hash": "b2140f358d03ddd7253e62368dd0e80e",
     "semantic_hash": ""
   },
   "website/src/content/docs/CONFIGURATION.md": {
-    "mtime": 1788582050.1838555,
-    "seen": 1789162203.0672743,
-    "ast_hash": "f81e144456dd012a81fa8225edd22866",
+    "mtime": 1789251637.209828,
+    "seen": 1789266555.606524,
+    "ast_hash": "3e0da46da56b08ed04b705e5ab7fefd9",
     "semantic_hash": ""
   },
   "website/src/content/docs/DATA-SOURCES.md": {
-    "mtime": 1788580985.9365573,
-    "seen": 1789162203.0672748,
-    "ast_hash": "dcc0f48cb9835cc38e1560f580c0adaa",
+    "mtime": 1789259780.049721,
+    "seen": 1789266555.6065245,
+    "ast_hash": "2c1a74eaf287dd3793252564a610fc19",
     "semantic_hash": ""
   },
   "website/src/content/docs/DEVELOPMENT.md": {
     "mtime": 1788580985.9375587,
-    "seen": 1789162203.067275,
+    "seen": 1789266555.6065254,
     "ast_hash": "4b1b48ab3e9459d5535c11405a6ad1bc",
     "semantic_hash": ""
   },
   "website/src/content/docs/DOCKER-MCP-LINUX.md": {
     "mtime": 1788580985.9375587,
-    "seen": 1789162203.0672755,
+    "seen": 1789266555.606526,
     "ast_hash": "d5f885349811a6ac348be92fc2d36bd8",
     "semantic_hash": ""
   },
   "website/src/content/docs/DOCKER-MCP-WINDOWS.md": {
     "mtime": 1788580985.938557,
-    "seen": 1789162203.0672758,
+    "seen": 1789266555.6065264,
     "ast_hash": "fb896a2524dbdbe3a28107bc00135676",
     "semantic_hash": ""
   },
   "website/src/content/docs/MCP.md": {
     "mtime": 1788925153.1483114,
-    "seen": 1789162203.0672762,
+    "seen": 1789266555.606527,
     "ast_hash": "ed2c5a6253723a2e4146dd2eca267a66",
     "semantic_hash": ""
   },
   "website/src/content/docs/README.md": {
-    "mtime": 1788926772.6094143,
-    "seen": 1789162203.0672767,
-    "ast_hash": "036bee63a71df92e5ad572ba97f0209d",
+    "mtime": 1789260045.3771217,
+    "seen": 1789266555.606528,
+    "ast_hash": "dfd049d174da1e3dd56d448ddaad24ce",
     "semantic_hash": ""
   },
   "website/src/content/docs/SECURITY-REVIEW.md": {
-    "mtime": 1788580985.9395573,
-    "seen": 1789162203.067277,
-    "ast_hash": "baacef3a5f93e6d4f09d529c3a1e8c60",
+    "mtime": 1789194087.0802822,
+    "seen": 1789266555.6065292,
+    "ast_hash": "a999f56e6b653dc1dffefea3db8533c4",
     "semantic_hash": ""
   },
   "website/src/content/docs/TESTING.md": {
     "mtime": 1788925182.5489042,
-    "seen": 1789162203.0672777,
+    "seen": 1789266555.6065302,
     "ast_hash": "9b9c909ee7078198f4f2488b2cdda368",
     "semantic_hash": ""
   },
   "website/src/content/docs/VISION.md": {
-    "mtime": 1788580985.940558,
-    "seen": 1789162203.067278,
-    "ast_hash": "8fec9a082207758feafa61a5db62e571",
+    "mtime": 1789188850.2225053,
+    "seen": 1789266555.606531,
+    "ast_hash": "3d5ba3868aa3ddf769a592e8bc6564ec",
     "semantic_hash": ""
   },
   "assets/zagros.png": {
     "mtime": 1788578469.4805903,
-    "seen": 1789162203.0672784,
+    "seen": 1789266555.6065311,
     "ast_hash": "4cb1e43593d42fc571be178f7a52155b",
     "semantic_hash": ""
   },
   "website/public/favicon.svg": {
     "mtime": 1788921666.2402527,
-    "seen": 1789162203.0672786,
+    "seen": 1789266555.6065316,
     "ast_hash": "d6faf2718d9fdba8412e531851df94d4",
     "semantic_hash": ""
   },
   "website/public/zagros.png": {
     "mtime": 1788578469.4805903,
-    "seen": 1789162203.067279,
+    "seen": 1789266555.606532,
     "ast_hash": "4cb1e43593d42fc571be178f7a52155b",
     "semantic_hash": ""
   },
   "website/src/content/docs/assets/zagros.png": {
     "mtime": 1788578469.4805903,
-    "seen": 1789162203.06728,
+    "seen": 1789266555.6065326,
     "ast_hash": "4cb1e43593d42fc571be178f7a52155b",
+    "semantic_hash": ""
+  },
+  "docker/mcp-entrypoint.sh": {
+    "mtime": 1789196493.1695125,
+    "seen": 1789266555.6064746,
+    "ast_hash": "487e44320477c0b2f231c2058a31bd57",
+    "semantic_hash": ""
+  },
+  "docker/zagros-refresh.sh": {
+    "mtime": 1789196323.1897507,
+    "seen": 1789266555.606478,
+    "ast_hash": "00f355653916340c64f46501ad9e633e",
+    "semantic_hash": ""
+  },
+  "scripts/e2e_mcp.py": {
+    "mtime": 1789229191.0876257,
+    "seen": 1789266555.606479,
+    "ast_hash": "c3187165f4faad5f4a03b844043c0e02",
+    "semantic_hash": ""
+  },
+  "skills/apm.yml": {
+    "mtime": 1789188461.268138,
+    "seen": 1789266555.6064806,
+    "ast_hash": "0a8d526eca4bb966d19a95e0765b0ca9",
+    "semantic_hash": ""
+  },
+  "skills/build-dist.py": {
+    "mtime": 1789266389.2077065,
+    "seen": 1789266555.6064813,
+    "ast_hash": "9f27596ad6025216cc07ad28ef689f75",
+    "semantic_hash": ""
+  },
+  "skills/install.ps1": {
+    "mtime": 1788926659.167098,
+    "seen": 1789266555.606482,
+    "ast_hash": "4070bd75bc2d04dc005d18224298cc33",
+    "semantic_hash": ""
+  },
+  "skills/install.sh": {
+    "mtime": 1788926659.167098,
+    "seen": 1789266555.6064823,
+    "ast_hash": "40856ba0917ea595534a8e8db608e314",
+    "semantic_hash": ""
+  },
+  "src/provenance.rs": {
+    "mtime": 1789258023.3278892,
+    "seen": 1789266555.6064873,
+    "ast_hash": "5a540abb0b8db3908f09827e48e5c7ce",
+    "semantic_hash": ""
+  },
+  "tests/e2e_seed.rs": {
+    "mtime": 1789257633.5537508,
+    "seen": 1789266555.6064882,
+    "ast_hash": "c10229099ddcf27f3f272477b8836b7e",
+    "semantic_hash": ""
+  },
+  ".github/ISSUE_TEMPLATE/bug.yml": {
+    "mtime": 1789258211.7971847,
+    "seen": 1789266555.606491,
+    "ast_hash": "894c403a53c1c4921bb51dae5c6b5ad9",
+    "semantic_hash": ""
+  },
+  ".github/ISSUE_TEMPLATE/config.yml": {
+    "mtime": 1789258299.4868202,
+    "seen": 1789266555.6064916,
+    "ast_hash": "12ce8b2a5fe4f48e13c040c3cc3132f1",
+    "semantic_hash": ""
+  },
+  ".github/ISSUE_TEMPLATE/data-source.yml": {
+    "mtime": 1789258253.9993985,
+    "seen": 1789266555.606492,
+    "ast_hash": "b092bb3da190a57c6f63c9cb3ec96f4d",
+    "semantic_hash": ""
+  },
+  ".github/ISSUE_TEMPLATE/feature.yml": {
+    "mtime": 1789258232.8593845,
+    "seen": 1789266555.6064928,
+    "ast_hash": "d2b766745ce43a9ecb97a4718253d878",
+    "semantic_hash": ""
+  },
+  ".github/dependabot.yml": {
+    "mtime": 1789228328.5348265,
+    "seen": 1789266555.6064932,
+    "ast_hash": "f01634731a81f4cac045ddcbe3cacb8d",
+    "semantic_hash": ""
+  },
+  ".github/pull_request_template.md": {
+    "mtime": 1789258281.0528088,
+    "seen": 1789266555.6064937,
+    "ast_hash": "f07a744f861b06eceae5278438c0b9ce",
+    "semantic_hash": ""
+  },
+  ".github/workflows/ci.yml": {
+    "mtime": 1789228176.447339,
+    "seen": 1789266555.6064942,
+    "ast_hash": "cd36086133c3db1099ea06d8c66d2407",
+    "semantic_hash": ""
+  },
+  ".github/workflows/e2e.yml": {
+    "mtime": 1789256822.9840856,
+    "seen": 1789266555.6064947,
+    "ast_hash": "77cbf711a8bb5fbcb6ddbb69cd3b0420",
+    "semantic_hash": ""
+  },
+  ".github/workflows/live-sources.yml": {
+    "mtime": 1789228296.318905,
+    "seen": 1789266555.6064951,
+    "ast_hash": "9fc2380a4b8b136a6d3667a16be93c92",
+    "semantic_hash": ""
+  },
+  ".github/workflows/release.yml": {
+    "mtime": 1789266389.2036865,
+    "seen": 1789266555.6064966,
+    "ast_hash": "02926f04d4214fe18df5f43975d799e4",
+    "semantic_hash": ""
+  },
+  ".github/workflows/security.yml": {
+    "mtime": 1789229501.5188432,
+    "seen": 1789266555.606497,
+    "ast_hash": "3e584aa694dbe2a9bc713a29fac108f3",
+    "semantic_hash": ""
+  },
+  "CHANGELOG.md": {
+    "mtime": 1789230805.2435246,
+    "seen": 1789266555.6064978,
+    "ast_hash": "2dc0634fe9c293430c1163306449d064",
+    "semantic_hash": ""
+  },
+  "CODE_OF_CONDUCT.md": {
+    "mtime": 1789258082.5226238,
+    "seen": 1789266555.6064982,
+    "ast_hash": "81b6f376e0f413a6c6f02a6d27644d2d",
+    "semantic_hash": ""
+  },
+  "CONTRIBUTING.md": {
+    "mtime": 1789258058.377275,
+    "seen": 1789266555.6064987,
+    "ast_hash": "db4dcbd013f95beffcc2f227dd811573",
+    "semantic_hash": ""
+  },
+  "ROADMAP.md": {
+    "mtime": 1789258106.0424159,
+    "seen": 1789266555.6065,
+    "ast_hash": "c6a0ec5a11f8044d8e089de6391ee0cb",
+    "semantic_hash": ""
+  },
+  "THIRD_PARTY_NOTICES.md": {
+    "mtime": 1789188612.9083436,
+    "seen": 1789266555.6065009,
+    "ast_hash": "418a697899d010a9d6b3c6ab6207f08c",
+    "semantic_hash": ""
+  },
+  "docker/compose.traefik.yml": {
+    "mtime": 1789196971.3037388,
+    "seen": 1789266555.6065013,
+    "ast_hash": "a96676175772d41e10043417f1290403",
+    "semantic_hash": ""
+  },
+  "docs/DEPLOYMENT.md": {
+    "mtime": 1789197556.0863557,
+    "seen": 1789266555.6065052,
+    "ast_hash": "01028edd8b4be2f3fcaffa9acef57102",
+    "semantic_hash": ""
+  },
+  "docs/OPEN-SOURCE-RELEASE-TODO.md": {
+    "mtime": 1789260625.5813699,
+    "seen": 1789266555.606508,
+    "ast_hash": "846321b15ebfe4f3b47de4ece860d4e5",
+    "semantic_hash": ""
+  },
+  "docs/RELEASING.md": {
+    "mtime": 1789266389.2036865,
+    "seen": 1789266555.606509,
+    "ast_hash": "466b245073a7fc7d16067a98c8a57df9",
+    "semantic_hash": ""
+  },
+  "docs/SOURCE-TRUST-POLICY.md": {
+    "mtime": 1789258155.8714266,
+    "seen": 1789266555.6065102,
+    "ast_hash": "8c73c274b17fceb27de6f412e9961844",
+    "semantic_hash": ""
+  },
+  "skills/.apm/skills/cybersecurity-expert/SKILL.md": {
+    "mtime": 1789197015.7054594,
+    "seen": 1789266555.6065116,
+    "ast_hash": "51b230b4ca515b773c3b27eec00e5425",
+    "semantic_hash": ""
+  },
+  "skills/.apm/skills/cybersecurity-expert/references/domain-1/1.1-Information-Assurance.md": {
+    "mtime": 1782050234.0,
+    "seen": 1789266555.6065123,
+    "ast_hash": "59881c57a02dfab74b7b0c76dd17665c",
+    "semantic_hash": ""
+  },
+  "skills/.apm/skills/cybersecurity-expert/references/domain-1/1.2-Risk-Management.md": {
+    "mtime": 1782050298.0,
+    "seen": 1789266555.6065128,
+    "ast_hash": "4112097bb22094eb293d8d8adeb63a1c",
+    "semantic_hash": ""
+  },
+  "skills/.apm/skills/cybersecurity-expert/references/domain-1/1.3-Security-Controls.md": {
+    "mtime": 1782050360.0,
+    "seen": 1789266555.6065135,
+    "ast_hash": "a2f08849819f62643a7075f676afc662",
+    "semantic_hash": ""
+  },
+  "skills/.apm/skills/cybersecurity-expert/references/domain-1/1.4-Ethics.md": {
+    "mtime": 1782050406.0,
+    "seen": 1789266555.606514,
+    "ast_hash": "dd345964a20d477ac61192305342784e",
+    "semantic_hash": ""
+  },
+  "skills/.apm/skills/cybersecurity-expert/references/domain-1/1.5-Governance.md": {
+    "mtime": 1782050464.0,
+    "seen": 1789266555.6065145,
+    "ast_hash": "235c7c6c71e82656fb93a9b019fffa82",
+    "semantic_hash": ""
+  },
+  "skills/.apm/skills/cybersecurity-expert/references/domain-2/2.1-Business-Continuity.md": {
+    "mtime": 1782050590.0,
+    "seen": 1789266555.606515,
+    "ast_hash": "24e1265bed9eafb84e3f1a30822b33bb",
+    "semantic_hash": ""
+  },
+  "skills/.apm/skills/cybersecurity-expert/references/domain-2/2.2-Disaster-Recovery.md": {
+    "mtime": 1782050590.0,
+    "seen": 1789266555.6065154,
+    "ast_hash": "79f5746f4d2d0de0ba6c917a3366482b",
+    "semantic_hash": ""
+  },
+  "skills/.apm/skills/cybersecurity-expert/references/domain-2/2.3-Incident-Response.md": {
+    "mtime": 1782050590.0,
+    "seen": 1789266555.606516,
+    "ast_hash": "e9861b2c7af7e20b6db5771f3f2ba940",
+    "semantic_hash": ""
+  },
+  "skills/.apm/skills/cybersecurity-expert/references/domain-3/3.1-Physical-Access-Controls.md": {
+    "mtime": 1782050872.0,
+    "seen": 1789266555.6065161,
+    "ast_hash": "e15a56c030f78d9d778c2e19100f751d",
+    "semantic_hash": ""
+  },
+  "skills/.apm/skills/cybersecurity-expert/references/domain-3/3.2-Logical-Access-Controls.md": {
+    "mtime": 1782050872.0,
+    "seen": 1789266555.6065168,
+    "ast_hash": "51aff685974953c2537d10c7af91f8e8",
+    "semantic_hash": ""
+  },
+  "skills/.apm/skills/cybersecurity-expert/references/domain-4/4.1-Computer-Networking.md": {
+    "mtime": 1782050630.0,
+    "seen": 1789266555.6065173,
+    "ast_hash": "c0a1e7d5f1f52adeb8140b09fc3e5e11",
+    "semantic_hash": ""
+  },
+  "skills/.apm/skills/cybersecurity-expert/references/domain-4/4.2-Network-Threats-Attacks.md": {
+    "mtime": 1782050630.0,
+    "seen": 1789266555.6065178,
+    "ast_hash": "320944802348dcbc16601ec6e95682a2",
+    "semantic_hash": ""
+  },
+  "skills/.apm/skills/cybersecurity-expert/references/domain-4/4.3-Network-Infrastructure.md": {
+    "mtime": 1782050630.0,
+    "seen": 1789266555.6065183,
+    "ast_hash": "b04f3dea86b18b7061fd3acfc42cf1a3",
+    "semantic_hash": ""
+  },
+  "skills/.apm/skills/cybersecurity-expert/references/domain-5/5.1-Data-Security.md": {
+    "mtime": 1782050642.0,
+    "seen": 1789266555.6065187,
+    "ast_hash": "ac943a7dcc48d03e45bc7bf26e2796fd",
+    "semantic_hash": ""
+  },
+  "skills/.apm/skills/cybersecurity-expert/references/domain-5/5.2-System-Hardening.md": {
+    "mtime": 1782050734.0,
+    "seen": 1789266555.6065192,
+    "ast_hash": "aa6882800e9e2d7d55f51e379b043c91",
+    "semantic_hash": ""
+  },
+  "skills/.apm/skills/cybersecurity-expert/references/domain-5/5.3-Security-Policies.md": {
+    "mtime": 1782050750.0,
+    "seen": 1789266555.6065197,
+    "ast_hash": "051b63be05d8ee09ac661467c434ac37",
+    "semantic_hash": ""
+  },
+  "skills/.apm/skills/cybersecurity-expert/references/domain-5/5.4-Security-Awareness.md": {
+    "mtime": 1782050718.0,
+    "seen": 1789266555.6065204,
+    "ast_hash": "a533a395b7ddccaedabb2eec8bb91d54",
+    "semantic_hash": ""
+  },
+  "skills/.apm/skills/cybersecurity-expert/references/zagros-mcp.md": {
+    "mtime": 1788929628.8166525,
+    "seen": 1789266555.606521,
+    "ast_hash": "75a2ca445291f8fe00997295d70a1877",
+    "semantic_hash": ""
+  },
+  "skills/INSTALL-PROMPT.md": {
+    "mtime": 1788926659.167098,
+    "seen": 1789266555.6065216,
+    "ast_hash": "67eaed6207f85b446011428abd890b93",
+    "semantic_hash": ""
+  },
+  "skills/README.md": {
+    "mtime": 1789266389.205696,
+    "seen": 1789266555.606522,
+    "ast_hash": "572d5100ed407a0129a57b253f004193",
+    "semantic_hash": ""
+  },
+  "skills/skill-meta.yml": {
+    "mtime": 1789188547.3930364,
+    "seen": 1789266555.6065226,
+    "ast_hash": "bf744cfac1f98436810404caf360e0a1",
+    "semantic_hash": ""
+  },
+  "website/src/content/docs/DEPLOYMENT.md": {
+    "mtime": 1789197556.0863557,
+    "seen": 1789266555.606525,
+    "ast_hash": "01028edd8b4be2f3fcaffa9acef57102",
+    "semantic_hash": ""
+  },
+  "website/src/content/docs/OPEN-SOURCE-RELEASE-TODO.md": {
+    "mtime": 1789260625.5813699,
+    "seen": 1789266555.6065276,
+    "ast_hash": "846321b15ebfe4f3b47de4ece860d4e5",
+    "semantic_hash": ""
+  },
+  "website/src/content/docs/RELEASING.md": {
+    "mtime": 1789266389.205696,
+    "seen": 1789266555.6065288,
+    "ast_hash": "466b245073a7fc7d16067a98c8a57df9",
+    "semantic_hash": ""
+  },
+  "website/src/content/docs/SOURCE-TRUST-POLICY.md": {
+    "mtime": 1789258155.8714266,
+    "seen": 1789266555.6065297,
+    "ast_hash": "8c73c274b17fceb27de6f412e9961844",
     "semantic_hash": ""
   }
 }
