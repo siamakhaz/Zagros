@@ -1,4 +1,4 @@
-name: Release
+﻿name: Release
 
 on:
   push:
@@ -87,13 +87,13 @@ jobs:
           fetch-depth: 0
       - name: Build deterministic skill package
         run: |
-          SOURCE_DATE_EPOCH="$(git show -s --format=%ct HEAD)" python skill/build-dist.py
-          cp skill/install.sh skill/dist/
-          cp skill/install.ps1 skill/dist/
+          SOURCE_DATE_EPOCH="$(git show -s --format=%ct HEAD)" python skills/build-dist.py
+          cp skills/install.sh skills/dist/
+          cp skills/install.ps1 skills/dist/
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: zagros-skill
-          path: skill/dist/*
+          path: skills/dist/*
 
   containers:
     needs: validate

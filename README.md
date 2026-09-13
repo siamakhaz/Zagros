@@ -1,4 +1,4 @@
-# Zagros â€” Security Knowledge MCP Server
+﻿# Zagros Ã¢â‚¬â€ Security Knowledge MCP Server
 
 A Rust CLI and MCP server for ingesting, storing, and searching official CVE records and authoritative security standards, backed by a local **HelixDB** graph-vector store.
 
@@ -15,7 +15,7 @@ A Rust CLI and MCP server for ingesting, storing, and searching official CVE rec
 - Exposes seven MCP tools to AI agent clients via stdio and Streamable HTTP.
 - Includes a web UI for browsing and searching CVE and knowledge records.
 
-Corpus after full seed (`backfill --limit 500` + `source all`) â€” v0.2, 2026-09-08 (fresh DB is `0` until seeded):
+Corpus after full seed (`backfill --limit 500` + `source all`) Ã¢â‚¬â€ v0.2, 2026-09-08 (fresh DB is `0` until seeded):
 
 | Store | Count | Source |
 |---|---|---|
@@ -40,7 +40,7 @@ Corpus after full seed (`backfill --limit 500` + `source all`) â€” v0.2, 20
 
 ### 1. Start the stack
 
-Single compose file â€” HelixDB + MCP HTTP + UI:
+Single compose file Ã¢â‚¬â€ HelixDB + MCP HTTP + UI:
 
 ```powershell
 docker compose -f docker/compose.yml up -d
@@ -52,7 +52,7 @@ Services:
 
 | Service | Container | Host port | Internal | Traefik host |
 |---|---|---|---|---|
-| `helix` | `zagros-helix` | `127.0.0.1:47474` â†’ `8080` | `http://helix:8080` | â€” |
+| `helix` | `zagros-helix` | `127.0.0.1:47474` Ã¢â€ â€™ `8080` | `http://helix:8080` | Ã¢â‚¬â€ |
 | `mcp` | `zagros-mcp-http` | `127.0.0.1:8789` | `http://helix:8080` | optional via Traefik override |
 | `zagros-ui` | `zagros-ui` | `127.0.0.1:8788` | `http://helix:8080` | optional via Traefik override |
 
@@ -75,7 +75,7 @@ cargo build
 
 ### 3. Populate CVE records
 
-CLI is host binary or standalone Docker image `zagros-cli:0.1.0` (`Dockerfile.cli`, profile `cli` â€” no daemon, `HELIX_URL=http://helix:8080` on `zagros` net):
+CLI is host binary or standalone Docker image `zagros-cli:0.1.0` (`Dockerfile.cli`, profile `cli` Ã¢â‚¬â€ no daemon, `HELIX_URL=http://helix:8080` on `zagros` net):
 
 **Host:**
 
@@ -192,13 +192,13 @@ docker build -f Dockerfile.cli -t zagros-cli:0.1.0 .
 docker build -f Dockerfile.ui -t zagros-ui:0.1.0 .
 ```
 
-#### HTTP (remote agents â€” opencode, OpenCode, custom)
+#### HTTP (remote agents Ã¢â‚¬â€ opencode, OpenCode, custom)
 
 `mcp` listens `0.0.0.0:8789` (`MCP_BIND_ADDR`, `MCP_ALLOWED_HOSTS`):
 
 ```powershell
 curl http://localhost:8789/health
-# via Traefik (Host header validated â€” must be in MCP_ALLOWED_HOSTS):
+# via Traefik (Host header validated Ã¢â‚¬â€ must be in MCP_ALLOWED_HOSTS):
 curl -H "Accept: application/json, text/event-stream" https://mcp.example.com/mcp
 ```
 
@@ -221,7 +221,7 @@ Client config examples:
 
 Local direct: `"url": "http://localhost:8789/mcp"` or `http://<host-ip>:8789/mcp` (add IP to `MCP_ALLOWED_HOSTS`).
 
-#### Stdio (Docker Desktop MCP Toolkit â€” Claude/VS Code)
+#### Stdio (Docker Desktop MCP Toolkit Ã¢â‚¬â€ Claude/VS Code)
 
 ```powershell
 docker build -t zagros-mcp:0.1.0 .
@@ -247,10 +247,10 @@ Or automated:
 | `search_cves` | BM25 search over CVE records; returns ranked hits with score and source URL |
 | `get_cve` | Exact lookup by CVE ID (e.g. `CVE-2026-17061`) |
 | `index_status` | CVE count, newest update, knowledge counts by source |
-| `sync_cves` | Download latest CVE delta (1..1000) and upsert into HelixDB â€” **requires user approval**, 5-min rate limit |
+| `sync_cves` | Download latest CVE delta (1..1000) and upsert into HelixDB Ã¢â‚¬â€ **requires user approval**, 5-min rate limit |
 | `search_knowledge` | BM25 search over CWE / ASVS / CAPEC / ATT&CK |
-| `sync_knowledge_source` | Ingest `cwe` \| `asvs` \| `capec` \| `attack` \| `all` â€” **requires user approval**, 5-min rate limit |
-| `backfill_cves` | Walk deltaLog history (1..10000) and upsert â€” **requires user approval**, 5-min rate limit |
+| `sync_knowledge_source` | Ingest `cwe` \| `asvs` \| `capec` \| `attack` \| `all` Ã¢â‚¬â€ **requires user approval**, 5-min rate limit |
+| `backfill_cves` | Walk deltaLog history (1..10000) and upsert Ã¢â‚¬â€ **requires user approval**, 5-min rate limit |
 
 * `sync_cves` fetches `delta.json` (latest), not `deltaLog.json` (history). For historical bulk via MCP use `backfill_cves`; via CLI use `backfill --limit 10000`.
 
@@ -262,14 +262,14 @@ Or automated:
 - Call `index_status` before `sync_cves` when only metadata is needed.
 - `sync_cves` accesses the network and modifies persistent data; always require explicit user approval.
 
-### Skill (`skill/`)
+### Skill (`skills/`)
 
 The `cybersecurity-expert` skill is independently authored guidance built from
 the maintainer's personal cybersecurity study notes and practical experience;
 ISC2 CC influenced topic coverage, but no official ISC2 courseware or exam
-content is included. It pairs with your own Zagros instance â€” see
-[`skill/README.md`](skill/README.md).
-Two install paths: paste [`skill/INSTALL-PROMPT.md`](skill/INSTALL-PROMPT.md)
+content is included. It pairs with your own Zagros instance Ã¢â‚¬â€ see
+[`skills/README.md`](skills/README.md).
+Two install paths: paste [`skills/INSTALL-PROMPT.md`](skills/INSTALL-PROMPT.md)
 to any agent harness, or run the URL installers (`install.sh` / `install.ps1`,
 default MCP `http://localhost:8789/mcp`, `--mcp-url` to override).
 
@@ -335,4 +335,4 @@ Default Compose uses only the internal `zagros` bridge network. `proxy_default` 
 
 ## License
 
-Zagros-authored code, documentation, and skills are licensed under Apache-2.0 â€” see [LICENSE](LICENSE). Third-party security datasets retain their original terms and attribution requirements; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Security disclosures: see [SECURITY.md](SECURITY.md).
+Zagros-authored code, documentation, and skills are licensed under Apache-2.0 Ã¢â‚¬â€ see [LICENSE](LICENSE). Third-party security datasets retain their original terms and attribution requirements; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Security disclosures: see [SECURITY.md](SECURITY.md).

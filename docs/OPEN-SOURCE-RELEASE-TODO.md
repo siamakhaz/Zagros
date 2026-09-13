@@ -152,14 +152,14 @@ Status legend: **Done** = implemented and documented; **Partial** = useful piece
 ## P2 â€” Skills ecosystem
 
 - [ ] Define a stable Zagros Skill Contract.
-- [ ] Keep generic security guidance harness-neutral.
-- [ ] Keep Zagros-specific MCP mappings in a separate reference.
+- [x] Keep generic security guidance harness-neutral. `SKILL.md` remains generic; harness/Zagros wiring is kept outside the core guidance.
+- [x] Keep Zagros-specific MCP mappings in a separate reference. Current mapping: `skills/.apm/skills/cybersecurity-expert/references/zagros-mcp.md`.
 - [ ] Document Microsoft APM install, upgrade, uninstall, and compatibility.
 - [ ] Add skill evaluation cases with expected behavior.
 - [ ] Add examples for OpenCode, Copilot, Claude-compatible clients, and generic MCP clients.
 - [ ] Define how community-contributed skills are reviewed and trusted.
 - [ ] Version skills independently from Zagros Core when needed.
-- [ ] Consider changing skill/ to skills/ for future multi-skill growth.
+- [x] Rename `skill/` to `skills/` for future multi-skill growth and update release/docs/install paths.
 
 ## P2 â€” Quality and project confidence
 
@@ -167,27 +167,29 @@ Status legend: **Done** = implemented and documented; **Partial** = useful piece
 - [ ] Add threat model for local, LAN, and public-cloud deployments.
 - [ ] Add retrieval-quality benchmarks and regression tests.
 - [ ] Add corpus integrity/freshness metrics.
-- [ ] Publish a roadmap and label experimental features clearly.
+- [x] Publish a roadmap (`ROADMAP.md`).
+- [ ] Label experimental vs stable interfaces/features clearly.
 - [ ] Add screenshots/demo flow for a real security investigation.
 - [ ] State non-goals clearly: evidence source, not compliance certification or autonomous remediation.
 
 ## P2 â€” Graphify cleanup
 
-- [ ] Add .graphifyignore.
-- [ ] Exclude website/.astro, website/dist, node_modules, target, and other generated files.
-- [ ] Investigate/remove stale references to C:/Projects/Zagros.
-- [ ] Rebuild Graphify with --force after cleanup.
-- [ ] Run multigraph diagnostics.
-- [ ] Decide which Graphify artifacts should be committed publicly.
-## Current verified baseline â€” 2026-09-11
+- [x] Add `.graphifyignore`.
+- [x] Exclude generated/unparseable inputs: target, website build/cache directories, node_modules, skill dist, Graphify outputs/caches, data, and `*.astro` parser-noise files.
+- [x] Investigate/remove stale references to `C:/Projects/Zagros`; none remain in rebuilt public Graphify outputs.
+- [x] Rebuild Graphify with `--force` after cleanup: 1,810 nodes / 2,312 edges / 188 communities.
+- [x] Run multigraph diagnostics: zero duplicate/collapsed/dangling/self-loop edges.
+- [x] Define public Graphify artifacts: keep `GRAPH_REPORT.md`, `graph.json`, `graph.html`, and `manifest.json`; exclude `cost.json`, caches, and dated backups.
+## Current verified baseline â€” 2026-09-12
 
-- [x] Graphify refreshed: 1,739 nodes / 2,169 edges / 186 communities.
-- [x] cargo fmt --all -- --check passes.
-- [x] cargo test --all-targets passes: 4 tests total.
-- [x] cargo clippy --all-targets --all-features -- -D warnings passes.
+- [x] Graphify refreshed after cleanup: 1,810 nodes / 2,312 edges / 188 communities.
+- [x] Multigraph diagnostics clean: no duplicate, collapsed, dangling, or self-loop edges.
+- [x] `cargo fmt --all -- --check` passes.
+- [x] `cargo test --all-targets` passes: 7 tests passed, E2E seed test intentionally ignored without HelixDB.
+- [x] `cargo clippy --all-targets --all-features -- -D warnings` passes.
 - [x] Astro website builds successfully.
-- [x] Quick tracked-file scan found no obvious committed API keys/private keys or generated target/node_modules/dist content.
-- [ ] Graphify parser noise remains around Astro/generated files.
+- [x] Tracked-file/history scans found no obvious committed credentials/private keys or generated build caches.
+- [x] Graphify Astro/generated parser noise is excluded through `.graphifyignore`; only zero-node JSON warnings for tooling/eval metadata remain.
 
 ## First public-release gate
 

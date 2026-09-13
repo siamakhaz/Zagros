@@ -1,12 +1,12 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """Build the standalone zagros-skill distributable.
 
-Reads the version from skill/apm.yml, packs
+Reads the version from skills/apm.yml, packs
 .apm/skills/cybersecurity-expert (+ META.json) into
 dist/zagros-skill.tar.gz, and writes dist/zagros-skill.tar.gz.sha256.
 
 Usage:
-    python build-dist.py            # from skill/
+    python build-dist.py            # from skills/
 Publish dist/* as versioned file attachments (e.g. a GitHub Release
 named zagros-skill-v<version>), e.g.:
     https://github.com/<org>/zagros/releases/download/zagros-skill-v0.1.0/{install.sh,install.ps1,zagros-skill.tar.gz,zagros-skill.tar.gz.sha256}
