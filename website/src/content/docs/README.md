@@ -46,3 +46,13 @@ agents how to use retrieved evidence safely and correctly.
 - [SKILL-TRUST-POLICY.md](SKILL-TRUST-POLICY.md) — community skill review and trust states
 - [../skills/COMPATIBILITY.md](../skills/COMPATIBILITY.md) — independent skill SemVer, Core/APM compatibility, upgrade and uninstall
 - [../skills/HARNESSES.md](../skills/HARNESSES.md) — OpenCode, Copilot, Claude-compatible, and generic MCP examples
+
+## Governance and security confidence
+
+- [THREAT-MODEL.md](THREAT-MODEL.md) — threat model for local, LAN, and public/cloud deployments
+- [INTERFACE-STATUS.md](INTERFACE-STATUS.md) — Stable, Beta, and Experimental interface lifecycle
+- [adr/README.md](adr/README.md) — Architecture Decision Records and template
+
+## Non-goals
+
+Zagros provides security evidence and retrieval. It does not certify compliance and does not autonomously remediate systems.

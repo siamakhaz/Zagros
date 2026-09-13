@@ -340,3 +340,12 @@ Default Compose uses only the internal `zagros` bridge network. `proxy_default` 
 ## License
 
 Zagros-authored code, documentation, and skills are licensed under Apache-2.0 Ã¢â‚¬â€ see [LICENSE](LICENSE). Third-party security datasets retain their original terms and attribution requirements; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Security disclosures: see [SECURITY.md](SECURITY.md).
+
+## Project boundaries and stability
+
+Zagros provides security evidence and retrieval. It does not certify compliance and does not autonomously remediate systems.
+
+Governance and security references:
+- `docs/THREAT-MODEL.md` — local, LAN, and public/cloud threat model
+- `docs/INTERFACE-STATUS.md` — Stable, Beta, and Experimental interface lifecycle
+- `docs/adr/README.md` — Architecture Decision Records
