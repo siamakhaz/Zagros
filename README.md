@@ -349,3 +349,5 @@ Governance and security references:
 - `docs/THREAT-MODEL.md` — local, LAN, and public/cloud threat model
 - `docs/INTERFACE-STATUS.md` — Stable, Beta, and Experimental interface lifecycle
 - `docs/adr/README.md` — Architecture Decision Records
+
+Quality confidence is documented in `docs/QUALITY-METRICS.md`, including retrieval regression thresholds and corpus integrity/freshness health.

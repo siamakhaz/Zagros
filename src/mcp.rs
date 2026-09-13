@@ -139,6 +139,21 @@ pub struct IndexStatusResponse {
     pub refresh_status: Option<String>,
     pub last_refresh_attempt: Option<String>,
     pub last_refresh_success: Option<String>,
+    pub source_health: Vec<SourceHealth>,
+    pub overall_health: String,
+}
+
+#[derive(Debug, Clone, Serialize, JsonSchema, PartialEq)]
+pub struct SourceHealth {
+    pub source: String,
+    #[schemars(schema_with = "schema_integer")]
+    pub records: usize,
+    #[schemars(schema_with = "schema_integer")]
+    pub expected_minimum: usize,
+    pub integrity: String,
+    pub latest_retrieved_at: Option<String>,
+    pub age_hours: Option<i64>,
+    pub freshness: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -146,6 +161,61 @@ struct RefreshStatusFile {
     status: Option<String>,
     last_attempt: Option<String>,
     last_success: Option<String>,
+}
+
+const FRESHNESS_WINDOW_HOURS: i64 = 48;
+
+fn expected_minimum(source: &str) -> usize {
+    match source {
+        "cve" => 400,
+        "cwe" => 900,
+        "asvs" => 300,
+        "capec" => 500,
+        "attack" => 600,
+        _ => 1,
+    }
+}
+
+fn build_source_health(
+    source: &str,
+    records: usize,
+    latest_retrieved_at: Option<String>,
+    now: chrono::DateTime<chrono::Utc>,
+) -> SourceHealth {
+    let expected_minimum = expected_minimum(source);
+    let integrity = if records == 0 {
+        "empty"
+    } else if records < expected_minimum {
+        "degraded"
+    } else {
+        "healthy"
+    }
+    .to_string();
+
+    let age_hours = latest_retrieved_at
+        .as_deref()
+        .and_then(|value| chrono::DateTime::parse_from_rfc3339(value).ok())
+        .map(|value| {
+            now.signed_duration_since(value.with_timezone(&chrono::Utc))
+                .num_hours()
+                .max(0)
+        });
+    let freshness = match age_hours {
+        Some(hours) if hours <= FRESHNESS_WINDOW_HOURS => "fresh",
+        Some(_) => "stale",
+        None => "unknown",
+    }
+    .to_string();
+
+    SourceHealth {
+        source: source.to_string(),
+        records,
+        expected_minimum,
+        integrity,
+        latest_retrieved_at,
+        age_hours,
+        freshness,
+    }
 }
 
 #[derive(Debug, Serialize, JsonSchema)]
@@ -422,6 +492,54 @@ impl CveMcpServer {
                 .and_then(|text| serde_json::from_str::<RefreshStatusFile>(&text).ok())
         };
 
+        let knowledge_docs = get_knowledge_docs(self).await?;
+        let now = chrono::Utc::now();
+        let latest_for = |source: &str| {
+            knowledge_docs
+                .iter()
+                .filter(|doc| doc.source == source)
+                .filter_map(|doc| {
+                    chrono::DateTime::parse_from_rfc3339(&doc.provenance.retrieved_at)
+                        .ok()
+                        .map(|value| value.with_timezone(&chrono::Utc))
+                })
+                .max()
+                .map(|value| value.to_rfc3339())
+        };
+        let cve_latest_retrieval = docs
+            .iter()
+            .filter_map(|doc| {
+                chrono::DateTime::parse_from_rfc3339(&doc.provenance.retrieved_at)
+                    .ok()
+                    .map(|value| value.with_timezone(&chrono::Utc))
+            })
+            .max()
+            .map(|value| value.to_rfc3339());
+
+        let count_for = |source: &str| {
+            knowledge_by_source
+                .iter()
+                .find(|(name, _)| name == source)
+                .map(|(_, count)| *count)
+                .unwrap_or(0)
+        };
+        let source_health = vec![
+            build_source_health("cve", docs.len(), cve_latest_retrieval, now),
+            build_source_health("cwe", count_for("cwe"), latest_for("cwe"), now),
+            build_source_health("asvs", count_for("asvs"), latest_for("asvs"), now),
+            build_source_health("capec", count_for("capec"), latest_for("capec"), now),
+            build_source_health("attack", count_for("attack"), latest_for("attack"), now),
+        ];
+        let overall_health = if source_health
+            .iter()
+            .all(|item| item.integrity == "healthy" && item.freshness == "fresh")
+        {
+            "healthy"
+        } else {
+            "degraded"
+        }
+        .to_string();
+
         Ok(rmcp::Json(IndexStatusResponse {
             records: docs.len(),
             newest_update,
@@ -430,6 +548,8 @@ impl CveMcpServer {
             refresh_status: refresh.as_ref().and_then(|r| r.status.clone()),
             last_refresh_attempt: refresh.as_ref().and_then(|r| r.last_attempt.clone()),
             last_refresh_success: refresh.and_then(|r| r.last_success),
+            source_health,
+            overall_health,
         }))
     }
 
@@ -669,4 +789,30 @@ pub fn valid_cve_id(value: &str) -> bool {
 pub fn internal_error(error: anyhow::Error) -> McpError {
     eprintln!("[zagros] internal error: {error:#}");
     McpError::internal_error("an internal error occurred; see server logs", None)
+}
+
+#[cfg(test)]
+mod health_tests {
+    use super::*;
+
+    #[test]
+    fn source_health_detects_integrity_and_freshness() {
+        let now = chrono::DateTime::parse_from_rfc3339("2026-09-13T12:00:00Z")
+            .unwrap()
+            .with_timezone(&chrono::Utc);
+
+        let healthy =
+            build_source_health("cwe", 969, Some("2026-09-13T00:00:00Z".to_string()), now);
+        assert_eq!(healthy.integrity, "healthy");
+        assert_eq!(healthy.freshness, "fresh");
+        assert_eq!(healthy.age_hours, Some(12));
+
+        let stale = build_source_health("cwe", 100, Some("2026-09-10T00:00:00Z".to_string()), now);
+        assert_eq!(stale.integrity, "degraded");
+        assert_eq!(stale.freshness, "stale");
+
+        let empty = build_source_health("attack", 0, None, now);
+        assert_eq!(empty.integrity, "empty");
+        assert_eq!(empty.freshness, "unknown");
+    }
 }

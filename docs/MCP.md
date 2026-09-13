@@ -142,13 +142,20 @@ Report CVE record count, newest update, and knowledge counts by source.
   "knowledge_by_source": [["asvs", 345], ["attack", 697], ["capec", 613], ["cwe", 969]],
   "refresh_status": "ok",
   "last_refresh_attempt": "2026-09-12T03:00:10Z",
-  "last_refresh_success": "2026-09-12T03:00:10Z"
+  "last_refresh_success": "2026-09-12T03:00:10Z",
+  "source_health": [
+    {"source":"cve","records":499,"expected_minimum":400,"integrity":"healthy","latest_retrieved_at":"2026-09-12T03:00:10Z","age_hours":6,"freshness":"fresh"},
+    {"source":"cwe","records":969,"expected_minimum":900,"integrity":"healthy","latest_retrieved_at":"2026-09-12T03:00:10Z","age_hours":6,"freshness":"fresh"}
+  ],
+  "overall_health": "healthy"
 }
 ```
 
 `newest_update` is the most recent `updated_at` timestamp across all CVE nodes, or `null` if no CVEs are stored. The refresh fields come from the persistent daily-refresh status file; they are `null` until the scheduler completes its first run.
 
-**Performance:** Uses the document cache (5-minute TTL); no HelixDB call on cache hit.
+`source_health` covers CVE, CWE, ASVS, CAPEC, and ATT&CK. `integrity` compares current counts with conservative regression minimums; `freshness` uses the newest provenance `retrieved_at` timestamp with a 48-hour freshness window. `overall_health` is `healthy` only when every tracked source has healthy integrity and fresh provenance. See [QUALITY-METRICS.md](QUALITY-METRICS.md).
+
+**Performance:** Uses the CVE and knowledge document caches (5-minute TTL); no HelixDB document reload is needed on cache hits.
 
 ---
 

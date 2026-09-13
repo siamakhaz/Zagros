@@ -56,3 +56,7 @@ agents how to use retrieved evidence safely and correctly.
 ## Non-goals
 
 Zagros provides security evidence and retrieval. It does not certify compliance and does not autonomously remediate systems.
+
+## Quality measurement
+
+- [QUALITY-METRICS.md](QUALITY-METRICS.md) — retrieval regression benchmark and corpus integrity/freshness metrics

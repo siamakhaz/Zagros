@@ -1,0 +1,18 @@
+{
+  "cves": [
+    {"cve_id":"CVE-2026-1001","title":"Acme Gateway authentication bypass","description":"Authentication bypass in the Acme VPN gateway allows an unauthenticated remote attacker to access administrative functions."},
+    {"cve_id":"CVE-2026-1002","title":"Widget Server SQL injection","description":"Improper neutralization of SQL input in Widget Server permits SQL injection through the report parameter."},
+    {"cve_id":"CVE-2026-1003","title":"Nimbus Agent remote code execution","description":"A deserialization flaw in Nimbus Agent can lead to remote code execution when a crafted management message is processed."},
+    {"cve_id":"CVE-2026-1004","title":"Orchid Proxy path traversal","description":"Orchid Proxy fails to normalize archive paths, allowing path traversal and arbitrary file overwrite."},
+    {"cve_id":"CVE-2026-1005","title":"Delta Appliance buffer overflow","description":"A stack-based buffer overflow in the Delta Appliance network parser may cause denial of service or code execution."},
+    {"cve_id":"CVE-2026-1006","title":"Helios Console cross-site scripting","description":"Stored cross-site scripting in Helios Console allows script execution in an administrator browser."}
+  ],
+  "knowledge": [
+    {"id":"CWE-89","source":"cwe","name":"SQL Injection","description":"Improper Neutralization of Special Elements used in an SQL Command allows untrusted input to alter database queries.","tags":"injection database"},
+    {"id":"CWE-287","source":"cwe","name":"Improper Authentication","description":"Authentication mechanisms fail to prove the claimed identity correctly.","tags":"authentication access control"},
+    {"id":"CWE-22","source":"cwe","name":"Path Traversal","description":"Improper limitation of a pathname to a restricted directory permits traversal outside an intended path.","tags":"filesystem traversal"},
+    {"id":"CAPEC-66","source":"capec","name":"SQL Injection","description":"An attacker injects SQL syntax into an application-controlled database query.","tags":"injection"},
+    {"id":"ATT&CK-T1190","source":"attack","name":"Exploit Public-Facing Application","description":"Adversaries may exploit a weakness in an internet-facing host or service to gain initial access.","tags":"initial-access public-facing"},
+    {"id":"ASVS-v5.0.0-2.1.1","source":"asvs","name":"Password security controls","description":"Verify that passwords are handled using appropriate authentication security requirements.","tags":"authentication level 1"}
+  ]
+}
