@@ -165,8 +165,8 @@ Status legend: **Done** = implemented and documented; **Partial** = useful piece
 
 - [x] Add architecture decision records for major design choices. See docs/adr/.
 - [x] Add threat model for local, LAN, and public-cloud deployments. See docs/THREAT-MODEL.md.
-- [ ] Add retrieval-quality benchmarks and regression tests.
-- [ ] Add corpus integrity/freshness metrics.
+- [x] Add retrieval-quality benchmarks and regression tests. Deterministic offline benchmark: 32 cases with Recall@1, Recall@5, MRR, and irrelevant-query rejection gates.
+- [x] Add corpus integrity/freshness metrics. `index_status` now reports per-source count thresholds, freshness age/state, and overall health.
 - [x] Publish a roadmap (`ROADMAP.md`).
 - [x] Label experimental vs stable interfaces/features clearly. See docs/INTERFACE-STATUS.md.
 - [ ] Add screenshots/demo flow for a real security investigation.
