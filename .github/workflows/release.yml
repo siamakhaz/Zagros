@@ -72,7 +72,7 @@ jobs:
             tar -C dist -czf "${{ matrix.artifact }}.tar.gz" .
             sha256sum "${{ matrix.artifact }}.tar.gz" > "${{ matrix.artifact }}.tar.gz.sha256"
           fi
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ${{ matrix.artifact }}
           path: |
@@ -90,7 +90,7 @@ jobs:
           SOURCE_DATE_EPOCH="$(git show -s --format=%ct HEAD)" python skills/build-dist.py
           cp skills/install.sh skills/dist/
           cp skills/install.ps1 skills/dist/
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: zagros-skill
           path: skills/dist/*
@@ -138,7 +138,7 @@ jobs:
         run: |
           mkdir -p digest
           echo "ghcr.io/${{ github.repository_owner }}/zagros-${{ matrix.name }}@${{ steps.build.outputs.digest }}" > "digest/${{ matrix.name }}.txt"
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: container-digest-${{ matrix.name }}
           path: digest/*.txt
