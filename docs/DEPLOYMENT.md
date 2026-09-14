@@ -73,8 +73,8 @@ If HelixDB data is lost:
 docker compose -f docker/compose.yml down
 # remove/recreate the data directory if necessary
 docker compose -f docker/compose.yml up -d --build
-docker compose --profile cli run --rm cli backfill --limit 1000
-docker compose --profile cli run --rm cli source all
+docker compose -f docker/compose.yml --profile cli run --rm cli backfill --limit 1000
+docker compose -f docker/compose.yml --profile cli run --rm cli source all
 ```
 
 The local index is then reconstructed from authoritative sources.

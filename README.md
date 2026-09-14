@@ -91,9 +91,9 @@ CLI is host binary or standalone Docker image `zagros-cli:0.1.0` (`Dockerfile.cl
 
 ```powershell
 docker build -f Dockerfile.cli -t zagros-cli:0.1.0 .
-docker compose --profile cli run --rm cli backfill --limit 500
-docker compose --profile cli run --rm cli ingest --limit 50
-docker compose --profile cli run --rm cli status
+docker compose -f docker/compose.yml --profile cli run --rm cli backfill --limit 500
+docker compose -f docker/compose.yml --profile cli run --rm cli ingest --limit 50
+docker compose -f docker/compose.yml --profile cli run --rm cli status
 # one-off:
 docker run --rm --network zagros -e HELIX_URL=http://helix:8080 zagros-cli:0.1.0 backfill --limit 500
 ```
@@ -107,7 +107,7 @@ docker run --rm --network zagros -e HELIX_URL=http://helix:8080 zagros-cli:0.1.0
 # ingested 969 CWE, 345 ASVS, 613 CAPEC, 697 ATT&CK records
 
 # or via Docker:
-docker compose --profile cli run --rm cli source all
+docker compose -f docker/compose.yml --profile cli run --rm cli source all
 
 # single source:
 .\target\debug\zagros.exe source cwe
@@ -124,7 +124,7 @@ CVE records:
 .\target\debug\zagros.exe search "remote code execution" --top-k 5
 .\target\debug\zagros.exe search CVE-2024-3094
 .\target\debug\zagros.exe search "buffer overflow" --json
-docker compose --profile cli run --rm cli search "rce" --top-k 5
+docker compose -f docker/compose.yml --profile cli run --rm cli search "rce" --top-k 5
 ```
 
 Knowledge base (CWE / ASVS / CAPEC / ATT&CK):
@@ -149,7 +149,7 @@ Check index status:
 
 ```powershell
 .\target\debug\zagros.exe status
-docker compose --profile cli run --rm cli status
+docker compose -f docker/compose.yml --profile cli run --rm cli status
 ```
 
 ### Optional web UI

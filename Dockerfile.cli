@@ -8,7 +8,7 @@ FROM debian:bookworm-slim@sha256:88200866dfff7ea7f5cbcb6ec7c8a701889efe6fe859fe6
 RUN apt-get update \
     && apt-get install -y --no-install-recommends ca-certificates=20250419~deb12u1 curl=7.88.1-10+deb12u15 libpcre2-8-0=10.42-1+deb12u1 \
     && rm -rf /var/lib/apt/lists/* \
-    && useradd --system --create-home --uid 10002 zagroscli
+    && useradd --system --create-home --uid 10001 zagroscli
 COPY --from=builder --chown=root:root /src/target/release/zagros /usr/local/bin/zagros
 RUN chmod 755 /usr/local/bin/zagros
 ENV HELIX_URL=http://helix:8080
