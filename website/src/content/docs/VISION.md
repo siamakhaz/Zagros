@@ -23,7 +23,7 @@ one model provider, or one deployment environment.
 
 ---
 
-## Current State (v0.2)
+## Current State (public pre-release baseline)
 
 ### What is working right now
 
@@ -42,7 +42,7 @@ one model provider, or one deployment environment.
 | MCP server | Seven tools over stdio and Streamable HTTP: `search_cves`, `get_cve`, `index_status`, `sync_cves`, `search_knowledge`, `sync_knowledge_source`, `backfill_cves` |
 | Docker Compose | `docker/compose.yml` starts HelixDB + MCP server as a stack |
 | Docker MCP | `docker/zagros-server.yaml` registers the MCP server with Docker MCP Toolkit |
-| Tests | 4 unit tests for BM25 ranking and CVE ID validation |
+| Tests | Hosted CI covers formatting, clippy, Rust tests, website build, Compose validation, three Docker builds, security scanning, and deterministic HelixDB -> CLI -> MCP E2E |
 
 ### Knowledge corpus in HelixDB (verified 2026-08-16)
 
@@ -72,7 +72,6 @@ The `know` command was run against patterns present in this codebase:
 
 | Gap | Phase it belongs to |
 |---|---|
-| Provenance envelope (chunk_id, license, trust_tier, retrieved_at) | Phase 2 |
 | HelixDB graph edges (ChildOf, MapsToTechnique, MitigatedBy, …) | Phase 3 |
 | Dense vector embeddings and semantic search | Phase 3 |
 | Hybrid retrieval with Reciprocal Rank Fusion | Phase 3 |
@@ -81,8 +80,7 @@ The `know` command was run against patterns present in this codebase:
 | LLM reasoning layer with citation enforcement | Phase 4 |
 | AST-based code analysis, IaC parser, SBOM | Phase 5 |
 | Evaluation harness and calibration | Phase 6 |
-| OWASP Cheat Sheets, NIST NCP, DISA STIGs, SEI CERT | Phase 2–3 |
-| Source identity preserved per chunk (license manifest) | Phase 2 |
+| OWASP Cheat Sheets, NIST NCP, DISA STIGs, SEI CERT | Phase 3+ source expansion |
 
 ---
 
@@ -155,7 +153,7 @@ The `know` command was run against patterns present in this codebase:
 | [MITRE CAPEC 3.9](https://capec.mitre.org/data/downloads.html) | 613 | **ingested** | XML | MITRE terms |
 | [MITRE ATT&CK Enterprise](https://attack.mitre.org/resources/attack-data-and-tools/) | 697 | **ingested** | STIX 2.1 | ATT&CK terms |
 | [CVE Project delta feed](https://github.com/CVEProject/cvelistV5) | 499+ | **ingested** | JSON | per-CVE |
-| [OWASP Cheat Sheets](https://cheatsheetseries.owasp.org/) | 0 | planned Phase 2 | Markdown | CC BY-SA 4.0 |
+| [OWASP Cheat Sheets](https://cheatsheetseries.owasp.org/) | 0 | planned Phase 3+ | Markdown | CC BY-SA 4.0 |
 | [NIST NCP](https://ncp.nist.gov/data-feeds) | 0 | planned Phase 3 | SCAP/XCCDF | Public |
 | [DISA STIGs](https://public.cyber.mil/stigs/downloads/) | 0 | planned Phase 3 | XCCDF/XML | Public |
 | [Kubernetes PSS](https://kubernetes.io/docs/concepts/security/pod-security-standards/) | 0 | planned Phase 3 | Structured docs | CC BY 4.0 |
@@ -182,26 +180,24 @@ pub struct KnowledgeDoc {
     pub source: String,      // "cwe" | "asvs" | "capec" | "attack"
     pub url: String,         // canonical source URL
     pub tags: String,        // tactic, platform, chapter, level, etc.
+    pub provenance: Provenance, // publisher/version/URLs/license/timestamps/hash/trust tier
 }
 ```
 
-### Target: provenance envelope (Phase 2)
+### Current provenance envelope
 
 ```json
 {
-  "chunk_id": "sha256:<content-hash>",
-  "source_id": "owasp-asvs-5.0.0",
-  "rule_id": "v5.0.0-1.2.5",
-  "knowledge_type": "normative",
-  "publisher": "OWASP",
-  "version": "5.0.0",
-  "release_date": "2025-05-30",
-  "retrieved_at": "2026-08-16T00:00:00Z",
-  "source_url": "https://github.com/OWASP/ASVS/tree/v5.0.0",
-  "license": "CC-BY-SA-4.0",
-  "trust_tier": 1,
-  "section_path": ["1", "Encoding and Sanitization", "1.2"],
-  "text": "Verify that the application protects against OS command injection…"
+  "publisher": "OWASP Foundation",
+  "source_name": "OWASP ASVS",
+  "source_version": "5.0.0",
+  "canonical_url": "https://github.com/OWASP/ASVS/tree/v5.0.0",
+  "retrieval_url": "https://raw.githubusercontent.com/OWASP/ASVS/v5.0.0/...",
+  "license": "CC BY-SA 4.0",
+  "retrieved_at": "2026-09-14T00:00:00Z",
+  "upstream_updated_at": null,
+  "content_sha256": "<64-hex SHA-256>",
+  "trust_tier": "authoritative"
 }
 ```
 
@@ -250,27 +246,27 @@ pub struct KnowledgeDoc {
 **Key insight:** RAG is retrieval first. Good retrieval without an LLM already
 provides value. An LLM on bad retrieval produces confident hallucinations.
 
-### Phase 2 — Structured Ingestion and Provenance (CURRENT)
+### Phase 2 — Structured Ingestion and Provenance (COMPLETE)
 
 **Learning goal:** understand why provenance, versioning, and schema discipline
 matter from the start. Mistakes here cascade to every downstream component.
 
 **Done:**
 - Four authoritative sources parsed and stored in HelixDB: CWE, ASVS, CAPEC, ATT&CK
-- Shared `KnowledgeDoc` type with `source`, `url`, and `tags` fields
+- Shared `KnowledgeDoc` type with structured `Provenance`
+- Provenance stores publisher/source, source version, canonical/retrieval URLs, license, retrieval/upstream timestamps, SHA-256 content hash, and trust tier
+- Source manifests record raw-source SHA-256 hashes; optional raw snapshots are preserved with `ZAGROS_PRESERVE_RAW_SOURCES`
 - `source <name|all>` CLI command with progress reporting
 - `know <query>` command for BM25 search over the knowledge corpus
 - Idempotent upsert (safe to re-run any source ingestion)
 
-**Remaining:**
-- Add SHA-256 content hash per chunk
-- Persist `retrieved_at` timestamp, source version, and license on every node
-- Add OWASP Cheat Sheets as Markdown-based source
+**Deferred source expansion:**
+- Add OWASP Cheat Sheets and other authoritative sources during Phase 3+
 
 **Key insight:** A knowledge chunk without provenance is noise. You cannot
 trust a finding if you cannot explain which version of which standard produced it.
 
-### Phase 3 — HelixDB Graph + Vectors
+### Phase 3 — HelixDB Graph + Vectors (NEXT)
 
 **Learning goal:** understand when graph traversal outperforms vector similarity.
 
@@ -415,19 +411,19 @@ store only rule IDs and metadata in the index. Full text is linked, not embedded
 
 ## Success Criteria
 
-### Phase 2 (current target)
+### Phase 2 (complete baseline)
 
 - `source all` ingests all four Tier-1 sources without error and stores correct counts.
 - `know "SQL injection"` returns CWE-89 and CAPEC-66 in the top three results.
 - `know "hardcoded credentials"` returns ASVS-v5.0.0-V13.3.1 in the top five results.
-- All four sources are queryable independently via `know --source cwe`, etc. (planned).
+- Provenance is attached to newly ingested CVE and knowledge records and exposed through MCP responses.
 - Re-running any `source` command is idempotent (no duplicates).
 
 ### Phase 3 (next milestone)
 
 - `know "what controls address SQL injection"` traverses CWE-89 → ATT&CK T1190 → ASVS requirements via graph edges.
-- Every result includes `source_version`, `license`, `retrieved_at`, and `content_hash`.
-- False-positive rate on OWASP Benchmark Java is below 15%.
+- Graph/vector results preserve the existing provenance envelope through retrieval.
+- Retrieval evaluation expands to larger source-diverse corpora before scanner-level false-positive targets are introduced.
 
 ### Full vision
 

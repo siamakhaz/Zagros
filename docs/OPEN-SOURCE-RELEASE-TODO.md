@@ -79,8 +79,8 @@ Project scope:
 - [x] Add THIRD_PARTY_NOTICES.md.
 - [x] Add issue templates: bug, feature, data-source request.
 - [x] Add pull-request template with tests/docs/security checklist.
-- [ ] Enable GitHub private vulnerability reporting. **Blocked while repository is private**; GitHub exposes this for public repositories.
-- [ ] Add branch protection and required CI checks. **Blocked on current private repo**: GitHub API requires Pro or public visibility.
+- [x] Enable GitHub private vulnerability reporting. Enabled after the repository became public on 2026-09-14.
+- [x] Add branch protection and required CI checks. `main` now requires PR review, CODEOWNERS approval, conversation resolution, strict required checks, and blocks force-push/deletion.
 - [x] Sanitize public Git history. Rewrote reachable history to remove the historical `.vscode/mcp.json`, personal Windows path, and obsolete private deployment domain; post-rewrite scans found no matching token/private-key patterns or those historical identifiers. A pre-rewrite bundle is retained outside the repository for recovery.
 - [x] Remove/ignore generated artifacts that should not be versioned; Graphify caches are untracked while intentional reports remain.
 
@@ -133,23 +133,40 @@ Status legend: **Done** = implemented and documented; **Partial** = useful piece
 
 ### CI and release engineering
 
-**Done:** CI now gates Rust formatting, clippy, tests, website build, Compose validation, and all three Docker image builds. A deterministic HelixDB -> seed -> CLI -> MCP E2E workflow runs on pull requests, main, schedule, and manual dispatch. Security automation covers Rust/npm audits, CodeQL, container scanning, Dependabot, and live-source checks. Tagged releases build Linux/Windows binaries, the deterministic skill package, signed GHCR images, checksums, BuildKit provenance/SBOM attestations, and a downloadable SPDX SBOM. Important release actions are pinned by commit SHA. The E2E workflow pins HelixDB v3.1.1 by immutable commit and builds it from source on Ubuntu. Local Linux-container verification was attempted on 2026-09-12, but Docker Desktop terminated the build twice with `unexpected EOF`; no Helix compile error was observed. The first hosted GitHub Actions run must therefore be green before the public-release gate is considered satisfied.
+**Done:** CI now gates Rust formatting, clippy, tests, website build, Compose validation, and all three Docker image builds. A deterministic HelixDB -> seed -> CLI -> MCP E2E workflow runs on pull requests, main, schedule, and manual dispatch. Security automation covers Rust/npm audits, CodeQL, container scanning, Dependabot, and live-source checks. Tagged releases build Linux/Windows binaries, the deterministic skill package, signed GHCR images, checksums, BuildKit provenance/SBOM attestations, and a downloadable SPDX SBOM. Important release actions are pinned by commit SHA. The E2E workflow pins HelixDB v3.1.1 by immutable commit and builds it from source on Ubuntu. Local Linux-container verification was attempted on 2026-09-12, but Docker Desktop terminated the build twice with `unexpected EOF`; no Helix compile error was observed. Hosted validation is now green on the public repository: CI run 34847953201, Security run 34847953062, OpenSSF Scorecard run 34847953135, and E2E smoke run 34847952996 all succeeded on commit `875d1b8`.
 
 ### Repository and contributor readiness
 
 - **Done:** `THIRD_PARTY_NOTICES.md`, `SECURITY.md`, `CHANGELOG.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `ROADMAP.md`, issue templates, and PR template.
-- **Blocked until public:** private vulnerability reporting returns 404 while the repository is private; GitHub documents repository-level private vulnerability reporting for public repositories.
-- **Blocked until public/Pro:** branch protection API returns 403: “Upgrade to GitHub Pro or make this repository public to enable this feature.”
+- **Done:** GitHub Private Vulnerability Reporting is enabled.
+- **Done:** `main` branch protection is active with one approval, CODEOWNERS review, stale-review dismissal, conversation resolution, strict required status checks, and force-push/deletion disabled.
 - **Done:** repository-history hygiene. Reachable history was rewritten to remove the historical `.vscode/mcp.json`, personal Windows path, and obsolete private deployment domain. Post-rewrite scans found no matching token/private-key patterns or those historical identifiers. A recovery bundle is retained locally outside the repository.
 - **Done:** generated-file hygiene for P1. Build outputs and Graphify caches are ignored/untracked; intentional Graphify reports remain versioned.
 
 ### Supply-chain security
 
-**Done for repository automation:** Rust and npm audits, Dependabot, CodeQL, Trivy container scanning, release SBOM generation, BuildKit SBOM/provenance attestations, keyless Cosign signing, SHA256 release checksums, and immutable GHCR digest publication are implemented. Runtime images were hardened until local Trivy scans reported zero HIGH/CRITICAL findings. Production release documentation demonstrates digest-pinned deployment. Hosted workflow results remain to be confirmed after push.
+**Done for repository automation:** Rust and npm audits, Dependabot, CodeQL, Trivy container scanning, release SBOM generation, BuildKit SBOM/provenance attestations, keyless Cosign signing, SHA256 release checksums, and immutable GHCR digest publication are implemented. Runtime images were hardened until local Trivy scans reported zero HIGH/CRITICAL findings. Production release documentation demonstrates digest-pinned deployment. Hosted CI, E2E, Security/CodeQL, dependency/container scanning, and OpenSSF Scorecard have been confirmed green on the public repository.
 
 ---
 
-## P2 â€” Skills ecosystem
+## P3 — Public-release hardening
+
+- [x] Add `.github/CODEOWNERS` for repository and security-sensitive ownership.
+- [x] Pin every external GitHub Actions `uses:` reference to a full immutable commit SHA; verification found 49 external references and zero unpinned references.
+- [x] Add the official GitHub Dependency Review pull-request gate, failing on moderate-or-higher newly introduced vulnerabilities.
+- [x] Add OpenSSF Scorecard with SARIF/code-scanning upload and immutable action pins.
+- [x] Make the sanitized repository public.
+- [x] Enable Secret Scanning and Push Protection.
+- [x] Enable Dependabot security updates.
+- [x] Enable Private Vulnerability Reporting.
+- [x] Protect `main` with required pull-request review, CODEOWNERS review, resolved conversations, strict required checks, and force-push/deletion disabled.
+- [x] Fix CodeQL workflow permissions and verify the public Security workflow succeeds.
+- [x] Verify public hosted CI, E2E, Security, and OpenSSF Scorecard workflows all succeed on commit `875d1b8`.
+- [x] Final public-history scan found zero tracked secret-like files and zero matching credential/private-key patterns in reachable `main` history.
+
+---
+
+## P2 — Skills ecosystem
 
 - [x] Define a stable Zagros Skill Contract. Contract v1 is documented in `docs/SKILL-CONTRACT.md` and enforced by `skills/validate.py`.
 - [x] Keep generic security guidance harness-neutral. `SKILL.md` remains generic; harness/Zagros wiring is kept outside the core guidance.
@@ -161,7 +178,7 @@ Status legend: **Done** = implemented and documented; **Partial** = useful piece
 - [x] Version skills independently from Zagros Core when needed. Skill SemVer and Core compatibility are explicit in package metadata and `skills/COMPATIBILITY.md`.
 - [x] Rename `skill/` to `skills/` for future multi-skill growth and update release/docs/install paths.
 
-## P2 â€” Quality and project confidence
+## P2 — Quality and project confidence
 
 - [x] Add architecture decision records for major design choices. See docs/adr/.
 - [x] Add threat model for local, LAN, and public-cloud deployments. See docs/THREAT-MODEL.md.
@@ -172,7 +189,7 @@ Status legend: **Done** = implemented and documented; **Partial** = useful piece
 - [x] Add screenshots/demo flow for a real security investigation. See `docs/DEMO.md` and the public `/demo/` page.
 - [x] State non-goals clearly: Zagros is an evidence source, not compliance certification or autonomous remediation.
 
-## P2 â€” Graphify cleanup
+## P2 — Graphify cleanup
 
 - [x] Add `.graphifyignore`.
 - [x] Exclude generated/unparseable inputs: target, website build/cache directories, node_modules, skill dist, Graphify outputs/caches, data, and `*.astro` parser-noise files.
@@ -180,7 +197,7 @@ Status legend: **Done** = implemented and documented; **Partial** = useful piece
 - [x] Rebuild Graphify with `--force` after cleanup: 1,810 nodes / 2,312 edges / 188 communities.
 - [x] Run multigraph diagnostics: zero duplicate/collapsed/dangling/self-loop edges.
 - [x] Define public Graphify artifacts: keep `GRAPH_REPORT.md`, `graph.json`, `graph.html`, and `manifest.json`; exclude `cost.json`, caches, and dated backups.
-## Current verified baseline — 2026-09-13
+## Current verified baseline — 2026-09-14
 
 - [x] Graphify refreshed after cleanup: 1,810 nodes / 2,312 edges / 188 communities.
 - [x] Multigraph diagnostics clean: no duplicate, collapsed, dangling, or self-loop edges.
@@ -194,8 +211,10 @@ Status legend: **Done** = implemented and documented; **Partial** = useful piece
 ## First public-release gate
 
 Do not tag the first public release until:
-1. Skill licensing/provenance is resolved.
-2. Current security review has no unresolved High findings.
-3. Fresh clone -> local Docker deployment works without a personal Traefik environment.
-4. CI and end-to-end tests are green.
-5. Documentation accurately describes the current implementation.
+1. [x] Skill licensing/provenance is resolved.
+2. [x] Current security review has no unresolved High findings.
+3. [ ] Fresh clone -> local Docker deployment works without a personal Traefik environment.
+4. [x] CI and end-to-end tests are green.
+5. [x] Documentation accurately describes the current implementation.
+
+**Remaining release gate:** perform the clean fresh-clone Docker acceptance test, then prepare/tag the first public release.

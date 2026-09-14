@@ -1,19 +1,22 @@
 # Zagros Roadmap
 
-## Current — Public release readiness
+## Current — Public open-source baseline
 
+- Public repository with sanitized reachable history.
 - Trusted-source provenance and source integrity.
-- CI, release engineering, supply-chain security.
-- Contributor and repository readiness.
-- Stable Core + Skills documentation.
-- Deterministic retrieval regression benchmarks and corpus integrity/freshness metrics.
+- CI, deterministic E2E, CodeQL/Trivy/dependency scanning, and OpenSSF Scorecard.
+- Secret scanning, push protection, Private Vulnerability Reporting, CODEOWNERS, and protected `main`.
+- Stable Core + Skills documentation and deterministic retrieval regression benchmarks.
+- Before the first tagged release: complete one clean fresh-clone Docker acceptance test.
 
-## Next
+## Next — Graph + vector retrieval
 
 - Graph relationships between CVE, CWE, CAPEC, ATT&CK and controls.
 - Embeddings/vector search and hybrid retrieval.
-- Evidence-chain tooling and source-status queries.
+- Reciprocal Rank Fusion across lexical, vector, and graph retrieval.
+- Exact/evidence-chain tooling such as `get_rule`, `explain_weakness`, `map_to_attack`, and source-status queries.
 - Expand retrieval evaluation with larger real-world corpora and source-diverse relevance cases.
+- Add additional authoritative sources where licensing and provenance requirements are satisfied.
 
 ## Later
 
