@@ -62,7 +62,7 @@ Verify:
 
 ```powershell
 docker compose -f docker/compose.yml ps
-curl http://localhost:47474/      # Helix (via proxy)
+curl http://localhost:47474/healthz # Helix readiness
 curl http://localhost:8789/health # MCP
 curl http://localhost:8788/api/status # UI (cves/knowledge counts)
 ```
