@@ -82,20 +82,22 @@ The threshold should remain subject to regression testing as corpus size grows.
 - Retrieval responses tell downstream agents to treat retrieved content as untrusted reference data.
 - Write/network MCP tools are distinct from read/search tools.
 - Synchronization invalidates in-process caches after successful writes.
-## Open Hardening Work
+## Post-review hardening status
 
-The following are not P0 blockers from this review, but remain important before or during the first public release:
+Several hardening items identified during this dated review were completed during P1/P2:
 
-1. Add authentication guidance or an authentication layer for internet-facing MCP deployments.
-2. Add automated Rust, npm, GitHub Actions, and container dependency scanning.
-3. Produce SBOMs and immutable release artifacts.
-4. Persist stronger provenance fields: publisher, source version, retrieval timestamp, license, and content hash.
-5. Add a formal threat model for local, LAN, and public-cloud deployments.
-6. Add end-to-end security regression tests around ingestion validation, payload limits, host allowlisting, and MCP cooldowns.
-7. Keep all external security content classified as data, never executable agent instructions.
+1. Internet-facing MCP authentication guidance is documented in `DEPLOYMENT.md`.
+2. Rust, npm, GitHub Actions, CodeQL, and container security automation is present in repository workflows.
+3. Release automation produces checksums, SBOM/provenance metadata, signed container images, and immutable digests.
+4. Structured provenance records publisher, source version, canonical/retrieval URLs, license, retrieval/upstream timestamps, content SHA-256, and trust tier.
+5. `THREAT-MODEL.md` covers local, LAN, and public/cloud deployments.
+6. Retrieval-quality and corpus-health regression tests are checked in and CI-gated.
+7. Retrieved external security content remains explicitly classified as untrusted data, never agent instructions.
+
+Additional ingestion/transport security regression coverage can continue to expand over time; it is not a blocker identified by F-01 through F-06.
 
 ## Release Assessment
 
 **Previous P0 security findings:** no unresolved High finding remains.
 
-**Release posture:** acceptable to proceed to the next open-source release-readiness items, provided the remaining P0 documentation/licensing work and tracked P1 deployment/supply-chain work are completed according to `OPEN-SOURCE-RELEASE-TODO.md`.
+**Release posture:** the reviewed F-01 through F-06 findings do not block release. Subsequent P1/P2 hardening is tracked in `OPEN-SOURCE-RELEASE-TODO.md`; remaining repository-side blockers are GitHub settings that depend on repository visibility/account capabilities.

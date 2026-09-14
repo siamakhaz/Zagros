@@ -15,7 +15,7 @@ A Rust CLI and MCP server for ingesting, storing, and searching official CVE rec
 - Exposes seven MCP tools to AI agent clients via stdio and Streamable HTTP.
 - Includes a web UI for browsing and searching CVE and knowledge records.
 
-Corpus after full seed (`backfill --limit 500` + `source all`) Ã¢â‚¬â€ v0.2, 2026-09-08 (fresh DB is `0` until seeded):
+Example seeded corpus baseline captured 2026-09-08 (`backfill --limit 500` + `source all`; a fresh DB is `0` until seeded):
 
 | Store | Count | Source |
 |---|---|---|
@@ -122,7 +122,7 @@ CVE records:
 
 ```powershell
 .\target\debug\zagros.exe search "remote code execution" --top-k 5
-.\target\debug\zagros.exe search CVE-2026-17061
+.\target\debug\zagros.exe search CVE-2024-3094
 .\target\debug\zagros.exe search "buffer overflow" --json
 docker compose --profile cli run --rm cli search "rce" --top-k 5
 ```
@@ -245,8 +245,8 @@ Or automated:
 | Tool | Description |
 |---|---|
 | `search_cves` | BM25 search over CVE records; returns ranked hits with score and source URL |
-| `get_cve` | Exact lookup by CVE ID (e.g. `CVE-2026-17061`) |
-| `index_status` | CVE count, newest update, knowledge counts by source |
+| `get_cve` | Exact lookup by CVE ID (e.g. `CVE-2024-3094`) |
+| `index_status` | CVE/knowledge counts, refresh state, and per-source integrity/freshness health |
 | `sync_cves` | Download latest CVE delta (1..1000) and upsert into HelixDB Ã¢â‚¬â€ **requires user approval**, 5-min rate limit |
 | `search_knowledge` | BM25 search over CWE / ASVS / CAPEC / ATT&CK |
 | `sync_knowledge_source` | Ingest `cwe` \| `asvs` \| `capec` \| `attack` \| `all` Ã¢â‚¬â€ **requires user approval**, 5-min rate limit |
@@ -341,17 +341,12 @@ Default Compose uses only the internal `zagros` bridge network. `proxy_default` 
 
 Zagros-authored code, documentation, and skills are licensed under Apache-2.0 Ã¢â‚¬â€ see [LICENSE](LICENSE). Third-party security datasets retain their original terms and attribution requirements; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Security disclosures: see [SECURITY.md](SECURITY.md).
 
-## Project boundaries and stability
+## Project status and trust model
 
-Zagros provides security evidence and retrieval. It does not certify compliance and does not autonomously remediate systems.
+Zagros separates authoritative evidence from agent analysis and recommendations. Retrieved third-party text is treated as untrusted data, provenance is preserved, and mutating/network MCP tools require explicit approval.
 
-Governance and security references:
-- `docs/THREAT-MODEL.md` — local, LAN, and public/cloud threat model
-- `docs/INTERFACE-STATUS.md` — Stable, Beta, and Experimental interface lifecycle
-- `docs/adr/README.md` — Architecture Decision Records
-
-Quality confidence is documented in `docs/QUALITY-METRICS.md`, including retrieval regression thresholds and corpus integrity/freshness health.
-
-## Investigation demo
-
-See [`docs/DEMO.md`](docs/DEMO.md) for a screenshot-backed Evidence / Analysis / Recommendation walkthrough, or use the public `/demo/` page.
+- Threat model: `docs/THREAT-MODEL.md`
+- Interface stability: `docs/INTERFACE-STATUS.md`
+- Architecture decisions: `docs/adr/README.md`
+- Retrieval/corpus quality gates: `docs/QUALITY-METRICS.md`
+- Investigation walkthrough: [`docs/DEMO.md`](docs/DEMO.md) or the public `/demo/` page

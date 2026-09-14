@@ -1,4 +1,4 @@
-﻿# Releasing Zagros
+# Releasing Zagros
 
 Zagros uses Semantic Versioning for tagged releases.
 
@@ -24,8 +24,8 @@ The version in `Cargo.toml` is the Zagros Core release version. Release tags mus
 Example:
 
 ```bash
-git tag v0.2.0
-git push origin v0.2.0
+git tag v0.1.0
+git push origin v0.1.0
 ```
 
 Do not manually upload locally built binaries as official release assets.

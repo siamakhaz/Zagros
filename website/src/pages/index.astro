@@ -20,11 +20,11 @@ const base = import.meta.env.BASE_URL;
       </div>
     </div>
     <div class="terminal">
-      <div class="term-bar"><span>$ zagros search "remote code execution" --top-k 5</span><span class="spacer"></span><button class="copy-lite" data-copy='zagros search "remote code execution" --top-k 5'>copy</button></div>
+      <div class="term-bar"><span>$ zagros search CVE-2024-3094 --top-k 5</span><span class="spacer"></span><button class="copy-lite" data-copy='zagros search "remote code execution" --top-k 5'>copy</button></div>
       <div class="term-body">
-        <div><span class="o">1 · CVE-2026-17061</span> <span class="g">18.4</span></div>
-        <div><span class="c">Heap buffer overflow in packet parser → remote code execution.</span></div>
-        <div><span class="d">src</span> <a href="https://www.cve.org/CVERecord?id=CVE-2026-17061">cve.org/CVERecord?id=CVE-2026-17061</a></div>
+        <div><span class="o">1 · CVE-2024-3094</span> <span class="g">18.4</span></div>
+        <div><span class="c">XZ Utils supply-chain compromise affecting upstream xz/liblzma release artifacts.</span></div>
+        <div><span class="d">src</span> <a href="https://www.cve.org/CVERecord?id=CVE-2024-3094">cve.org/CVERecord?id=CVE-2024-3094</a></div>
         <div><span class="o">2 · CWE-787</span> <span class="g">9.1</span></div>
         <div><span class="c">Out-of-bounds Write — writes past the end of the intended buffer.</span></div>
         <div><span class="d">src</span> <a href="https://cwe.mitre.org/data/definitions/787.html">cwe.mitre.org/definitions/787</a></div>
@@ -70,13 +70,16 @@ const base = import.meta.env.BASE_URL;
 
   <section class="block">
     <div class="kicker">MCP</div>
-    <h2>Four tools. Zero guesswork.</h2>
-    <p class="sub">Same four tools over stdio (<span class="mono">zagros-mcp</span>) and Streamable HTTP (<span class="mono">zagros-mcp-http</span>).</p>
+    <h2>Seven tools. Zero guesswork.</h2>
+    <p class="sub">Same seven tools over stdio (<span class="mono">zagros-mcp</span>) and Streamable HTTP (<span class="mono">zagros-mcp-http</span>).</p>
     <div class="grid2">
       <div class="card"><span class="tag">search_cves</span><h3>Ranked CVE search</h3><p>BM25 + field weights, exact-match &amp; phrase bonuses.</p></div>
-      <div class="card"><span class="tag">get_cve</span><h3>Exact CVE lookup</h3><p><span class="mono">CVE-2026-17061</span> → full record + source URL.</p></div>
-      <div class="card"><span class="tag">index_status</span><h3>Index health</h3><p>Counts + newest timestamp before you sync.</p></div>
-      <div class="card"><span class="tag">sync_cves</span><h3>Delta sync</h3><p>Pull latest, upsert. Approval-required, 5-min cooldown.</p></div>
+      <div class="card"><span class="tag">get_cve</span><h3>Exact CVE lookup</h3><p><span class="mono">CVE-2024-3094</span> → full record + source URL.</p></div>
+      <div class="card"><span class="tag">index_status</span><h3>Index health</h3><p>Counts, refresh state, and per-source integrity/freshness health.</p></div>
+      <div class="card"><span class="tag">sync_cves</span><h3>Delta sync</h3><p>Pull latest CVE changes. Approval-required, 5-min cooldown.</p></div>
+      <div class="card"><span class="tag">search_knowledge</span><h3>Knowledge search</h3><p>Ranked CWE / ASVS / CAPEC / ATT&amp;CK retrieval.</p></div>
+      <div class="card"><span class="tag">sync_knowledge_source</span><h3>Knowledge sync</h3><p>Refresh one knowledge source or all. Approval-required.</p></div>
+      <div class="card"><span class="tag">backfill_cves</span><h3>CVE history backfill</h3><p>Walk deltaLog history with explicit approval and rate limiting.</p></div>
     </div>
     <div class="cta-row" style="justify-content:flex-start">
       <a class="btn btn-ghost mono" href={`${base}demo/`}>Try a search →</a>
