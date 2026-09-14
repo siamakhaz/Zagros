@@ -41,8 +41,12 @@ name: zagros
 services:
 
   helix:
-    # Pin: helixdb:latest as of 2026-08-16
-    image: ghcr.io/helixdb/helixdb@sha256:ba41464c42b3cd58edd0f049e15bd7bea673f6abd217eb0ea5f5160b46a4412f
+    # HelixDB no longer publishes the historical public server image used here.
+    # Build the same pinned server commit exercised by the hosted E2E workflow.
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.helix
+    image: zagros-helix:3.1.1-pinned
     container_name: zagros-helix
     restart: unless-stopped
     mem_limit: 512m
