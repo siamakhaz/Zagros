@@ -180,14 +180,14 @@ Status legend: **Done** = implemented and documented; **Partial** = useful piece
 - [x] Rebuild Graphify with `--force` after cleanup: 1,810 nodes / 2,312 edges / 188 communities.
 - [x] Run multigraph diagnostics: zero duplicate/collapsed/dangling/self-loop edges.
 - [x] Define public Graphify artifacts: keep `GRAPH_REPORT.md`, `graph.json`, `graph.html`, and `manifest.json`; exclude `cost.json`, caches, and dated backups.
-## Current verified baseline â€” 2026-09-12
+## Current verified baseline — 2026-09-13
 
 - [x] Graphify refreshed after cleanup: 1,810 nodes / 2,312 edges / 188 communities.
 - [x] Multigraph diagnostics clean: no duplicate, collapsed, dangling, or self-loop edges.
 - [x] `cargo fmt --all -- --check` passes.
-- [x] `cargo test --all-targets` passes: 7 tests passed, E2E seed test intentionally ignored without HelixDB.
+- [x] `cargo test --all-targets` passes: 9 tests passed across library/MCP/retrieval suites; E2E seed test intentionally ignored without HelixDB.
 - [x] `cargo clippy --all-targets --all-features -- -D warnings` passes.
-- [x] Astro website builds successfully.
+- [x] Astro website builds successfully: 37 static pages including the investigation demo and quality-metrics docs.
 - [x] Tracked-file/history scans found no obvious committed credentials/private keys or generated build caches.
 - [x] Graphify Astro/generated parser noise is excluded through `.graphifyignore`; only zero-node JSON warnings for tooling/eval metadata remain.
 

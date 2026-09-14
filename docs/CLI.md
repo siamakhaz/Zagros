@@ -153,7 +153,7 @@ zagros.exe search <QUERY> [OPTIONS]
 ```powershell
 .\target\debug\zagros.exe search "remote code execution" --top-k 5
 
-.\target\debug\zagros.exe search CVE-2026-17061
+.\target\debug\zagros.exe search CVE-2024-3094
 
 .\target\debug\zagros.exe search "buffer overflow in nginx" --top-k 20
 
@@ -163,8 +163,8 @@ zagros.exe search <QUERY> [OPTIONS]
 **Text output format:**
 
 ```
-1. CVE-2026-17061 | score 128.342 | updated 2026-08-01
-   Remote code execution in ExampleLib via crafted input
+1. CVE-2024-3094 | score 128.342 | updated <timestamp>
+   XZ Utils supply-chain compromise
 2. CVE-2025-12345 | score 42.100 | updated 2025-11-15
    ...
 ```
@@ -174,12 +174,12 @@ zagros.exe search <QUERY> [OPTIONS]
 ```json
 [
   {
-    "cve_id": "CVE-2026-17061",
-    "title": "Remote code execution in ExampleLib...",
+    "cve_id": "CVE-2024-3094",
+    "title": "XZ Utils supply-chain compromise",
     "description": "...",
-    "published_at": "2026-07-01T00:00:00Z",
-    "updated_at": "2026-08-01T00:00:00Z",
-    "source_url": "https://www.cve.org/CVERecord?id=CVE-2026-17061",
+    "published_at": "<RFC3339 timestamp>",
+    "updated_at": "<RFC3339 timestamp>",
+    "source_url": "https://www.cve.org/CVERecord?id=CVE-2024-3094",
     "score": 128.342
   }
 ]
@@ -270,7 +270,7 @@ zagros.exe interactive [OPTIONS]
 
 ```
 > remote code execution
-1. CVE-2026-17061 | score 128.3 | updated 2026-08-01
+1. CVE-2024-3094 | score 128.3 | updated <timestamp>
    ...
 
 > :limit 5

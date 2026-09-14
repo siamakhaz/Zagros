@@ -37,7 +37,7 @@ See [SOURCE-TRUST-POLICY.md](SOURCE-TRUST-POLICY.md) for claim-specific source a
 
 **Format:** JSON (CVE 5.0 schema)
 
-**Record ID scheme:** `CVE-{4-digit year}-{4+ digit sequence}` — e.g. `CVE-2026-17061`
+**Record ID scheme:** `CVE-{4-digit year}-{4+ digit sequence}` — e.g. `CVE-2024-3094`
 
 **Ingestion flow:**
 
@@ -71,10 +71,10 @@ before fetching. Allows loading a much larger historical corpus.
 
 | Field | Example |
 |---|---|
-| `cve_id` | `CVE-2026-17061` |
-| `title` | `Remote code execution in ExampleLib via crafted input` |
+| `cve_id` | `CVE-2024-3094` |
+| `title` | `XZ Utils supply-chain compromise` |
 | `description` | Full CVE description text |
-| `published_at` | `2026-07-01T00:00:00Z` |
+| `published_at` | `<RFC3339 timestamp>` |
 | `updated_at` | `2026-08-16T14:30:00Z` |
 
 **Source URL** (constructed at query time): `https://www.cve.org/CVERecord?id={cve_id}`

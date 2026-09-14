@@ -1,12 +1,12 @@
 # Security Investigation Demo
 
-This walkthrough shows the intended Zagros investigation pattern: retrieve evidence first, keep interpretation separate, and make recommendations without overstating what the source says.
+This walkthrough uses the real CVE-2024-3094 record to show the intended Zagros investigation pattern: retrieve evidence first, keep interpretation separate, and make recommendations without overstating what the source says.
 
 Example question:
 
-> What does Zagros know about CVE-2026-17061, and what should I do next?
+> What does Zagros know about CVE-2024-3094, and what should I do next?
 
-The public website also exposes this flow interactively on the `/demo/` page.
+The public website also exposes this flow interactively on the `/demo/` page. Demo wording is intentionally conservative; operational decisions should always be rechecked against the current authoritative record.
 
 ## 1. Evidence — retrieve and verify
 
@@ -56,7 +56,7 @@ Zagros does not certify compliance and does not autonomously remediate systems.
 With a running Zagros MCP server:
 
 1. Call `index_status`.
-2. Call `get_cve` for `CVE-2026-17061`.
+2. Call `get_cve` for `CVE-2024-3094`.
 3. Present output using **Evidence / Analysis / Recommendation** sections.
 4. Cite the CVE ID and canonical source for evidence-backed claims.
 5. Require explicit approval before any sync/backfill operation.

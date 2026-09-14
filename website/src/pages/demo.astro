@@ -9,18 +9,18 @@ const payload = JSON.stringify(data);
   <section class="block" style="padding-top:40px">
     <div class="kicker">Try a search Â· static, offline</div>
     <h2>Search like it's HelixDB.</h2>
-    <p class="sub">This page runs 100% in your browser over a tiny sample (8 records). The real CLI / MCP server runs the same BM25 logic over ~3,100 nodes. Try <span class="mono">rce</span>, <span class="mono">CVE-2026-17061</span>, <span class="mono">sql injection</span>, <span class="mono">credentials</span>.</p>
+    <p class="sub">This page runs 100% in your browser over a tiny sample (8 records). The real CLI / MCP server runs the same BM25 logic over ~3,100 nodes. Try <span class="mono">xz</span>, <span class="mono">CVE-2024-3094</span>, <span class="mono">sql injection</span>, <span class="mono">credentials</span>.</p>
     <div class="demo-grid">
       <div class="searchbox">
-        <input id="q" type="search" value="remote code execution" autocomplete="off" spellcheck="false" aria-label="Search sample records" />
+        <input id="q" type="search" value="xz" autocomplete="off" spellcheck="false" aria-label="Search sample records" />
         <button id="go">Search</button>
       </div>
       <div class="chips" id="chips">
-        <button data-q="remote code execution">rce</button>
-        <button data-q="CVE-2026-17061">exact id</button>
+        <button data-q="xz">xz</button>
+        <button data-q="CVE-2024-3094">exact id</button>
         <button data-q="sql injection">sql injection</button>
         <button data-q="hardcoded credentials">credentials</button>
-        <button data-q="buffer overflow">overflow</button>
+        <button data-q="CVE-2023-4911">second CVE</button>
       </div>
       <div id="results" class="demo-grid"></div>
       <div class="note">Static demo â€” scores are illustrative. Full ranking (field weights, exact-match + phrase bonuses, <span class="mono">MIN_SCORE 1.0</span>) runs in-process in the Rust binary. Point the real thing at <span class="mono">zagros search "â€¦" --top-k 5</span> or MCP <span class="mono">search_cves</span>.</div>
@@ -31,10 +31,10 @@ const payload = JSON.stringify(data);
     <div class="kicker">MCP preview</div>
     <h2>What your agent sees.</h2>
     <div class="steps">
-      <div class="step"><div class="n">â†’</div><div><h3 class="mono">search_cves â€” query + top_k <button class="copy-lite" data-copy='{"tool": "search_cves", "query": "buffer overflow", "top_k": 5}'>copy</button></h3><pre class="code"><span class="cm">// POST /mcp â€” Streamable HTTP</span>
-&#123;"tool": <span class="hl">"search_cves"</span>, "query": "buffer overflow", "top_k": 5&#125;
+      <div class="step"><div class="n">â†’</div><div><h3 class="mono">search_cves â€” query + top_k <button class="copy-lite" data-copy='{"tool": "search_cves", "query": "xz", "top_k": 5}'>copy</button></h3><pre class="code"><span class="cm">// POST /mcp â€” Streamable HTTP</span>
+&#123;"tool": <span class="hl">"search_cves"</span>, "query": "xz", "top_k": 5&#125;
 <span class="cm">// â†’ ranked hits: id, score, description, source_url</span></pre></div></div>
-      <div class="step"><div class="n">â†’</div><div><h3 class="mono">get_cve â€” exact id <button class="copy-lite" data-copy='{"tool": "get_cve", "cve_id": "CVE-2026-17061"}'>copy</button></h3><pre class="code">&#123;"tool": <span class="hl">"get_cve"</span>, "cve_id": "CVE-2026-17061"&#125;</pre></div></div>
+      <div class="step"><div class="n">â†’</div><div><h3 class="mono">get_cve â€” exact id <button class="copy-lite" data-copy='{"tool": "get_cve", "cve_id": "CVE-2024-3094"}'>copy</button></h3><pre class="code">&#123;"tool": <span class="hl">"get_cve"</span>, "cve_id": "CVE-2024-3094"&#125;</pre></div></div>
     </div>
     <div class="cta-row" style="justify-content:flex-start">
       <a class="btn btn-ghost mono" href={`${base}docs/mcp/`}>MCP reference â†’</a>
@@ -44,16 +44,16 @@ const payload = JSON.stringify(data);
   <section class="block" id="investigation">
     <div class="kicker">Canonical investigation flow</div>
     <h2>From question to evidence-backed recommendation.</h2>
-    <p class="sub">Example question: <span class="mono">"What does Zagros know about CVE-2026-17061, and what should I do next?"</span> The agent first checks corpus health, then retrieves the record, and keeps evidence separate from interpretation.</p>
+    <p class="sub">Example question: <span class="mono">"What does Zagros know about CVE-2024-3094, and what should I do next?"</span> The agent first checks corpus health, then retrieves the record, and keeps evidence separate from interpretation.</p>
 
     <div class="steps">
       <div class="step" id="evidence"><div class="n">1</div><div>
         <h3>Evidence â€” retrieve and verify</h3>
         <pre class="code"><span class="cm">index_status â†’ overall_health: healthy</span>
 <span class="cm">get_cve â†’ authoritative CVE record</span>
-ID: <span class="hl">CVE-2026-17061</span>
-Finding: heap-based buffer overflow in packet parser
-Impact stated by record: remote arbitrary code execution
+ID: <span class="hl">CVE-2024-3094</span>
+Finding: malicious code in upstream xz/liblzma 5.6.0 and 5.6.1 release tarballs
+Impact stated by record: could interfere with sshd authentication in affected Linux environments
 Source: CVE Program / cvelistV5
 Trust tier: authoritative</pre>
         <p class="muted">Retrieved text is treated as untrusted reference data. The record ID and canonical source remain attached to the claim.</p>
@@ -61,7 +61,7 @@ Trust tier: authoritative</pre>
 
       <div class="step" id="analysis"><div class="n">2</div><div>
         <h3>Analysis â€” interpret without rewriting the evidence</h3>
-        <pre class="code">The record supports a high-impact memory-safety finding with remote execution potential.
+        <pre class="code">The record supports a serious software supply-chain compromise affecting xz/liblzma release artifacts.
 Zagros does <span class="hl">not</span> infer affected versions, exploitability in your environment,
 or remediation status unless those facts are present in authoritative evidence.</pre>
         <p class="muted">Inference is labeled as analysis, not presented as something the source said.</p>
@@ -96,7 +96,7 @@ or remediation status unless those facts are present in authoritative evidence.<
     }).filter((r) => r.s >= 1).sort((a, b) => b.s - a.s);
     box.innerHTML = out.length ? out.map((r) =>
       `<div class="result"><span class="score">score ${r.s.toFixed(1)}</span><div class="rid">${r.d.id} Â· ${r.d.source}</div><h3>${r.d.title}</h3><p>${r.d.description}</p></div>`
-    ).join('') : `<div class="result"><h3>No hits above MIN_SCORE 1.0</h3><p class="muted">Try â€œrceâ€, â€œoverflowâ€, or a full CVE id.</p></div>`;
+    ).join('') : `<div class="result"><h3>No hits above MIN_SCORE 1.0</h3><p class="muted">Try â€œxzâ€, â€œcredentialsâ€, or a full CVE id.</p></div>`;
   }
   go.onclick = () => search(q.value);
   q.onkeydown = (e) => { if (e.key === 'Enter') search(q.value); };

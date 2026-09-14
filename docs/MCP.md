@@ -66,12 +66,12 @@ Search the local CVE index stored in HelixDB using ranked lexical retrieval.
   "count": 5,
   "results": [
     {
-      "cve_id": "CVE-2026-17061",
-      "title": "Remote code execution via crafted input in ExampleLib",
-      "description": "A vulnerability in ExampleLib allows...",
-      "published_at": "2026-07-01T00:00:00Z",
-      "updated_at": "2026-08-01T00:00:00Z",
-      "source_url": "https://www.cve.org/CVERecord?id=CVE-2026-17061",
+      "cve_id": "CVE-2024-3094",
+      "title": "XZ Utils supply-chain compromise",
+      "description": "The authoritative CVE record describes the xz/liblzma supply-chain compromise...",
+      "published_at": "<RFC3339 timestamp>",
+      "updated_at": "<RFC3339 timestamp>",
+      "source_url": "https://www.cve.org/CVERecord?id=CVE-2024-3094",
       "score": 128.342
     }
   ],
@@ -100,18 +100,18 @@ Get one exact CVE record from HelixDB by CVE identifier.
 |---|---|---|---|
 | `cve_id` | string | yes | CVE identifier in `CVE-YYYY-NNNN` format (4-digit year, 4+ digit sequence) |
 
-**Example values:** `CVE-2026-17061`, `CVE-2025-12345`
+**Example values:** `CVE-2024-3094`, `CVE-2023-4911`
 
 **Output:**
 
 ```json
 {
-  "cve_id": "CVE-2026-17061",
-  "title": "Remote code execution via crafted input in ExampleLib",
-  "description": "A vulnerability in ExampleLib allows an unauthenticated attacker...",
-  "published_at": "2026-07-01T00:00:00Z",
-  "updated_at": "2026-08-01T00:00:00Z",
-  "source_url": "https://www.cve.org/CVERecord?id=CVE-2026-17061",
+  "cve_id": "CVE-2024-3094",
+  "title": "XZ Utils supply-chain compromise",
+  "description": "The authoritative CVE record describes the xz/liblzma supply-chain compromise...",
+  "published_at": "<RFC3339 timestamp>",
+  "updated_at": "<RFC3339 timestamp>",
+  "source_url": "https://www.cve.org/CVERecord?id=CVE-2024-3094",
   "score": null
 }
 ```

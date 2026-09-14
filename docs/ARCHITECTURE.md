@@ -99,7 +99,7 @@ zagros/
 
 | Field | Type | Notes |
 |---|---|---|
-| `cve_id` | String | Primary key pattern — e.g. `CVE-2026-17061` |
+| `cve_id` | String | Primary key pattern — e.g. `CVE-2024-3094` |
 | `title` | String | First English description sentence from the CVE record |
 | `description` | String | Full description text |
 | `published_at` | String | RFC 3339 timestamp or empty string |
@@ -119,6 +119,25 @@ zagros/
 HelixDB has no built-in authentication. The port is restricted to loopback
 (`127.0.0.1:47474`) in `docker/compose.yml`.
 
+
+### Structured provenance
+
+Both CVE and knowledge records carry source provenance used by MCP responses and health checks:
+
+| Field | Purpose |
+|---|---|
+| `publisher` | authoritative publisher/maintainer |
+| `source` / `source_version` | corpus identity and version |
+| `canonical_url` | canonical evidence location |
+| `retrieval_url` | exact retrieval origin |
+| `license` | upstream licensing metadata |
+| `retrieved_at` | successful retrieval timestamp |
+| `upstream_updated_at` | upstream update timestamp when available |
+| `content_sha256` | normalized content integrity hash |
+| `trust_tier` | source trust classification |
+
+Legacy rows without complete provenance are identified as `legacy_unknown` until refreshed.
+
 ---
 
 ## BM25 retrieval engine
@@ -131,7 +150,7 @@ to HelixDB for search, only for the initial data load.
 - Split on any character that is not alphanumeric or a hyphen.
 - Discard tokens with length ≤ 1.
 - Lowercase all tokens.
-- Hyphens are preserved so `CVE-2026-17061` tokenizes as a single token, not three.
+- Hyphens are preserved so `CVE-2024-3094` tokenizes as a single token, not three.
 
 ### Scoring formula
 
@@ -239,12 +258,6 @@ The CLI binary (`zagros`) is not included in the Docker image.
 
 ## Roadmap
 
-See [VISION.md](VISION.md) for the full phased roadmap. Key upcoming phases:
+The authoritative roadmap is [../ROADMAP.md](../ROADMAP.md). This architecture document intentionally does not duplicate phase status because implementation and release-readiness work evolve independently.
 
-| Phase | Focus |
-|---|---|
-| 2 (current) | SHA-256 content hashes, `retrieved_at` timestamps, `sync_source` MCP tool, OWASP Cheat Sheets |
-| 3 | HelixDB graph edges (CWE → ATT&CK, CWE → ASVS), dense vector embeddings, hybrid BM25 + vector + graph with RRF |
-| 4 | LLM reasoning layer with citation enforcement, `analyze_code` and `check_config` MCP tools |
-| 5 | AST-based code analysis, Dockerfile/IaC parser, SBOM |
-| 6 | Evaluation harness, precision/recall per CWE, confidence calibration |
+Current stable foundations include BM25 retrieval, structured provenance, corpus health metrics, CI-gated retrieval regression tests, Core/Skills separation, and seven MCP tools. Graph relationships, vector/hybrid retrieval, and assisted reasoning remain experimental/planned and must satisfy the interface and evidence-boundary policies before stabilization.
