@@ -30,7 +30,7 @@
 #   docker compose -f docker/compose.yml down -v            # stop + delete data
 #
 # Environment variables
-#   ZAGROS_DATA_DIR      Host path for HelixDB data  (default: ./data)
+#   ZAGROS_DATA_DIR      Host path for HelixDB data  (default: ../data relative to this compose file)
 #   MCP_BIND_ADDR         Bind address for the HTTP MCP server (default: 0.0.0.0:8789)
 #   MCP_ALLOWED_HOSTS     Comma-separated Host header allowlist
 #                         (default: "localhost,127.0.0.1")
@@ -59,7 +59,7 @@ services:
       - "127.0.0.1:47474:8080"
     volumes:
       - type: bind
-        source: ${ZAGROS_DATA_DIR:-./data}
+        source: ${ZAGROS_DATA_DIR:-../data}
         target: /data
     networks:
       - zagros
