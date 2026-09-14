@@ -1,0 +1,31 @@
+# Default ownership: maintainer review for all changes.
+* @siamakhaz
+
+# GitHub automation and repository security configuration.
+/.github/ @siamakhaz
+/.github/workflows/ @siamakhaz
+/.github/dependabot.yml @siamakhaz
+
+# Security policy and public-release governance.
+/SECURITY.md @siamakhaz
+/THIRD_PARTY_NOTICES.md @siamakhaz
+/docs/THREAT-MODEL.md @siamakhaz
+/docs/SOURCE-TRUST-POLICY.md @siamakhaz
+/docs/SKILL-TRUST-POLICY.md @siamakhaz
+/docs/OPEN-SOURCE-RELEASE-TODO.md @siamakhaz
+
+# Core security-sensitive implementation.
+/src/ @siamakhaz
+/docker/ @siamakhaz
+/Dockerfile @siamakhaz
+/Dockerfile.cli @siamakhaz
+/Dockerfile.ui @siamakhaz
+
+# Dependency and release metadata.
+/Cargo.toml @siamakhaz
+/Cargo.lock @siamakhaz
+/website/package.json @siamakhaz
+/website/package-lock.json @siamakhaz
+
+# Agent skill trust and packaging.
+/skills/ @siamakhaz
