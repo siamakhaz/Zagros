@@ -81,7 +81,8 @@ Project scope:
 - [x] Add pull-request template with tests/docs/security checklist.
 - [x] Enable GitHub private vulnerability reporting. Enabled after the repository became public on 2026-09-14.
 - [x] Add branch protection and required CI checks. `main` now requires PR review, CODEOWNERS approval, conversation resolution, strict required checks, and blocks force-push/deletion.
-- [x] Sanitize public Git history. Rewrote reachable history to remove the historical `.vscode/mcp.json`, personal Windows path, and obsolete private deployment domain; post-rewrite scans found no matching token/private-key patterns or those historical identifiers. A pre-rewrite bundle is retained outside the repository for recovery.
+- [x] Sanitize public Git history. Reachable public history was rewritten and post-rewrite scans found no matching credential/private-key patterns or removed private-environment identifiers. A private recovery bundle is retained outside the repository until GitHub server-side cleanup is verified.
+- [x] Use GitHub noreply identity for repository commits to avoid exposing personal author email addresses.
 - [x] Remove/ignore generated artifacts that should not be versioned; Graphify caches are untracked while intentional reports remain.
 
 ## P1 â€” Supply-chain security
@@ -212,9 +213,9 @@ Status legend: **Done** = implemented and documented; **Partial** = useful piece
 
 Do not tag the first public release until:
 1. [x] Skill licensing/provenance is resolved.
-2. [x] Current security review has no unresolved High findings.
-3. [ ] Fresh clone -> local Docker deployment works without a personal Traefik environment.
+2. [ ] Current security review has no unresolved High findings. Local fixes are prepared for the post-rewrite Trivy and RustSec failures; hosted verification is still required.
+3. [x] Fresh clone -> local Docker deployment works without a personal Traefik environment. Verified from public `main` on 2026-09-15.
 4. [x] CI and end-to-end tests are green.
 5. [x] Documentation accurately describes the current implementation.
 
-**Remaining release gate:** perform the clean fresh-clone Docker acceptance test, then prepare/tag the first public release.
+**Remaining release gate:** publish and verify the two local security fixes, complete the remaining GitHub cleanup verification, then prepare the first public release. Tagging/releasing still requires explicit authorization.
