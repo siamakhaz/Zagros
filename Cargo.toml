@@ -12,7 +12,7 @@ chrono = { version = "0.4", features = ["serde"] }
 clap = { version = "4", features = ["derive"] }
 csv = "1"
 helix-db = "=3.0.0"
-quick-xml = { version = "0.41", features = ["serialize"] }
+quick-xml = { version = "0.42", features = ["serialize"] }
 reqwest = { version = "0.13", features = ["json", "rustls"] }
 schemars = "1.2.2"
 rmcp = { version = "3.1.2", features = [
