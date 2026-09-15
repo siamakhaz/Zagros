@@ -1,0 +1,57 @@
+---
+import Base from '../layouts/Base.astro';
+import prompt from '../data/install-prompt.txt?raw';
+const base = import.meta.env.BASE_URL;
+---
+<Base title="Zagros AI Install Prompt" description="One prompt for an AI agent to install Zagros, seed the security index, install the cybersecurity skill, connect MCP, and verify the host.">
+  <div class="wrap">
+    <section class="block">
+      <div class="kicker">AI bootstrap</div>
+      <h1>Install Zagros with one prompt.</h1>
+      <p class="sub">
+        Give this page to an AI agent with shell access. It will detect the host,
+        install prerequisites, deploy Zagros, seed the index, install the skill,
+        connect MCP, and verify the result.
+      </p>
+      <div class="cta-row" style="justify-content:flex-start">
+        <button id="copy-install-prompt" class="btn btn-primary">Copy install prompt</button>
+        <a class="btn btn-ghost mono" href="https://github.com/siamakhaz/Zagros">View repository ↗</a>
+      </div>
+      <p class="mono" style="margin-top:1rem">Agent URL: https://siamakhaz.github.io/Zagros/install-prompt/</p>
+    </section>
+
+    <section class="block">
+      <div class="card">
+        <div class="term-bar">
+          <span>zagros / install-prompt</span>
+          <span class="spacer"></span>
+          <button id="copy-install-prompt-lite" class="copy-lite">copy</button>
+        </div>
+        <pre id="install-prompt" class="code" style="white-space:pre-wrap;max-height:none;overflow:auto">{prompt}</pre>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="kicker">What it configures</div>
+      <div class="grid2">
+        <div class="card"><h3>Zagros host</h3><p>Git + Docker Compose, local HelixDB, MCP HTTP service, UI, and persistent data.</p></div>
+        <div class="card"><h3>Security corpus</h3><p>CVE baseline plus CWE, ASVS, CAPEC, and ATT&amp;CK knowledge sources.</p></div>
+        <div class="card"><h3>Agent skill</h3><p>Installs <span class="mono">cybersecurity-expert</span> at user scope without touching unrelated skills.</p></div>
+        <div class="card"><h3>MCP wiring</h3><p>Connects the current supported AI harness to <span class="mono">http://localhost:8789/mcp</span>.</p></div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const promptText = document.getElementById('install-prompt')?.textContent ?? '';
+    for (const id of ['copy-install-prompt', 'copy-install-prompt-lite']) {
+      const button = document.getElementById(id);
+      button?.addEventListener('click', async () => {
+        await navigator.clipboard.writeText(promptText);
+        const original = button.textContent;
+        button.textContent = 'copied';
+        setTimeout(() => { button.textContent = original; }, 1200);
+      });
+    }
+  </script>
+</Base>
