@@ -2,30 +2,87 @@
 import Base from '../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
 const base = import.meta.env.BASE_URL;
-const docs = (await getCollection('docs')).sort((a, b) => (a.data.order ?? 99) - (b.data.order ?? 99) || a.id.localeCompare(b.id));
+const docs = (await getCollection('docs')).sort((a, b) => a.id.localeCompare(b.id));
 const label = (id: string) => (id.replace(/\.md$/, '').replace(/[-_]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()));
+const docUrl = (id: string) => `${base}docs/${id.replace(/\.md$/, '')}/`;
+
+interface Card { id?: string; href?: string; tag: string; title: string; blurb: string; }
+interface Section { kicker: string; title: string; cards: Card[]; }
+const sections: Section[] = [
+  {
+    kicker: 'Start',
+    title: 'Get running',
+    cards: [
+      { href: `${base}install/`, tag: 'page', title: 'Install', blurb: 'Docker Compose path: start, check readiness, seed, verify.' },
+      { href: `${base}install-prompt/`, tag: 'page', title: 'AI install', blurb: 'One prompt for an agent to install, seed, and wire up MCP.' },
+    ],
+  },
+  {
+    kicker: 'Use',
+    title: 'Use Zagros',
+    cards: [
+      { id: 'cli.md', tag: 'CLI', title: 'CLI reference', blurb: 'search, know, source, backfill, status.' },
+      { id: 'mcp.md', tag: 'MCP', title: 'MCP server reference', blurb: 'Seven tools over stdio and Streamable HTTP.' },
+      { id: 'data-sources.md', tag: 'DATA-SOURCES', title: 'Data sources', blurb: 'CVE, CWE, ASVS, CAPEC, ATT&CK provenance.' },
+      { id: 'configuration.md', tag: 'CONFIGURATION', title: 'Configuration', blurb: 'Environment variables and defaults.' },
+    ],
+  },
+  {
+    kicker: 'Trust & Security',
+    title: 'Trust and security',
+    cards: [
+      { id: 'threat-model.md', tag: 'THREAT-MODEL', title: 'Threat model', blurb: 'Scope, objectives, and deployment boundary.' },
+      { id: 'source-trust-policy.md', tag: 'SOURCE-TRUST-POLICY', title: 'Source trust policy', blurb: 'How source authority is ranked.' },
+      { id: 'skill-trust-policy.md', tag: 'SKILL-TRUST-POLICY', title: 'Skill trust policy', blurb: 'How skills earn trust states.' },
+      { id: 'security-review.md', tag: 'SECURITY-REVIEW', title: 'Security review', blurb: 'Pre-release findings and status.' },
+    ],
+  },
+  {
+    kicker: 'Architecture',
+    title: 'How it fits together',
+    cards: [
+      { id: 'architecture.md', tag: 'ARCHITECTURE', title: 'Architecture', blurb: 'Binaries, storage, and retrieval design.' },
+      { id: 'vision.md', tag: 'VISION', title: 'Vision', blurb: 'Where the project is headed.' },
+    ],
+  },
+  {
+    kicker: 'Development',
+    title: 'Build and release',
+    cards: [
+      { id: 'development.md', tag: 'DEVELOPMENT', title: 'Development', blurb: 'Prerequisites and local workflow.' },
+      { id: 'testing.md', tag: 'TESTING', title: 'Testing', blurb: 'Verifying a deployed instance layer by layer.' },
+      { id: 'releasing.md', tag: 'RELEASING', title: 'Releasing', blurb: 'Version policy and release process.' },
+    ],
+  },
+];
+const cardHref = (c: Card) => c.href ?? (c.id ? docUrl(c.id) : `${base}docs/`);
 ---
-<Base title="Docs — Zagros" description="Zagros documentation: CLI, MCP server, architecture, data sources, configuration, development, security review.">
+<Base title="Docs — Zagros" description="Zagros documentation: install, CLI, MCP server, data sources, trust policies, architecture, development.">
 <div class="wrap">
   <div class="docs-layout">
     <aside class="docs-side">
       <a href={`${base}docs/`} aria-current="page">Overview</a>
-      {docs.map((d) => <a href={`${base}docs/${d.id.replace(/\.md$/, '')}/`}>{d.data.title ?? label(d.id)}</a>)}
+      {docs.map((d) => <a href={docUrl(d.id)}>{d.data.title ?? label(d.id)}</a>)}
     </aside>
     <article class="prose">
       <div class="kicker">Docs</div>
       <h1>Zagros documentation</h1>
-      <p class="muted">Local-first CVE + knowledge search. Start with CLI, then wire up MCP, then read the architecture notes. Source of truth lives in <span class="mono">/docs/*.md</span> — this site renders the same files.</p>
-      <div class="grid">
-        {docs.map((d) => (
-          <a class="card" style="text-decoration:none" href={`${base}docs/${d.id.replace(/\.md$/, '')}/`}>
-            <span class="tag mono">{d.id.replace(/\.md$/, '')}</span>
-            <h3>{d.data.title ?? label(d.id)}</h3>
-            <p>{d.data.description ?? 'Guide →'}</p>
-          </a>
-        ))}
-      </div>
-      <div class="note">Quickstart: <span class="mono">docker compose -f docker/compose.yml up -d helix</span> → <span class="mono">zagros backfill --limit 500</span> → <span class="mono">zagros source all</span> → <span class="mono">zagros search "rce"</span>.</div>
+      <p class="muted">Local-first security evidence search. New here? Start with <a href={`${base}install/`}>Install</a>, then CLI and MCP. Source of truth lives in <span class="mono">/docs/*.md</span> — this site renders the same files.</p>
+      {sections.map((s) => (
+        <section>
+          <h2>{s.title}</h2>
+          <div class="grid">
+            {s.cards.map((c) => (
+              <a class="card" style="text-decoration:none" href={cardHref(c)}>
+                <span class="tag mono">{c.tag}</span>
+                <h3>{c.title}</h3>
+                <p>{c.blurb}</p>
+              </a>
+            ))}
+          </div>
+        </section>
+      ))}
+      <div class="note">Full index — including project-management and historical notes not listed above — is in the sidebar. Human install path: <a href={`${base}install/`}>Install →</a></div>
     </article>
   </div>
 </div>

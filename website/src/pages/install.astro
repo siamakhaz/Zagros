@@ -1,0 +1,78 @@
+﻿---
+import Base from '../layouts/Base.astro';
+const base = import.meta.env.BASE_URL;
+---
+<Base title="Install Zagros â€” Docker Compose" description="Install Zagros with Docker Compose: start the stack, check readiness, seed CVE and knowledge sources, and verify. No local Rust toolchain required.">
+<div class="wrap">
+  <section class="block" style="padding-top:40px">
+    <div class="kicker">Install Â· human path</div>
+    <h1>Install Zagros with Docker Compose.</h1>
+    <p class="sub">The supported path. No local Rust toolchain required â€” every Zagros command below runs inside the Compose <span class="mono">cli</span> profile container. Prefer an agent to do this for you? <a href={`${base}install-prompt/`}>Use the AI install prompt â†’</a></p>
+  </section>
+
+  <section class="block">
+    <div class="kicker">Prerequisites</div>
+    <h2>What you need first.</h2>
+    <div class="grid2">
+      <div class="card"><h3>Git</h3><p>To clone the repository.</p></div>
+      <div class="card"><h3>Docker + Compose v2</h3><p>Docker Desktop, Docker Engine, or WSL2 with Docker integration. Linux, macOS, and Windows are supported; Linux is recommended for production.</p></div>
+      <div class="card"><h3>Network access</h3><p>Required during image builds and source ingestion so Zagros can retrieve its configured authoritative upstream data.</p></div>
+      <div class="card"><h3>Loopback ports</h3><p><span class="mono">127.0.0.1:47474</span> (HelixDB), <span class="mono">127.0.0.1:8789</span> (MCP), <span class="mono">127.0.0.1:8788</span> (UI). No ports are exposed beyond loopback by default.</p></div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="kicker">Step 1 Â· Clone and start</div>
+    <h2>Clone the repo, start the stack.</h2>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><div><h3>Clone <button class="copy-lite" data-copy="git clone https://github.com/siamakhaz/Zagros.git">copy</button></h3><pre class="code">git clone https://github.com/siamakhaz/Zagros.git
+cd Zagros</pre></div></div>
+      <div class="step"><div class="n">2</div><div><h3>Configure environment (optional)</h3><p>Copy the example file only if you need to customize settings. Defaults work out of the box.</p><pre class="code">cp .env.example .env</pre></div></div>
+      <div class="step"><div class="n">3</div><div><h3>Start the stack <button class="copy-lite" data-copy="docker compose -f docker/compose.yml up -d --build">copy</button></h3><p>Starts HelixDB, the MCP server, and the web UI â€” all bound to loopback only.</p><pre class="code">docker compose -f docker/compose.yml up -d --build</pre></div></div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="kicker">Step 2 Â· Readiness check</div>
+    <h2>Confirm the services are up.</h2>
+    <p class="sub">The MCP health endpoint verifies HelixDB is reachable, so it is the primary stack readiness check.</p>
+    <div class="steps">
+      <div class="step"><div class="n">â†’</div><div><h3>Health checks <button class="copy-lite" data-copy="curl -fsS http://127.0.0.1:8789/health && curl -fsS http://127.0.0.1:8788/api/status">copy</button></h3><pre class="code">curl -fsS http://127.0.0.1:8789/health
+curl -fsS http://127.0.0.1:8788/api/status</pre></div></div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="kicker">Step 3 Â· Seed the index</div>
+    <h2>A fresh database is empty â€” seed it.</h2>
+    <p class="sub">Seeding is idempotent; re-running is safe. These commands use the Compose <span class="mono">cli</span> profile, so no local Rust build is needed.</p>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><div><h3>Backfill CVEs <button class="copy-lite" data-copy="docker compose -f docker/compose.yml --profile cli run --rm cli backfill --limit 500">copy</button></h3><p>Loads up to 500 CVE records from deltaLog history. Raise <span class="mono">--limit</span> (max 10000) for a larger baseline.</p><pre class="code">docker compose -f docker/compose.yml --profile cli run --rm cli backfill --limit 500</pre></div></div>
+      <div class="step"><div class="n">2</div><div><h3>Load knowledge sources <button class="copy-lite" data-copy="docker compose -f docker/compose.yml --profile cli run --rm cli source all">copy</button></h3><p>Loads CWE, ASVS, CAPEC, and ATT&amp;CK. Individual sources can be loaded with <span class="mono">source cwe</span>, <span class="mono">source asvs</span>, <span class="mono">source capec</span>, or <span class="mono">source attack</span>.</p><pre class="code">docker compose -f docker/compose.yml --profile cli run --rm cli source all</pre></div></div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="kicker">Step 4 Â· Verify</div>
+    <h2>Check counts and run a search.</h2>
+    <div class="steps">
+      <div class="step"><div class="n">â†’</div><div><h3>Status <button class="copy-lite" data-copy="docker compose -f docker/compose.yml --profile cli run --rm cli status">copy</button></h3><pre class="code">docker compose -f docker/compose.yml --profile cli run --rm cli status</pre></div></div>
+      <div class="step"><div class="n">â†’</div><div><h3>Search CVEs <button class="copy-lite" data-copy='docker compose -f docker/compose.yml --profile cli run --rm cli search "remote code execution" --top-k 5'>copy</button></h3><pre class="code">docker compose -f docker/compose.yml --profile cli run --rm cli search "remote code execution" --top-k 5</pre></div></div>
+      <div class="step"><div class="n">â†’</div><div><h3>Search knowledge <button class="copy-lite" data-copy='docker compose -f docker/compose.yml --profile cli run --rm cli know "out-of-bounds write" --top-k 5'>copy</button></h3><pre class="code">docker compose -f docker/compose.yml --profile cli run --rm cli know "out-of-bounds write" --top-k 5</pre></div></div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="kicker">Staying fresh</div>
+    <h2>Daily refresh is automatic.</h2>
+    <p class="sub">The persistent MCP container runs a scheduler (default <span class="mono">03:00 UTC</span> daily) that pulls the latest CVE delta and refreshes all configured knowledge sources. Operational history is written to <span class="mono">/data/refresh-status.json</span> and <span class="mono">/data/refresh-history.jsonl</span>. Set <span class="mono">ZAGROS_AUTO_REFRESH=false</span> to disable it or <span class="mono">ZAGROS_REFRESH_CRON</span> to change the schedule.</p>
+    <div class="note">Remote or cloud deployment? Keep HelixDB loopback-only and place MCP/UI behind an authenticated TLS reverse proxy. See <a href={`${base}docs/deployment/`}>Deployment</a> â€” Zagros has no application-level user authentication, so never publish port 8789 to the public internet without an auth layer.</div>
+    <div class="cta-row" style="justify-content:flex-start">
+      <a class="btn btn-ghost mono" href={`${base}install-prompt/`}>AI install â†’</a>
+      <a class="btn btn-ghost mono" href={`${base}docs/`}>Docs â†’</a>
+      <a class="btn btn-ghost mono" href={`${base}demo/`}>Browser preview â†’</a>
+    </div>
+  </section>
+</div>
+</Base>
+

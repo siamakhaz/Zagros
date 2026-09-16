@@ -2,61 +2,65 @@
 import Base from '../layouts/Base.astro';
 const base = import.meta.env.BASE_URL;
 ---
-<Base title="Zagros — Security Intelligence RAG" description="Local-first CVE + CWE, ASVS, CAPEC, ATT&CK search for humans and AI agents. Rust CLI, MCP server, HelixDB.">
+<Base title="Zagros — Local-first security knowledge search" description="Zagros is local-first BM25 lexical retrieval over authoritative CVE, CWE, ASVS, CAPEC and ATT&CK sources — evidence with provenance for humans and AI agents.">
 <div class="wrap">
   <div class="hero">
     <div class="hero-grid">
       <div class="hero-copy">
         <div class="status"><span class="dot"></span>v0.1.0 · rust · helixdb · mcp · bm25</div>
-        <h1>Local-first CVE search for humans and agents.</h1>
-        <p class="lede">500+ CVEs plus CWE, ASVS, CAPEC and ATT&amp;CK in one HelixDB index. Terminal, web UI, or MCP — every claim cites its source.</p>
+        <h1>Local-first security evidence search for humans and agents.</h1>
+        <p class="lede">Zagros is local-first BM25 lexical retrieval over authoritative CVE, CWE, ASVS, CAPEC, and ATT&amp;CK sources. CVE search and knowledge search are separate commands; every hit carries source and provenance data for humans and agents to cite.</p>
       </div>
       <figure class="hero-art">
         <img src={`${base}zagros.png`} alt="Zagros — octopus over mountains, MCP shield" width="340" height="340" />
       </figure>
       <div class="cta-row hero-actions">
-        <a class="btn btn-primary" href={`${base}docs/`}>Get started</a>
-        <a class="btn btn-ghost" href={`${base}demo/`}>Try a search</a>
+        <a class="btn btn-primary" href={`${base}install/`}>Install Zagros</a>
+        <a class="btn btn-ghost" href={`${base}install-prompt/`}>AI install</a>
+        <a class="btn btn-ghost" href={`${base}demo/`}>Browser preview</a>
       </div>
     </div>
     <div class="terminal">
-      <div class="term-bar"><span>$ zagros search CVE-2024-3094 --top-k 5</span><span class="spacer"></span><button class="copy-lite" data-copy='zagros search "remote code execution" --top-k 5'>copy</button></div>
+      <div class="term-bar"><span>$ zagros search "remote code execution" --top-k 5</span><span class="spacer"></span><button class="copy-lite" data-copy='zagros search "remote code execution" --top-k 5'>copy</button></div>
       <div class="term-body">
         <div><span class="o">1 · CVE-2024-3094</span> <span class="g">18.4</span></div>
         <div><span class="c">XZ Utils supply-chain compromise affecting upstream xz/liblzma release artifacts.</span></div>
         <div><span class="d">src</span> <a href="https://www.cve.org/CVERecord?id=CVE-2024-3094">cve.org/CVERecord?id=CVE-2024-3094</a></div>
-        <div><span class="o">2 · CWE-787</span> <span class="g">9.1</span></div>
-        <div><span class="c">Out-of-bounds Write — writes past the end of the intended buffer.</span></div>
-        <div><span class="d">src</span> <a href="https://cwe.mitre.org/data/definitions/787.html">cwe.mitre.org/definitions/787</a></div>
-        <div><span class="o">3 · T1190</span> <span class="g">6.7</span></div>
-        <div><span class="c">Exploit Public-Facing Application — initial access via RCE.</span></div>
-        <div><span class="d">src</span> <a href="https://attack.mitre.org/techniques/T1190/">attack.mitre.org/techniques/T1190</a></div>
       </div>
     </div>
+    <div class="terminal">
+      <div class="term-bar"><span>$ zagros know "out-of-bounds write" --top-k 5</span><span class="spacer"></span><button class="copy-lite" data-copy='zagros know "out-of-bounds write" --top-k 5'>copy</button></div>
+      <div class="term-body">
+        <div><span class="o">1 · CWE-787 [CWE]</span> <span class="g">9.1</span></div>
+        <div><span class="c">Out-of-bounds Write — writes past the end of the intended buffer.</span></div>
+        <div><span class="d">src</span> <a href="https://cwe.mitre.org/data/definitions/787.html">cwe.mitre.org/definitions/787</a></div>
+      </div>
+    </div>
+    <p class="sub" style="margin-top:12px">Two separate indexes, two separate commands: <span class="mono">search</span> ranks CVE records, <span class="mono">know</span> ranks CWE / ASVS / CAPEC / ATT&amp;CK. Zagros does lexical retrieval only — no embeddings, no generated answers.</p>
   </div>
 
   <section class="block">
     <div class="kicker">Corpora</div>
-    <h2>One index. Five authorities.</h2>
-    <p class="sub">Seed snapshot 2026-09-08 · ~3,100 nodes. Verify anytime with <span class="mono">zagros status</span>.</p>
-    <div class="card feature"><div class="num">499+</div><div><span class="tag">cvelistV5 deltaLog · hourly</span><h3>CVE records</h3><p>Exact-ID lookup plus BM25 ranked search with source URLs on every hit.</p></div></div>
+    <h2>Two indexes. Five authorities.</h2>
+    <p class="sub">A fresh database is empty until seeded. Counts below are a 2026-09-08 seeding snapshot (~3,100 nodes) — a dated baseline, not guaranteed live counts. Verify any instance with <span class="mono">status</span>.</p>
+    <div class="card feature"><div class="num">~500</div><div><span class="tag">cvelistV5 deltaLog · snapshot</span><h3>CVE records</h3><p>Exact-ID lookup plus BM25 ranked search with source URLs on every hit.</p></div></div>
     <div class="grid2">
-      <div class="card"><span class="tag">MITRE CWE 4.15</span><div class="num">969</div><h3>Weaknesses</h3><p>Know <span class="mono">CWE-787</span>? Zagros does.</p></div>
-      <div class="card"><span class="tag">OWASP ASVS 5.0</span><div class="num">345</div><h3>Requirements</h3><p>Map findings to verifiable controls.</p></div>
-      <div class="card"><span class="tag">MITRE CAPEC 3.9</span><div class="num">613</div><h3>Attack patterns</h3><p>How attackers actually get in.</p></div>
-      <div class="card"><span class="tag">ATT&amp;CK v16.1</span><div class="num">697</div><h3>Techniques</h3><p>Enterprise tactics, queryable offline.</p></div>
+      <div class="card"><span class="tag">MITRE CWE · snapshot</span><div class="num">969</div><h3>Weaknesses</h3><p>Know <span class="mono">CWE-787</span>? Zagros does.</p></div>
+      <div class="card"><span class="tag">OWASP ASVS · snapshot</span><div class="num">345</div><h3>Requirements</h3><p>Map findings to verifiable controls.</p></div>
+      <div class="card"><span class="tag">MITRE CAPEC · snapshot</span><div class="num">613</div><h3>Attack patterns</h3><p>How attackers actually get in.</p></div>
+      <div class="card"><span class="tag">MITRE ATT&amp;CK · snapshot</span><div class="num">697</div><h3>Techniques</h3><p>Enterprise tactics, queryable offline.</p></div>
     </div>
   </section>
 
   <section class="block">
     <div class="kicker">Install</div>
     <h2>Up in three steps.</h2>
-    <p class="sub">Prereqs: Rust 1.85+, Docker + Compose v2. No OpenSSL — reqwest uses rustls.</p>
+    <p class="sub">Prereqs: Git, Docker + Compose v2. No local Rust toolchain needed — commands run in the Compose <span class="mono">cli</span> profile container. Full walkthrough: <a href={`${base}install/`}>Install →</a></p>
     <div class="steps">
-      <div class="step"><div class="n">1</div><div><h3>Start the stack <button class="copy-lite" data-copy="docker compose -f docker/compose.yml up -d">copy</button></h3><p>HelixDB on <span class="mono">127.0.0.1:47474</span>, MCP on <span class="mono">:8789</span>, UI on <span class="mono">:8788</span>.</p><pre class="code">docker compose -f docker/compose.yml up -d</pre></div></div>
-      <div class="step"><div class="n">2</div><div><h3>Seed the index <button class="copy-lite" data-copy="zagros backfill --limit 500 && zagros source all">copy</button></h3><p>Idempotent — safe to re-run.</p><pre class="code"><span class="cm"># ~499 CVEs + 2,624 knowledge docs</span>
-.\target\debug\zagros.exe backfill --limit 500
-.\target\debug\zagros.exe source all</pre></div></div>
+      <div class="step"><div class="n">1</div><div><h3>Start the stack <button class="copy-lite" data-copy="docker compose -f docker/compose.yml up -d --build">copy</button></h3><p>HelixDB on <span class="mono">127.0.0.1:47474</span>, MCP on <span class="mono">127.0.0.1:8789</span>, UI on <span class="mono">127.0.0.1:8788</span>.</p><pre class="code">docker compose -f docker/compose.yml up -d --build</pre></div></div>
+      <div class="step"><div class="n">2</div><div><h3>Seed the index <button class="copy-lite" data-copy="docker compose -f docker/compose.yml --profile cli run --rm cli backfill --limit 500">copy</button></h3><p>Idempotent — safe to re-run. Then load knowledge sources with <span class="mono">source all</span> in the same container.</p><pre class="code"><span class="cm"># CVE baseline, then knowledge sources</span>
+docker compose -f docker/compose.yml --profile cli run --rm cli backfill --limit 500
+docker compose -f docker/compose.yml --profile cli run --rm cli source all</pre></div></div>
       <div class="step"><div class="n">3</div><div><h3>Connect your agent</h3><p>Streamable HTTP for opencode / OpenCode.</p><pre class="code">&#123;
   <span class="hl">"mcpServers"</span>: &#123;
     <span class="hl">"zagros"</span>: &#123;
@@ -66,12 +70,16 @@ const base = import.meta.env.BASE_URL;
   &#125;
 &#125;</pre></div></div>
     </div>
+    <div class="cta-row" style="justify-content:flex-start">
+      <a class="btn btn-primary mono" href={`${base}install/`}>Install Zagros →</a>
+      <a class="btn btn-ghost mono" href={`${base}install-prompt/`}>AI install →</a>
+    </div>
   </section>
 
   <section class="block">
     <div class="kicker">MCP</div>
-    <h2>Seven tools. Zero guesswork.</h2>
-    <p class="sub">Same seven tools over stdio (<span class="mono">zagros-mcp</span>) and Streamable HTTP (<span class="mono">zagros-mcp-http</span>).</p>
+    <h2>Seven tools. Evidence with provenance.</h2>
+    <p class="sub">Same seven tools over stdio (<span class="mono">zagros-mcp</span>) and Streamable HTTP (<span class="mono">zagros-mcp-http</span>). Hits carry source URLs and provenance data, and agents are expected to preserve citations — Zagros retrieves evidence, it doesn't write your report.</p>
     <div class="grid2">
       <div class="card"><span class="tag">search_cves</span><h3>Ranked CVE search</h3><p>BM25 + field weights, exact-match &amp; phrase bonuses.</p></div>
       <div class="card"><span class="tag">get_cve</span><h3>Exact CVE lookup</h3><p><span class="mono">CVE-2024-3094</span> → full record + source URL.</p></div>
@@ -82,7 +90,7 @@ const base = import.meta.env.BASE_URL;
       <div class="card"><span class="tag">backfill_cves</span><h3>CVE history backfill</h3><p>Walk deltaLog history with explicit approval and rate limiting.</p></div>
     </div>
     <div class="cta-row" style="justify-content:flex-start">
-      <a class="btn btn-ghost mono" href={`${base}demo/`}>Try a search →</a>
+      <a class="btn btn-ghost mono" href={`${base}demo/`}>Browser preview →</a>
       <a class="btn btn-ghost mono" href={`${base}docs/mcp/`}>MCP reference →</a>
     </div>
   </section>
