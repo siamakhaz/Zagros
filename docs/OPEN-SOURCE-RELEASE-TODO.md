@@ -4,10 +4,10 @@
 Goal: prepare Zagros for public open-source release as a local-first, secure, trusted source of truth for AI-agent security investigations.
 
 Project scope:
-- **Zagros Core** â€” ingestion, HelixDB, retrieval/RAG, CLI, MCP servers, UI.
-- **Zagros Skills** â€” agent guidance for using Zagros correctly during security investigations.
+- **Zagros Core** — ingestion, HelixDB, retrieval/RAG, CLI, MCP servers, UI.
+- **Zagros Skills** — agent guidance for using Zagros correctly during security investigations.
 
-## P0 â€” Release blockers
+## P0 — Release blockers
 
 - [x] Resolve skill copyright/provenance before publishing.
   - Skill content is independently authored from the maintainer's personal cybersecurity study notes and practical experience.
@@ -28,7 +28,7 @@ Project scope:
   - F-03 is mitigated/documented as a HelixDB v3 limitation.
   - No unresolved High-severity finding remains from the previous review.
 
-## P1 â€” Trusted-source guarantees
+## P1 — Trusted-source guarantees
 
 - [x] Store publisher/source, source version, canonical URL, retrieval URL, license, retrieved timestamp, upstream timestamp, content hash, and trust tier per record/chunk.
 - [x] Define trust tiers and claim-specific source-selection/conflict policy.
@@ -42,7 +42,7 @@ Project scope:
 - [x] Document prompt-injection handling for retrieved security text.
 - [x] Document behavior when authoritative sources disagree.
 
-## P1 â€” Deployment and usability
+## P1 — Deployment and usability
 
 - [x] Provide one canonical 5-minute local Docker quick start.
 - [x] Provide separate cloud/self-hosted deployment guidance.
@@ -55,7 +55,7 @@ Project scope:
 - [x] Add authentication guidance for internet-facing MCP deployments.
 - [x] Add/verify health and readiness checks for runtime services.
 
-## P1 â€” CI and release engineering
+## P1 — CI and release engineering
 
 - [x] Add CI for cargo fmt --all -- --check.
 - [x] Add CI for cargo clippy --all-targets --all-features -- -D warnings.
@@ -70,7 +70,7 @@ Project scope:
 - [x] Publish container images with immutable version tags/digests.
 - [x] Automate skill package release and checksum verification.
 
-## P1 â€” Repository and contributor readiness
+## P1 — Repository and contributor readiness
 
 - [x] Add CONTRIBUTING.md.
 - [x] Add CODE_OF_CONDUCT.md.
@@ -85,7 +85,7 @@ Project scope:
 - [x] Use GitHub noreply identity for repository commits to avoid exposing personal author email addresses.
 - [x] Remove/ignore generated artifacts that should not be versioned; Graphify caches are untracked while intentional reports remain.
 
-## P1 â€” Supply-chain security
+## P1 — Supply-chain security
 
 - [x] Add Rust dependency audit.
 - [x] Add npm dependency audit.
@@ -97,7 +97,7 @@ Project scope:
 - [x] Sign release artifacts where practical.
 - [x] Publish SHA256 checksums for binaries and skill packages.
 
-## P1 Review â€” 2026-09-12
+## P1 Review — 2026-09-12
 
 Status legend: **Done** = implemented and documented; **Partial** = useful pieces exist but release requirement is not fully closed; **Open** = not implemented or not yet verified.
 

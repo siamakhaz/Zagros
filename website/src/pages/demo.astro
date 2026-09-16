@@ -4,10 +4,10 @@ import data from '../data/sample.json';
 const base = import.meta.env.BASE_URL;
 const payload = JSON.stringify(data);
 ---
-<Base title="Try a search â€” Zagros" description="Static interactive demo: BM25-style search over sample CVE + knowledge records, plus MCP tool preview.">
+<Base title="Try a search — Zagros" description="Static interactive demo: BM25-style search over sample CVE + knowledge records, plus MCP tool preview.">
 <div class="wrap">
   <section class="block" style="padding-top:40px">
-    <div class="kicker">Try a search Â· static, offline</div>
+    <div class="kicker">Try a search · static, offline</div>
     <h2>Static browser preview of ranking behavior.</h2>
     <p class="sub">This is a static preview — it runs 100% in your browser over a tiny sample of 8 records to illustrate how queries match. It is not a live index. The real CLI / MCP server runs the same BM25 logic over a seeded HelixDB. Try <span class="mono">xz</span>, <span class="mono">CVE-2024-3094</span>, <span class="mono">sql injection</span>, <span class="mono">credentials</span>.</p>
     <div class="demo-grid">
@@ -23,7 +23,7 @@ const payload = JSON.stringify(data);
         <button data-q="CVE-2023-4911">second CVE</button>
       </div>
       <div id="results" class="demo-grid"></div>
-      <div class="note">Static demo â€” scores are illustrative. Full ranking (field weights, exact-match + phrase bonuses, <span class="mono">MIN_SCORE 1.0</span>) runs in-process in the Rust binary. Point the real thing at <span class="mono">zagros search "â€¦" --top-k 5</span> or MCP <span class="mono">search_cves</span>.</div>
+      <div class="note">Static demo — scores are illustrative. Full ranking (field weights, exact-match + phrase bonuses, <span class="mono">MIN_SCORE 1.0</span>) runs in-process in the Rust binary. Point the real thing at <span class="mono">zagros search "…" --top-k 5</span> or MCP <span class="mono">search_cves</span>.</div>
     </div>
   </section>
 
@@ -42,13 +42,13 @@ const payload = JSON.stringify(data);
     <div class="kicker">MCP preview</div>
     <h2>What your agent sees.</h2>
     <div class="steps">
-      <div class="step"><div class="n">â†’</div><div><h3 class="mono">search_cves â€” query + top_k <button class="copy-lite" data-copy='{"tool": "search_cves", "query": "xz", "top_k": 5}'>copy</button></h3><pre class="code"><span class="cm">// POST /mcp â€” Streamable HTTP</span>
+      <div class="step"><div class="n">→</div><div><h3 class="mono">search_cves — query + top_k <button class="copy-lite" data-copy='{"tool": "search_cves", "query": "xz", "top_k": 5}'>copy</button></h3><pre class="code"><span class="cm">// POST /mcp — Streamable HTTP</span>
 &#123;"tool": <span class="hl">"search_cves"</span>, "query": "xz", "top_k": 5&#125;
-<span class="cm">// â†’ ranked hits: id, score, description, source_url</span></pre></div></div>
-      <div class="step"><div class="n">â†’</div><div><h3 class="mono">get_cve â€” exact id <button class="copy-lite" data-copy='{"tool": "get_cve", "cve_id": "CVE-2024-3094"}'>copy</button></h3><pre class="code">&#123;"tool": <span class="hl">"get_cve"</span>, "cve_id": "CVE-2024-3094"&#125;</pre></div></div>
+<span class="cm">// → ranked hits: id, score, description, source_url</span></pre></div></div>
+      <div class="step"><div class="n">→</div><div><h3 class="mono">get_cve — exact id <button class="copy-lite" data-copy='{"tool": "get_cve", "cve_id": "CVE-2024-3094"}'>copy</button></h3><pre class="code">&#123;"tool": <span class="hl">"get_cve"</span>, "cve_id": "CVE-2024-3094"&#125;</pre></div></div>
     </div>
     <div class="cta-row" style="justify-content:flex-start">
-      <a class="btn btn-ghost mono" href={`${base}docs/mcp/`}>MCP reference â†’</a>
+      <a class="btn btn-ghost mono" href={`${base}docs/mcp/`}>MCP reference →</a>
     </div>
   </section>
 
@@ -59,9 +59,9 @@ const payload = JSON.stringify(data);
 
     <div class="steps">
       <div class="step" id="evidence"><div class="n">1</div><div>
-        <h3>Evidence â€” retrieve and verify</h3>
-        <pre class="code"><span class="cm">index_status â†’ overall_health: healthy</span>
-<span class="cm">get_cve â†’ authoritative CVE record</span>
+        <h3>Evidence — retrieve and verify</h3>
+        <pre class="code"><span class="cm">index_status → overall_health: healthy</span>
+<span class="cm">get_cve → authoritative CVE record</span>
 ID: <span class="hl">CVE-2024-3094</span>
 Finding: malicious code in upstream xz/liblzma 5.6.0 and 5.6.1 release tarballs
 Impact stated by record: could interfere with sshd authentication in affected Linux environments
@@ -71,7 +71,7 @@ Trust tier: authoritative</pre>
       </div></div>
 
       <div class="step" id="analysis"><div class="n">2</div><div>
-        <h3>Analysis â€” interpret without rewriting the evidence</h3>
+        <h3>Analysis — interpret without rewriting the evidence</h3>
         <pre class="code">The record supports a serious software supply-chain compromise affecting xz/liblzma release artifacts.
 Zagros does <span class="hl">not</span> infer affected versions, exploitability in your environment,
 or remediation status unless those facts are present in authoritative evidence.</pre>
@@ -79,7 +79,7 @@ or remediation status unless those facts are present in authoritative evidence.<
       </div></div>
 
       <div class="step" id="recommendation"><div class="n">3</div><div>
-        <h3>Recommendation â€” act proportionally</h3>
+        <h3>Recommendation — act proportionally</h3>
         <pre class="code">1. Verify whether the affected product/version exists in your environment.
 2. Confirm the current vendor advisory and CVE record.
 3. Prioritize remediation if exposure and affected-version evidence match.
@@ -106,8 +106,8 @@ or remediation status unless those facts are present in authoritative evidence.<
       return { d, s };
     }).filter((r) => r.s >= 1).sort((a, b) => b.s - a.s);
     box.innerHTML = out.length ? out.map((r) =>
-      `<div class="result"><span class="score">score ${r.s.toFixed(1)}</span><div class="rid">${r.d.id} Â· ${r.d.source}</div><h3>${r.d.title}</h3><p>${r.d.description}</p></div>`
-    ).join('') : `<div class="result"><h3>No hits above MIN_SCORE 1.0</h3><p class="muted">Try â€œxzâ€, â€œcredentialsâ€, or a full CVE id.</p></div>`;
+      `<div class="result"><span class="score">score ${r.s.toFixed(1)}</span><div class="rid">${r.d.id} · ${r.d.source}</div><h3>${r.d.title}</h3><p>${r.d.description}</p></div>`
+    ).join('') : `<div class="result"><h3>No hits above MIN_SCORE 1.0</h3><p class="muted">Try “xz”, “credentials”, or a full CVE id.</p></div>`;
   }
   go.onclick = () => search(q.value);
   q.onkeydown = (e) => { if (e.key === 'Enter') search(q.value); };
