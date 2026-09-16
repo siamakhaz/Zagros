@@ -1,6 +1,6 @@
 # Deployment
 
-Zagros is designed to run on infrastructure controlled by the user. The supported public-release path is Docker Compose.
+Zagros is designed to run on infrastructure controlled by the organization or team using it. The supported public-release path is Docker Compose. A single-user local deployment is supported, but the primary shared-service model is one controlled Zagros instance serving the same security reference to multiple developers, AI agents, IDE integrations, and internal tools.
 
 ## Local deployment
 
@@ -25,11 +25,11 @@ curl -fsS http://127.0.0.1:8788/api/status
 ```
 
 The MCP health endpoint verifies that HelixDB is reachable, so it acts as the primary stack readiness check.
-## Cloud or remote deployment
+## Shared team / cloud deployment
 
 Do **not** expose HelixDB directly. Keep port 47474 loopback-only/internal.
 
-For remote MCP/UI access, place Zagros behind a TLS reverse proxy. An optional Traefik override is provided:
+For team, remote, or cloud MCP/UI access, place Zagros behind a TLS reverse proxy or authenticated internal gateway. Give clients one stable internal endpoint (for example, `https://zagros.example.com/mcp`) so multiple agents query the same corpus. An optional Traefik override is provided:
 
 ```bash
 docker compose -f docker/compose.yml -f docker/compose.traefik.yml up -d --build

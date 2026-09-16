@@ -67,7 +67,7 @@ const cardHref = (c: Card) => c.href ?? (c.id ? docUrl(c.id) : `${base}docs/`);
     <article class="prose">
       <div class="kicker">Docs</div>
       <h1>Zagros documentation</h1>
-      <p class="muted">Local-first security evidence search. New here? Start with <a href={`${base}install/`}>Install</a>, then CLI and MCP. Source of truth lives in <span class="mono">/docs/*.md</span> — this site renders the same files.</p>
+      <p class="muted">Self-hosted shared security knowledge for teams and AI agents. New here? Start with <a href={`${base}install/`}>Install</a>, then CLI and MCP. Source of truth lives in <span class="mono">/docs/*.md</span> — this site renders the same files.</p>
       {sections.map((s) => (
         <section>
           <h2>{s.title}</h2>

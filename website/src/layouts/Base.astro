@@ -1,7 +1,7 @@
 ---
 import '../styles/global.css';
 interface Props { title?: string; description?: string; }
-const { title = 'Zagros — Local-first security knowledge search', description = 'Local-first BM25 search over CVE, CWE, ASVS, CAPEC and ATT&CK for humans and AI agents. Rust CLI, MCP server, HelixDB.' } = Astro.props;
+const { title = 'Zagros — Shared security knowledge for AI agents', description = 'Self-hosted security knowledge for teams and AI agents, with authoritative CVE, CWE, ASVS, CAPEC and ATT&CK evidence, provenance, MCP, CLI and web UI.' } = Astro.props;
 const base = import.meta.env.BASE_URL;
 ---
 <!doctype html>
@@ -35,7 +35,7 @@ const base = import.meta.env.BASE_URL;
   <main><slot /></main>
   <footer>
     <div class="wrap">
-      <span class="mono">ZAGROS · Local-first security knowledge search</span>
+      <span class="mono">ZAGROS · Shared security knowledge for teams and AI agents</span>
       <span style="margin-left:auto"></span>
       <a href={`${base}docs/`}>Docs</a>
       <a href={`${base}install/`}>Install</a>

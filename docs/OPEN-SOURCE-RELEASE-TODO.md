@@ -1,7 +1,7 @@
 
 # Zagros Open-Source Release TODO
 
-Goal: prepare Zagros for public open-source release as a local-first, secure, trusted source of truth for AI-agent security investigations.
+Goal: prepare Zagros for public open-source release as a self-hosted, shared security reference that teams can connect to their AI agents and internal tools.
 
 Project scope:
 - **Zagros Core** — ingestion, HelixDB, retrieval/RAG, CLI, MCP servers, UI.

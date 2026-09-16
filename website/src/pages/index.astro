@@ -2,14 +2,14 @@
 import Base from '../layouts/Base.astro';
 const base = import.meta.env.BASE_URL;
 ---
-<Base title="Zagros — Local-first security knowledge search" description="Zagros is local-first BM25 lexical retrieval over authoritative CVE, CWE, ASVS, CAPEC and ATT&CK sources — evidence with provenance for humans and AI agents.">
+<Base title="Zagros — Shared security knowledge for your team’s AI agents" description="Zagros is a self-hosted security knowledge service that gives teams and AI agents one shared reference built from authoritative CVE, CWE, ASVS, CAPEC and ATT&CK sources with preserved provenance.">
 <div class="wrap">
   <div class="hero">
     <div class="hero-grid">
       <div class="hero-copy">
         <div class="status"><span class="dot"></span>v0.1.0 · rust · helixdb · mcp · bm25</div>
-        <h1>Local-first security evidence search for humans and agents.</h1>
-        <p class="lede">Zagros is local-first BM25 lexical retrieval over authoritative CVE, CWE, ASVS, CAPEC, and ATT&amp;CK sources. CVE search and knowledge search are separate commands; every hit carries source and provenance data for humans and agents to cite.</p>
+        <h1>Trusted security knowledge for your team’s AI agents.</h1>
+        <p class="lede">Run Zagros on infrastructure your team controls and give developers, AI agents, IDE integrations, and internal tools one shared security reference. Zagros retrieves authoritative CVE, CWE, ASVS, CAPEC, and ATT&amp;CK evidence with preserved provenance through MCP, CLI, and the web UI.</p>
       </div>
       <figure class="hero-art">
         <img src={`${base}zagros.png`} alt="Zagros — octopus over mountains, MCP shield" width="340" height="340" />
@@ -37,19 +37,19 @@ const base = import.meta.env.BASE_URL;
         <div><span class="d">src</span> <a href="https://cwe.mitre.org/data/definitions/787.html">cwe.mitre.org/definitions/787</a></div>
       </div>
     </div>
-    <p class="sub" style="margin-top:12px">Command examples above show the interface, not captured runtime ranking or scores. Two separate indexes, two separate commands: <span class="mono">search</span> ranks CVE records, <span class="mono">know</span> ranks CWE / ASVS / CAPEC / ATT&amp;CK. Zagros does lexical retrieval only — no embeddings, no generated answers.</p>
+    <p class="sub" style="margin-top:12px">Command examples above show the interface, not captured runtime ranking or scores. Zagros keeps CVE and security-knowledge retrieval separate and currently uses lexical BM25 retrieval only — no embeddings and no generated answers. The value is a consistent evidence source that many team tools and agents can share.</p>
   </div>
 
   <section class="block">
-    <div class="kicker">Corpora</div>
-    <h2>Two indexes. Five authorities.</h2>
+    <div class="kicker">Shared reference</div>
+    <h2>One team-controlled service. Five authoritative sources.</h2>
     <p class="sub">A fresh database is empty until seeded. Counts below are a 2026-09-08 seeding snapshot (~3,100 nodes) — a dated baseline, not guaranteed live counts. Verify any instance with <span class="mono">status</span>.</p>
     <div class="card feature"><div class="num">~500</div><div><span class="tag">cvelistV5 deltaLog · snapshot</span><h3>CVE records</h3><p>Exact-ID lookup plus BM25 ranked search with source URLs on every hit.</p></div></div>
     <div class="grid2">
       <div class="card"><span class="tag">MITRE CWE · snapshot</span><div class="num">969</div><h3>Weaknesses</h3><p>Know <span class="mono">CWE-787</span>? Zagros does.</p></div>
-      <div class="card"><span class="tag">OWASP ASVS · snapshot</span><div class="num">345</div><h3>Requirements</h3><p>Map findings to verifiable controls.</p></div>
-      <div class="card"><span class="tag">MITRE CAPEC · snapshot</span><div class="num">613</div><h3>Attack patterns</h3><p>How attackers actually get in.</p></div>
-      <div class="card"><span class="tag">MITRE ATT&amp;CK · snapshot</span><div class="num">697</div><h3>Techniques</h3><p>Enterprise tactics, queryable offline.</p></div>
+      <div class="card"><span class="tag">OWASP ASVS · snapshot</span><div class="num">345</div><h3>Requirements</h3><p>Search verifiable application-security requirements.</p></div>
+      <div class="card"><span class="tag">MITRE CAPEC · snapshot</span><div class="num">613</div><h3>Attack patterns</h3><p>Search documented attack patterns.</p></div>
+      <div class="card"><span class="tag">MITRE ATT&amp;CK · snapshot</span><div class="num">697</div><h3>Techniques</h3><p>Enterprise ATT&amp;CK techniques, queryable locally.</p></div>
     </div>
   </section>
 
@@ -62,14 +62,11 @@ const base = import.meta.env.BASE_URL;
       <div class="step"><div class="n">2</div><div><h3>Seed the index <button class="copy-lite" data-copy="docker compose -f docker/compose.yml --profile cli run --rm cli backfill --limit 500">copy</button></h3><p>Idempotent — safe to re-run. Then load knowledge sources with <span class="mono">source all</span> in the same container.</p><pre class="code"><span class="cm"># CVE baseline, then knowledge sources</span>
 docker compose -f docker/compose.yml --profile cli run --rm cli backfill --limit 500
 docker compose -f docker/compose.yml --profile cli run --rm cli source all</pre></div></div>
-      <div class="step"><div class="n">3</div><div><h3>Connect your agent</h3><p>Streamable HTTP for opencode / OpenCode.</p><pre class="code">&#123;
-  <span class="hl">"mcpServers"</span>: &#123;
-    <span class="hl">"zagros"</span>: &#123;
-      <span class="hl">"type"</span>: <span class="hl">"streamable-http"</span>,
-      <span class="hl">"url"</span>: "http://localhost:8789/mcp"
-    &#125;
-  &#125;
-&#125;</pre></div></div>
+      <div class="step"><div class="n">3</div><div><h3>Connect your team’s agents</h3><p>Use one protected Streamable HTTP MCP endpoint from compatible harnesses and internal tools. The default local endpoint is shown below; for a shared deployment, expose Zagros through your authenticated internal gateway or reverse proxy.</p><pre class="code"># local default
+http://localhost:8789/mcp
+
+# shared deployment example
+https://zagros.example.com/mcp</pre></div></div>
     </div>
     <div class="cta-row" style="justify-content:flex-start">
       <a class="btn btn-primary mono" href={`${base}install/`}>Install Zagros →</a>
@@ -78,9 +75,9 @@ docker compose -f docker/compose.yml --profile cli run --rm cli source all</pre>
   </section>
 
   <section class="block">
-    <div class="kicker">MCP</div>
-    <h2>Seven tools. Evidence with provenance.</h2>
-    <p class="sub">Same seven tools over stdio (<span class="mono">zagros-mcp</span>) and Streamable HTTP (<span class="mono">zagros-mcp-http</span>). Hits carry source URLs and provenance data, and agents are expected to preserve citations — Zagros retrieves evidence, it doesn't write your report.</p>
+    <div class="kicker">AI integration</div>
+    <h2>One shared reference for many agents.</h2>
+    <p class="sub">Zagros exposes the same seven tools over stdio (<span class="mono">zagros-mcp</span>) and Streamable HTTP (<span class="mono">zagros-mcp-http</span>), so multiple agents and internal tools can query the same controlled corpus. MCP results include source URLs and provenance; Zagros retrieves evidence and leaves analysis and recommendations to the consuming agent.</p>
     <div class="grid2">
       <div class="card"><span class="tag">search_cves</span><h3>Ranked CVE search</h3><p>BM25 + field weights, exact-match &amp; phrase bonuses.</p></div>
       <div class="card"><span class="tag">get_cve</span><h3>Exact CVE lookup</h3><p><span class="mono">CVE-2024-3094</span> → full record + source URL.</p></div>

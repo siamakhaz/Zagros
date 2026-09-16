@@ -1,10 +1,14 @@
-# Zagros — Security Knowledge MCP Server
+# Zagros — Shared Security Knowledge for AI Agents
 
-A Rust CLI and MCP server for ingesting, storing, and searching official CVE records and authoritative security standards, backed by a local **HelixDB** graph-vector store.
+Zagros is an open-source, self-hosted security knowledge service for teams. It gives a company, lab, or engineering group one controlled reference that humans and AI agents can share, built from authoritative CVE, CWE, ASVS, CAPEC, and ATT&CK sources with provenance preserved in HelixDB.
 
 ![Zagros](assets/zagros.png)
 
 ---
+
+## Why teams use it
+
+Zagros is designed to run once on infrastructure your team controls and serve the same security evidence to multiple developers, AI agents, IDE integrations, and internal tools through MCP, CLI, and the web UI. This keeps the reference corpus consistent across the team instead of letting every agent independently search or improvise security facts.
 
 ## What it does
 

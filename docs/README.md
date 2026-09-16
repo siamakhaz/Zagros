@@ -1,9 +1,11 @@
 # Zagros Documentation
 
-Zagros is an open-source, local-first security knowledge system for AI agents.
-Zagros Core provides ingestion, HelixDB-backed retrieval, CLI, MCP servers, and
-UI; Zagros Skills provide harness-neutral investigation guidance that teaches
-agents how to use retrieved evidence safely and correctly.
+Zagros is an open-source, self-hosted security knowledge service for teams and their AI agents.
+A team can run one controlled Zagros instance and expose the same evidence to developers,
+AI agents, IDE integrations, and internal tools through MCP, CLI, and the web UI.
+Zagros Core provides ingestion, HelixDB-backed retrieval, CLI, MCP servers, and UI;
+Zagros Skills provide harness-neutral investigation guidance that teaches agents how to use
+retrieved evidence safely and correctly.
 
 ## Quick links
 

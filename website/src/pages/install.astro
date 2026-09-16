@@ -7,7 +7,7 @@ const base = import.meta.env.BASE_URL;
   <section class="block" style="padding-top:40px">
     <div class="kicker">Install · human path</div>
     <h1>Install Zagros with Docker Compose.</h1>
-    <p class="sub">The supported path. No local Rust toolchain required — every Zagros command below runs inside the Compose <span class="mono">cli</span> profile container. Prefer an agent to do this for you? <a href={`${base}install-prompt/`}>Use the AI install prompt →</a></p>
+    <p class="sub">The supported path for a local or shared team deployment. No local Rust toolchain required — every Zagros command below runs inside the Compose <span class="mono">cli</span> profile container. Prefer an agent to do this for you? <a href={`${base}install-prompt/`}>Use the AI install prompt →</a></p>
   </section>
 
   <section class="block">
@@ -66,7 +66,7 @@ curl -fsS http://127.0.0.1:8788/api/status</pre></div></div>
     <div class="kicker">Staying fresh</div>
     <h2>Daily refresh is automatic.</h2>
     <p class="sub">The persistent MCP container runs a scheduler (default <span class="mono">03:00 UTC</span> daily) that pulls the latest CVE delta and refreshes all configured knowledge sources. Operational history is written to <span class="mono">/data/refresh-status.json</span> and <span class="mono">/data/refresh-history.jsonl</span>. Set <span class="mono">ZAGROS_AUTO_REFRESH=false</span> to disable it or <span class="mono">ZAGROS_REFRESH_CRON</span> to change the schedule.</p>
-    <div class="note">Remote or cloud deployment? Keep HelixDB loopback-only and place MCP/UI behind an authenticated TLS reverse proxy. See <a href={`${base}docs/deployment/`}>Deployment</a> — Zagros has no application-level user authentication, so never publish port 8789 to the public internet without an auth layer.</div>
+    <div class="note">Shared team deployment? Keep HelixDB private and place MCP/UI behind an authenticated TLS reverse proxy before making the service reachable across your network or from the internet. See <a href={`${base}docs/deployment/`}>Deployment</a> — Zagros has no application-level user authentication, so never publish port 8789 to the public internet without an auth layer.</div>
     <div class="cta-row" style="justify-content:flex-start">
       <a class="btn btn-ghost mono" href={`${base}install-prompt/`}>AI install →</a>
       <a class="btn btn-ghost mono" href={`${base}docs/`}>Docs →</a>
