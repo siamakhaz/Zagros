@@ -1,24 +1,72 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { getCollection, render } from 'astro:content';
+
 export async function getStaticPaths() {
   const docs = await getCollection('docs');
   return docs.map((d) => ({ params: { id: d.id.replace(/\.md$/, '') }, props: { doc: d } }));
 }
+
 const base = import.meta.env.BASE_URL;
 const { doc } = Astro.props;
 const { Content } = await render(doc);
-const all = (await getCollection('docs')).sort((a, b) => a.id.localeCompare(b.id));
-const label = (id: string) => (id.replace(/\.md$/, '').replace(/[-_]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()));
+const label = (id: string) => id.replace(/\.md$/, '').replace(/[-_]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 const title = doc.data.title ?? label(doc.id);
+const docUrl = (id: string) => `${base}docs/${id.replace(/\.md$/, '')}/`;
+
+interface NavItem { id?: string; href?: string; title: string; }
+interface NavGroup { title: string; items: NavItem[]; }
+
+const navGroups: NavGroup[] = [
+  { title: 'Start here', items: [
+    { href: `${base}install/`, title: 'Install Zagros' },
+    { id: 'deployment.md', title: 'Deploy for a team' },
+    { id: 'configuration.md', title: 'Configuration' },
+  ]},
+  { title: 'Use Zagros', items: [
+    { id: 'mcp.md', title: 'Connect AI agents with MCP' },
+    { id: 'cli.md', title: 'CLI reference' },
+    { id: 'data-sources.md', title: 'Data sources' },
+    { id: 'demo.md', title: 'Investigation example' },
+  ]},
+  { title: 'Trust & security', items: [
+    { id: 'source-trust-policy.md', title: 'Source trust policy' },
+    { id: 'threat-model.md', title: 'Threat model' },
+    { id: 'quality-metrics.md', title: 'Quality & freshness' },
+    { id: 'security-review.md', title: 'Security review' },
+  ]},
+  { title: 'Agent integration', items: [
+    { id: 'skill-harnesses.md', title: 'Agent harnesses' },
+    { id: 'skill-contract.md', title: 'Skill contract' },
+    { id: 'skill-compatibility.md', title: 'Skill compatibility' },
+    { id: 'skill-trust-policy.md', title: 'Skill trust policy' },
+  ]},
+  { title: 'Project internals', items: [
+    { id: 'architecture.md', title: 'Architecture' },
+    { id: 'development.md', title: 'Development' },
+    { id: 'testing.md', title: 'Testing' },
+    { id: 'releasing.md', title: 'Releasing' },
+    { id: 'interface-status.md', title: 'Interface status' },
+    { id: 'vision.md', title: 'Project vision' },
+  ]},
+];
+
+const hrefFor = (item: NavItem) => item.href ?? docUrl(item.id!);
+const isCurrent = (item: NavItem) => item.id === doc.id;
 ---
 <Base title={`${title} — Zagros docs`}>
 <div class="wrap">
   <div class="docs-layout">
     <aside class="docs-side">
       <a href={`${base}docs/`}>Overview</a>
-      {all.map((d) => <a href={`${base}docs/${d.id.replace(/\.md$/, '')}/`} aria-current={d.id === doc.id ? 'page' : undefined}>{d.data.title ?? label(d.id)}</a>)}
+      {navGroups.map((group) => (
+        <div class="docs-nav-group">
+          <div class="docs-nav-title">{group.title}</div>
+          {group.items.map((item) => <a href={hrefFor(item)} aria-current={isCurrent(item) ? 'page' : undefined}>{item.title}</a>)}
+        </div>
+      ))}
     </aside>
+
     <article class="prose">
       <div class="kicker mono">{doc.id.replace(/\.md$/, '')}</div>
       <h1>{title}</h1>

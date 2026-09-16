@@ -1,88 +1,127 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { getCollection } from 'astro:content';
 const base = import.meta.env.BASE_URL;
-const docs = (await getCollection('docs')).sort((a, b) => a.id.localeCompare(b.id));
-const label = (id: string) => (id.replace(/\.md$/, '').replace(/[-_]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()));
 const docUrl = (id: string) => `${base}docs/${id.replace(/\.md$/, '')}/`;
 
-interface Card { id?: string; href?: string; tag: string; title: string; blurb: string; }
-interface Section { kicker: string; title: string; cards: Card[]; }
-const sections: Section[] = [
+interface NavItem { id?: string; href?: string; title: string; blurb?: string; }
+interface NavGroup { title: string; items: NavItem[]; }
+
+const navGroups: NavGroup[] = [
   {
-    kicker: 'Start',
-    title: 'Get running',
-    cards: [
-      { href: `${base}install/`, tag: 'page', title: 'Install', blurb: 'Docker Compose path: start, check readiness, seed, verify.' },
-      { href: `${base}install-prompt/`, tag: 'page', title: 'AI install', blurb: 'One prompt for an agent to install, seed, and wire up MCP.' },
+    title: 'Start here',
+    items: [
+      { href: `${base}install/`, title: 'Install Zagros' },
+      { id: 'deployment.md', title: 'Deploy for a team' },
+      { id: 'configuration.md', title: 'Configuration' },
     ],
   },
   {
-    kicker: 'Use',
     title: 'Use Zagros',
-    cards: [
-      { id: 'cli.md', tag: 'CLI', title: 'CLI reference', blurb: 'search, know, source, backfill, status.' },
-      { id: 'mcp.md', tag: 'MCP', title: 'MCP server reference', blurb: 'Seven tools over stdio and Streamable HTTP.' },
-      { id: 'data-sources.md', tag: 'DATA-SOURCES', title: 'Data sources', blurb: 'CVE, CWE, ASVS, CAPEC, ATT&CK provenance.' },
-      { id: 'configuration.md', tag: 'CONFIGURATION', title: 'Configuration', blurb: 'Environment variables and defaults.' },
+    items: [
+      { id: 'mcp.md', title: 'Connect AI agents with MCP' },
+      { id: 'cli.md', title: 'CLI reference' },
+      { id: 'data-sources.md', title: 'Data sources' },
+      { id: 'demo.md', title: 'Investigation example' },
     ],
   },
   {
-    kicker: 'Trust & Security',
-    title: 'Trust and security',
-    cards: [
-      { id: 'threat-model.md', tag: 'THREAT-MODEL', title: 'Threat model', blurb: 'Scope, objectives, and deployment boundary.' },
-      { id: 'source-trust-policy.md', tag: 'SOURCE-TRUST-POLICY', title: 'Source trust policy', blurb: 'How source authority is ranked.' },
-      { id: 'skill-trust-policy.md', tag: 'SKILL-TRUST-POLICY', title: 'Skill trust policy', blurb: 'How skills earn trust states.' },
-      { id: 'security-review.md', tag: 'SECURITY-REVIEW', title: 'Security review', blurb: 'Pre-release findings and status.' },
+    title: 'Trust & security',
+    items: [
+      { id: 'source-trust-policy.md', title: 'Source trust policy' },
+      { id: 'threat-model.md', title: 'Threat model' },
+      { id: 'quality-metrics.md', title: 'Quality & freshness' },
+      { id: 'security-review.md', title: 'Security review' },
     ],
   },
   {
-    kicker: 'Architecture',
-    title: 'How it fits together',
-    cards: [
-      { id: 'architecture.md', tag: 'ARCHITECTURE', title: 'Architecture', blurb: 'Binaries, storage, and retrieval design.' },
-      { id: 'vision.md', tag: 'VISION', title: 'Vision', blurb: 'Where the project is headed.' },
+    title: 'Agent integration',
+    items: [
+      { id: 'skill-harnesses.md', title: 'Agent harnesses' },
+      { id: 'skill-contract.md', title: 'Skill contract' },
+      { id: 'skill-compatibility.md', title: 'Skill compatibility' },
+      { id: 'skill-trust-policy.md', title: 'Skill trust policy' },
     ],
   },
   {
-    kicker: 'Development',
-    title: 'Build and release',
-    cards: [
-      { id: 'development.md', tag: 'DEVELOPMENT', title: 'Development', blurb: 'Prerequisites and local workflow.' },
-      { id: 'testing.md', tag: 'TESTING', title: 'Testing', blurb: 'Verifying a deployed instance layer by layer.' },
-      { id: 'releasing.md', tag: 'RELEASING', title: 'Releasing', blurb: 'Version policy and release process.' },
+    title: 'Project internals',
+    items: [
+      { id: 'architecture.md', title: 'Architecture' },
+      { id: 'development.md', title: 'Development' },
+      { id: 'testing.md', title: 'Testing' },
+      { id: 'releasing.md', title: 'Releasing' },
+      { id: 'interface-status.md', title: 'Interface status' },
+      { id: 'vision.md', title: 'Project vision' },
     ],
   },
 ];
-const cardHref = (c: Card) => c.href ?? (c.id ? docUrl(c.id) : `${base}docs/`);
+
+const hrefFor = (item: NavItem) => item.href ?? docUrl(item.id!);
+
+const journeys = [
+  { tag: 'TEAM', title: 'Deploy Zagros for a team', blurb: 'Run one shared instance, keep HelixDB private, and put MCP/UI behind your organization’s access boundary.', href: docUrl('deployment.md') },
+  { tag: 'AI', title: 'Connect an AI agent', blurb: 'Use MCP so agents and internal tools can query the same team-controlled security reference.', href: docUrl('mcp.md') },
+  { tag: 'TRUST', title: 'Understand what to trust', blurb: 'See how Zagros treats authoritative sources, provenance, freshness, and conflicting evidence.', href: docUrl('source-trust-policy.md') },
+  { tag: 'OPERATE', title: 'Operate and keep it fresh', blurb: 'Configure refresh behavior, runtime settings, and health checks for a shared deployment.', href: docUrl('configuration.md') },
+];
 ---
-<Base title="Docs — Zagros" description="Zagros documentation: install, CLI, MCP server, data sources, trust policies, architecture, development.">
+<Base title="Docs — Zagros" description="Zagros documentation organized by task: deploy a shared instance, connect AI agents, operate the service, and understand its trust model.">
 <div class="wrap">
   <div class="docs-layout">
     <aside class="docs-side">
       <a href={`${base}docs/`} aria-current="page">Overview</a>
-      {docs.map((d) => <a href={docUrl(d.id)}>{d.data.title ?? label(d.id)}</a>)}
-    </aside>
-    <article class="prose">
-      <div class="kicker">Docs</div>
-      <h1>Zagros documentation</h1>
-      <p class="muted">Self-hosted shared security knowledge for teams and AI agents. New here? Start with <a href={`${base}install/`}>Install</a>, then CLI and MCP. Source of truth lives in <span class="mono">/docs/*.md</span> — this site renders the same files.</p>
-      {sections.map((s) => (
-        <section>
-          <h2>{s.title}</h2>
-          <div class="grid">
-            {s.cards.map((c) => (
-              <a class="card" style="text-decoration:none" href={cardHref(c)}>
-                <span class="tag mono">{c.tag}</span>
-                <h3>{c.title}</h3>
-                <p>{c.blurb}</p>
-              </a>
-            ))}
-          </div>
-        </section>
+      {navGroups.map((group) => (
+        <div class="docs-nav-group">
+          <div class="docs-nav-title">{group.title}</div>
+          {group.items.map((item) => <a href={hrefFor(item)}>{item.title}</a>)}
+        </div>
       ))}
-      <div class="note">Full index — including project-management and historical notes not listed above — is in the sidebar. Human install path: <a href={`${base}install/`}>Install →</a></div>
+    </aside>
+
+    <article class="prose docs-home">
+      <div class="kicker">Documentation</div>
+      <h1>What are you trying to do?</h1>
+      <p class="docs-intro">Zagros is designed as a shared, self-hosted security reference for teams and their AI agents. Start with the task you need to complete; implementation details and project internals are kept lower in the navigation.</p>
+
+      <div class="docs-journey-grid">
+        {journeys.map((j) => (
+          <a class="card docs-journey" href={j.href}>
+            <span class="tag mono">{j.tag}</span>
+            <h3>{j.title}</h3>
+            <p>{j.blurb}</p>
+            <span class="docs-card-link">Open guide →</span>
+          </a>
+        ))}
+      </div>
+
+      <section class="docs-section">
+        <div class="kicker">New installation</div>
+        <h2>Start with a working instance</h2>
+        <p>For a first deployment, use the installation guide. If you want an AI agent to perform the setup, use the AI install prompt.</p>
+        <div class="cta-row" style="justify-content:flex-start">
+          <a class="btn btn-primary" href={`${base}install/`}>Install Zagros</a>
+          <a class="btn btn-ghost" href={`${base}install-prompt/`}>AI install</a>
+        </div>
+      </section>
+
+      <section class="docs-section">
+        <div class="kicker">Reference</div>
+        <h2>Browse by topic</h2>
+        <div class="docs-topic-grid">
+          {navGroups.slice(1).map((group) => (
+            <div class="docs-topic">
+              <h3>{group.title}</h3>
+              {group.items.map((item) => (
+                <a href={hrefFor(item)}>
+                  <span>{item.title}</span>
+                  <span aria-hidden="true">→</span>
+                </a>
+              ))}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <div class="note">Looking for maintainer-only or historical material? Those documents remain available by direct URL and in the repository, but they are intentionally excluded from the primary documentation navigation so normal users do not have to sort through project-management material.</div>
     </article>
   </div>
 </div>
