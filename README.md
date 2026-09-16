@@ -36,6 +36,12 @@ Example seeded corpus baseline captured 2026-09-08 (`backfill --limit 500` + `so
 
 ---
 
+## Try it live in GitHub Codespaces
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/siamakhaz/Zagros?quickstart=1)
+
+The repository includes a `.devcontainer` live-demo configuration. A new Codespace starts the real Docker Compose stack, seeds a practical demo corpus (100 CVEs plus all configured knowledge sources), and forwards the Zagros UI on port `8788`. Forwarded ports are private to the Codespace owner by default.
+
 ## Quick start
 
 ### 1. Start the stack

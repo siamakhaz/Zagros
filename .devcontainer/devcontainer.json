@@ -1,0 +1,16 @@
+{
+  "name": "Zagros Live Demo",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "forwardPorts": [8788],
+  "portsAttributes": {
+    "8788": {
+      "label": "Zagros UI",
+      "onAutoForward": "openBrowser"
+    }
+  },
+  "postCreateCommand": "bash .devcontainer/setup-live-demo.sh",
+  "remoteUser": "vscode"
+}
