@@ -24,7 +24,7 @@ const base = import.meta.env.BASE_URL;
     <div class="terminal">
       <div class="term-bar"><span>$ zagros search "remote code execution" --top-k 5</span><span class="spacer"></span><button class="copy-lite" data-copy='zagros search "remote code execution" --top-k 5'>copy</button></div>
       <div class="term-body">
-        <div><span class="o">1 · CVE-2024-3094</span> <span class="g">18.4</span></div>
+        <div><span class="o">CVE-2024-3094</span></div>
         <div><span class="c">XZ Utils supply-chain compromise affecting upstream xz/liblzma release artifacts.</span></div>
         <div><span class="d">src</span> <a href="https://www.cve.org/CVERecord?id=CVE-2024-3094">cve.org/CVERecord?id=CVE-2024-3094</a></div>
       </div>
@@ -32,12 +32,12 @@ const base = import.meta.env.BASE_URL;
     <div class="terminal">
       <div class="term-bar"><span>$ zagros know "out-of-bounds write" --top-k 5</span><span class="spacer"></span><button class="copy-lite" data-copy='zagros know "out-of-bounds write" --top-k 5'>copy</button></div>
       <div class="term-body">
-        <div><span class="o">1 · CWE-787 [CWE]</span> <span class="g">9.1</span></div>
+        <div><span class="o">CWE-787 [CWE]</span></div>
         <div><span class="c">Out-of-bounds Write — writes past the end of the intended buffer.</span></div>
         <div><span class="d">src</span> <a href="https://cwe.mitre.org/data/definitions/787.html">cwe.mitre.org/definitions/787</a></div>
       </div>
     </div>
-    <p class="sub" style="margin-top:12px">Two separate indexes, two separate commands: <span class="mono">search</span> ranks CVE records, <span class="mono">know</span> ranks CWE / ASVS / CAPEC / ATT&amp;CK. Zagros does lexical retrieval only — no embeddings, no generated answers.</p>
+    <p class="sub" style="margin-top:12px">Command examples above show the interface, not captured runtime ranking or scores. Two separate indexes, two separate commands: <span class="mono">search</span> ranks CVE records, <span class="mono">know</span> ranks CWE / ASVS / CAPEC / ATT&amp;CK. Zagros does lexical retrieval only — no embeddings, no generated answers.</p>
   </div>
 
   <section class="block">

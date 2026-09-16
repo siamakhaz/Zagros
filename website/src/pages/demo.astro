@@ -4,16 +4,20 @@ import data from '../data/sample.json';
 const base = import.meta.env.BASE_URL;
 const payload = JSON.stringify(data);
 ---
-<Base title="Try a search — Zagros" description="Static interactive demo: BM25-style search over sample CVE + knowledge records, plus MCP tool preview.">
+<Base title="Try a search — Zagros" description="Static UI preview over sample CVE and knowledge fixtures, plus a real Codespaces launch path.">
 <div class="wrap">
   <section class="block" style="padding-top:40px">
-    <div class="kicker">Try a search · static, offline</div>
-    <h2>Static browser preview of ranking behavior.</h2>
-    <p class="sub">This is a static preview — it runs 100% in your browser over a tiny sample of 8 records to illustrate how queries match. It is not a live index. The real CLI / MCP server runs the same BM25 logic over a seeded HelixDB. Try <span class="mono">xz</span>, <span class="mono">CVE-2024-3094</span>, <span class="mono">sql injection</span>, <span class="mono">credentials</span>.</p>
+    <div class="kicker">UI preview · static fixture data</div>
+    <h2>Preview the search interface.</h2>
+    <p class="sub">This page uses 8 hand-picked fixture records to preview the UI only. It does not call HelixDB, does not run Zagros BM25, and does not show runtime scores. Use <strong>Try Zagros Live</strong> below for the real Rust retrieval engine and seeded database.</p>
     <div class="demo-grid">
+      <div class="chips" id="modes">
+        <button data-mode="cve">CVE sample</button>
+        <button data-mode="knowledge">Knowledge sample</button>
+      </div>
       <div class="searchbox">
-        <input id="q" type="search" value="xz" autocomplete="off" spellcheck="false" aria-label="Search sample records" />
-        <button id="go">Search</button>
+        <input id="q" type="search" value="xz" autocomplete="off" spellcheck="false" aria-label="Filter sample records" />
+        <button id="go">Filter</button>
       </div>
       <div class="chips" id="chips">
         <button data-q="xz">xz</button>
@@ -23,7 +27,7 @@ const payload = JSON.stringify(data);
         <button data-q="CVE-2023-4911">second CVE</button>
       </div>
       <div id="results" class="demo-grid"></div>
-      <div class="note">Static demo — scores are illustrative. Full ranking (field weights, exact-match + phrase bonuses, <span class="mono">MIN_SCORE 1.0</span>) runs in-process in the Rust binary. Point the real thing at <span class="mono">zagros search "…" --top-k 5</span> or MCP <span class="mono">search_cves</span>.</div>
+      <div class="note">Fixture preview only. Matching here is a simple browser-side text filter. Real ranking, thresholds, field weights, and exact/phrase bonuses exist only in the Rust Zagros runtime.</div>
     </div>
   </section>
 
@@ -42,10 +46,25 @@ const payload = JSON.stringify(data);
     <div class="kicker">MCP preview</div>
     <h2>What your agent sees.</h2>
     <div class="steps">
-      <div class="step"><div class="n">→</div><div><h3 class="mono">search_cves — query + top_k <button class="copy-lite" data-copy='{"tool": "search_cves", "query": "xz", "top_k": 5}'>copy</button></h3><pre class="code"><span class="cm">// POST /mcp — Streamable HTTP</span>
-&#123;"tool": <span class="hl">"search_cves"</span>, "query": "xz", "top_k": 5&#125;
-<span class="cm">// → ranked hits: id, score, description, source_url</span></pre></div></div>
-      <div class="step"><div class="n">→</div><div><h3 class="mono">get_cve — exact id <button class="copy-lite" data-copy='{"tool": "get_cve", "cve_id": "CVE-2024-3094"}'>copy</button></h3><pre class="code">&#123;"tool": <span class="hl">"get_cve"</span>, "cve_id": "CVE-2024-3094"&#125;</pre></div></div>
+      <div class="step"><div class="n">→</div><div><h3 class="mono">search_cves — real MCP tools/call request</h3><pre class="code"><span class="cm">// JSON-RPC body sent to POST /mcp</span>
+&#123;
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": <span class="hl">"tools/call"</span>,
+  "params": &#123;
+    "name": <span class="hl">"search_cves"</span>,
+    "arguments": &#123;"query": "xz", "top_k": 5&#125;
+  &#125;
+&#125;</pre></div></div>
+      <div class="step"><div class="n">→</div><div><h3 class="mono">get_cve — real MCP tools/call request</h3><pre class="code">&#123;
+  "jsonrpc": "2.0",
+  "id": 2,
+  "method": <span class="hl">"tools/call"</span>,
+  "params": &#123;
+    "name": <span class="hl">"get_cve"</span>,
+    "arguments": &#123;"cve_id": "CVE-2024-3094"&#125;
+  &#125;
+&#125;</pre></div></div>
     </div>
     <div class="cta-row" style="justify-content:flex-start">
       <a class="btn btn-ghost mono" href={`${base}docs/mcp/`}>MCP reference →</a>
@@ -53,38 +72,38 @@ const payload = JSON.stringify(data);
   </section>
 
   <section class="block" id="investigation">
-    <div class="kicker">Canonical investigation flow</div>
-    <h2>From question to evidence-backed recommendation.</h2>
-    <p class="sub">Example question: <span class="mono">"What does Zagros know about CVE-2024-3094, and what should I do next?"</span> The agent first checks corpus health, then retrieves the record, and keeps evidence separate from interpretation.</p>
+    <div class="kicker">Example investigation flow</div>
+    <h2>How an agent can use Zagros evidence.</h2>
+    <p class="sub">This is a documented example, not live output from this static page. For the question <span class="mono">"What does Zagros know about CVE-2024-3094, and what should I do next?"</span>, an agent should check current corpus health, retrieve evidence, and keep its own interpretation separate.</p>
 
     <div class="steps">
       <div class="step" id="evidence"><div class="n">1</div><div>
-        <h3>Evidence — retrieve and verify</h3>
-        <pre class="code"><span class="cm">index_status → overall_health: healthy</span>
-<span class="cm">get_cve → authoritative CVE record</span>
+        <h3>Evidence — example of fields to verify</h3>
+        <pre class="code"><span class="cm">index_status → inspect current overall_health at runtime</span>
+<span class="cm">get_cve → retrieve current stored CVE record</span>
 ID: <span class="hl">CVE-2024-3094</span>
 Finding: malicious code in upstream xz/liblzma 5.6.0 and 5.6.1 release tarballs
 Impact stated by record: could interfere with sshd authentication in affected Linux environments
 Source: CVE Program / cvelistV5
 Trust tier: authoritative</pre>
-        <p class="muted">Retrieved text is treated as untrusted reference data. The record ID and canonical source remain attached to the claim.</p>
+        <p class="muted">The text above is an illustrative excerpt. In a real run, use the current <span class="mono">get_cve</span> response and its provenance/source URL.</p>
       </div></div>
 
       <div class="step" id="analysis"><div class="n">2</div><div>
-        <h3>Analysis — interpret without rewriting the evidence</h3>
+        <h3>Agent analysis — separate from Zagros output</h3>
         <pre class="code">The record supports a serious software supply-chain compromise affecting xz/liblzma release artifacts.
 Zagros does <span class="hl">not</span> infer affected versions, exploitability in your environment,
 or remediation status unless those facts are present in authoritative evidence.</pre>
-        <p class="muted">Inference is labeled as analysis, not presented as something the source said.</p>
+        <p class="muted">This interpretation is performed by the consuming agent, not generated by Zagros itself.</p>
       </div></div>
 
       <div class="step" id="recommendation"><div class="n">3</div><div>
-        <h3>Recommendation — act proportionally</h3>
+        <h3>Agent recommendation — based on verified evidence</h3>
         <pre class="code">1. Verify whether the affected product/version exists in your environment.
 2. Confirm the current vendor advisory and CVE record.
 3. Prioritize remediation if exposure and affected-version evidence match.
 4. Re-run the investigation after source refresh if evidence is stale.</pre>
-        <p class="muted">Zagros supplies evidence and a safe investigation structure. It does not certify compliance or autonomously remediate systems.</p>
+        <p class="muted">These actions are an example agent workflow. Zagros supplies retrieval and provenance; it does not generate recommendations, certify compliance, or autonomously remediate systems.</p>
       </div></div>
     </div>
   </section>
@@ -92,27 +111,48 @@ or remediation status unless those facts are present in authoritative evidence.<
 </div>
 <script define:vars={{ payload }}>
   const docs = JSON.parse(payload);
-  const q = document.getElementById('q'), go = document.getElementById('go');
+  const q = document.getElementById('q');
+  const go = document.getElementById('go');
   const box = document.getElementById('results');
-  const tok = (s) => (s.toLowerCase().match(/[a-z0-9]+(?:-[a-z0-9]+)*/g) || []);
-  function search(query) {
-    const terms = tok(query); const exact = query.trim().toUpperCase();
-    const out = docs.map((d) => {
-      const hay = (d.id + ' ' + d.title + ' ' + d.description).toLowerCase();
-      const ht = tok(hay); let s = 0;
-      for (const t of terms) { const f = ht.filter((x) => x === t).length; if (f) s += (1 + Math.log(f)) * (t.startsWith('cve-') ? 6 : t.length > 5 ? 2 : 1); }
-      if (exact && d.id.toUpperCase() === exact) s += 25;
-      if (terms.length > 1 && terms.every((t) => hay.includes(t))) s += 4;
-      return { d, s };
-    }).filter((r) => r.s >= 1).sort((a, b) => b.s - a.s);
-    box.innerHTML = out.length ? out.map((r) =>
-      `<div class="result"><span class="score">score ${r.s.toFixed(1)}</span><div class="rid">${r.d.id} · ${r.d.source}</div><h3>${r.d.title}</h3><p>${r.d.description}</p></div>`
-    ).join('') : `<div class="result"><h3>No hits above MIN_SCORE 1.0</h3><p class="muted">Try “xz”, “credentials”, or a full CVE id.</p></div>`;
+  let mode = 'cve';
+
+  const isCve = (d) => d.id.startsWith('CVE-');
+  const inMode = (d) => mode === 'cve' ? isCve(d) : !isCve(d);
+
+  function filterRecords(query) {
+    const needle = query.trim().toLowerCase();
+    const out = docs.filter(inMode).filter((d) => {
+      if (!needle) return true;
+      return (d.id + ' ' + d.title + ' ' + d.description + ' ' + d.source)
+        .toLowerCase()
+        .includes(needle);
+    });
+    box.innerHTML = out.length ? out.map((d) =>
+      `<div class="result"><div class="rid">${d.id} · ${d.source}</div><h3>${d.title}</h3><p>${d.description}</p></div>`
+    ).join('') : `<div class="result"><h3>No fixture records match</h3><p class="muted">Change the filter or switch sample type.</p></div>`;
   }
-  go.onclick = () => search(q.value);
-  q.onkeydown = (e) => { if (e.key === 'Enter') search(q.value); };
-  document.getElementById('chips').onclick = (e) => { const b = e.target.closest('button'); if (!b) return; q.value = b.dataset.q; search(q.value); };
-  search(q.value);
+
+  function setMode(next) {
+    mode = next;
+    q.value = next === 'cve' ? 'xz' : 'injection';
+    filterRecords(q.value);
+  }
+
+  go.onclick = () => filterRecords(q.value);
+  q.onkeydown = (e) => { if (e.key === 'Enter') filterRecords(q.value); };
+  document.getElementById('chips').onclick = (e) => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    q.value = b.dataset.q;
+    filterRecords(q.value);
+  };
+  document.getElementById('modes').onclick = (e) => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    setMode(b.dataset.mode);
+  };
+
+  setMode('cve');
   const focus = new URLSearchParams(window.location.search).get('focus');
   if (focus) document.getElementById(focus)?.scrollIntoView({ block: 'start' });
 </script>

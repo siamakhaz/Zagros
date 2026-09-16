@@ -16,7 +16,9 @@ See [SOURCE-TRUST-POLICY.md](SOURCE-TRUST-POLICY.md) for claim-specific source a
 
 ## Summary
 
-| Source | Command | Records | Node label | `source` field |
+Counts in the summary table are an example seeded snapshot captured on 2026-09-08. A fresh or refreshed instance can differ; use `zagros status` or `index_status` for current counts.
+
+| Source | Command | Example seeded count (2026-09-08) | Node label | `source` field |
 |---|---|---|---|---|
 | CVE Project delta feed | `ingest` / `backfill` | 499+ | `Cve` | — |
 | MITRE CWE | `source cwe` | ~969 | `Knowledge` | `cwe` |

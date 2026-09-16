@@ -8,6 +8,8 @@ for clients that cannot use the Toolkit transport.
 
 ---
 
+> **Example output note:** JSON responses below are examples. Counts, timestamps, scores, refresh state, and health values vary by the running Zagros instance and are not live website data.
+
 ## Setup
 
 ### Prerequisites
@@ -58,7 +60,7 @@ Search the local CVE index stored in HelixDB using ranked lexical retrieval.
 | `query` | string | yes | 1–500 chars | — | Search phrase, product, vulnerability class, attack technique, or CVE ID |
 | `top_k` | integer | no | 1–50 | 10 | Maximum number of results to return |
 
-**Output:**
+**Example output:**
 
 ```json
 {
@@ -102,7 +104,7 @@ Get one exact CVE record from HelixDB by CVE identifier.
 
 **Example values:** `CVE-2024-3094`, `CVE-2023-4911`
 
-**Output:**
+**Example output:**
 
 ```json
 {
@@ -132,7 +134,7 @@ Report CVE record count, newest update, and knowledge counts by source.
 
 **Input:** none
 
-**Output:**
+**Example output:**
 
 ```json
 {
@@ -172,7 +174,7 @@ Download the latest changed official CVE records and upsert them into HelixDB.
 |---|---|---|---|---|---|
 | `limit` | integer | no | 1–1000 | 50 | Number of latest changed records to download |
 
-**Output:**
+**Example output:**
 
 ```json
 {
@@ -211,7 +213,7 @@ Search the CWE / ASVS / CAPEC / ATT&CK knowledge base (CLI `know` parity).
 | `query` | string | yes | 1–500 chars | — | Weakness name, control ID, technique name, or keyword |
 | `top_k` | integer | no | 1–50 | 10 | Maximum number of results to return |
 
-**Output:**
+**Example output:**
 
 ```json
 {
@@ -249,8 +251,8 @@ Ingest a knowledge source (CLI `source` parity). `source: "all"` runs `cwe → a
 |---|---|---|---|
 | `source` | string | yes | `cwe` \| `asvs` \| `capec` \| `attack` \| `all` |
 
-**Output (single):** `{ "source": "cwe", "loaded": 969, "total_records": 969 }`
-**Output (`all`):** same plus `per_source: [{source, loaded, total_records}, …]`.
+**Example output (single):** `{ "source": "cwe", "loaded": 969, "total_records": 969 }`
+**Example output (`all`):** same plus `per_source: [{source, loaded, total_records}, …]`.
 
 **Rate limiting:** 5-minute cooldown via `last_knowledge_sync`; invalidates knowledge cache on success.
 
@@ -269,7 +271,7 @@ Walk `deltaLog.json` history (CLI `backfill` parity).
 | `limit` | integer | no | 1–10000 | 500 | Max unique CVEs to load |
 | `verbose` | boolean | no | — | false | Per-URL skip messages (server logs) |
 
-**Output:** `{ "fetched": 499, "total_records": 499 }`
+**Example output:** `{ "fetched": 499, "total_records": 499 }`
 
 **Rate limiting:** 5-minute cooldown via `last_backfill`; invalidates CVE cache on success.
 

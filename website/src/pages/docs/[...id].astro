@@ -22,6 +22,7 @@ const title = doc.data.title ?? label(doc.id);
     <article class="prose">
       <div class="kicker mono">{doc.id.replace(/\.md$/, '')}</div>
       <h1>{title}</h1>
+      <div class="note">Documentation examples may contain captured seeded counts, scores, timestamps, or health values. They are examples, not live telemetry. Use the running CLI <span class="mono">status</span> command or MCP <span class="mono">index_status</span> for current instance data.</div>
       <Content />
     </article>
   </div>

@@ -23,9 +23,11 @@ one model provider, or one deployment environment.
 
 ---
 
-## Current State (public pre-release baseline)
+## Current State (public pre-release baseline; example snapshot)
 
 ### What is working right now
+
+The counts below are a captured example baseline, not live website telemetry. Verify any running instance with `zagros status` or MCP `index_status`.
 
 | Component | Current implementation |
 |---|---|
@@ -44,7 +46,7 @@ one model provider, or one deployment environment.
 | Docker MCP | `docker/zagros-server.yaml` registers the MCP server with Docker MCP Toolkit |
 | Tests | Hosted CI covers formatting, clippy, Rust tests, website build, Compose validation, three Docker builds, security scanning, and deterministic HelixDB -> CLI -> MCP E2E |
 
-### Knowledge corpus in HelixDB (verified 2026-08-16)
+### Example seeded corpus snapshot (captured 2026-09-08)
 
 ```
 HelixDB URL  : http://localhost:47474
