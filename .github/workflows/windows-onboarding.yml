@@ -1,0 +1,90 @@
+name: Windows fresh onboarding
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/windows-onboarding.yml'
+      - 'Cargo.toml'
+      - 'Cargo.lock'
+      - 'src/**'
+      - 'tests/**'
+      - 'scripts/**'
+      - 'skills/**'
+      - 'docs/ONBOARD-*.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-native:
+    name: Fresh Windows native build and onboarding checks
+    runs-on: windows-2025
+    timeout-minutes: 35
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - name: Checkout clean repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87 # stable
+        with:
+          components: rustfmt
+
+      - name: Verify prerequisites
+        run: |
+          $ErrorActionPreference = 'Stop'
+          rustc --version
+          cargo --version
+          pwsh --version
+          python --version
+          git --version
+          if ($LASTEXITCODE -ne 0) { throw 'Prerequisite command failed' }
+
+      - name: Verify PowerShell setup scripts parse
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $scripts = @('scripts/setup.ps1', 'docker/register.ps1')
+          foreach ($file in $scripts) {
+            $tokens = $null
+            $errors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile(
+              (Join-Path $PWD $file), [ref]$tokens, [ref]$errors
+            ) | Out-Null
+            if ($errors.Count -gt 0) { throw "$file has PowerShell parser errors: $($errors -join '; ')" }
+            Write-Host "PASS parser: $file"
+          }
+
+      - name: Validate agent skill contract
+        run: |
+          python skills/validate.py
+          if ($LASTEXITCODE -ne 0) { throw 'Skill validation failed' }
+
+      - name: Build native Windows CLI and MCP servers
+        run: |
+          cargo build --locked --bin zagros --bin zagros-mcp --bin zagros-mcp-http
+          if ($LASTEXITCODE -ne 0) { throw 'Windows build failed' }
+
+      - name: Run native unit and non-service tests
+        run: |
+          cargo test --locked --all-targets
+          if ($LASTEXITCODE -ne 0) { throw 'Windows tests failed' }
+
+      - name: Validate installed CLI can start and display help
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $exe = Join-Path $PWD 'target/debug/zagros.exe'
+          if (-not (Test-Path $exe)) { throw 'Missing Windows CLI executable' }
+          & $exe --help
+          if ($LASTEXITCODE -ne 0) { throw 'CLI help failed' }
+          & $exe search --help
+          if ($LASTEXITCODE -ne 0) { throw 'CLI search help failed' }
+
+      - name: Record verification scope
+        run: |
+          Write-Host 'PASS: clean Windows runner checkout, PowerShell syntax, skills, native Rust compile/tests, CLI launch.'
+          Write-Host 'NOT TESTED: Docker Desktop/WSL2, HelixDB deployment, seeded first query, MCP network connection.'
