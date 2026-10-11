@@ -1,7 +1,7 @@
 FROM golang:1.26.9-bookworm AS supercronic-build
 RUN GOBIN=/go/bin go install github.com/aptible/supercronic@v0.2.49
 
-﻿FROM rust:1.95-bookworm@sha256:6258907abe69656e41cd992e0b705cdcfabcbbe3db374f92ed2d47121282d4a1 AS builder
+FROM rust:1.95-bookworm@sha256:6258907abe69656e41cd992e0b705cdcfabcbbe3db374f92ed2d47121282d4a1 AS builder
 WORKDIR /src
 COPY Cargo.toml Cargo.lock ./
 COPY src ./src
