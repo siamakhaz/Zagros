@@ -7,6 +7,11 @@ Zagros Core provides ingestion, HelixDB-backed retrieval, CLI, MCP servers, and 
 Zagros Skills provide harness-neutral investigation guidance that teaches agents how to use
 retrieved evidence safely and correctly.
 
+## Start here
+
+- [AI-agent developer onboarding](ONBOARD-DEVELOPER.md)
+- [Self-hosting administrator onboarding](ONBOARD-ADMIN.md)
+
 ## Quick links
 
 - [CLAIM-AUDIT.md](CLAIM-AUDIT.md) — Claim evidence and verification limits

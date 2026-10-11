@@ -46,6 +46,11 @@ Example seeded corpus baseline captured 2026-09-08 (`backfill --limit 500` + `so
 
 The repository includes a `.devcontainer` live-demo configuration. A new Codespace starts the real Docker Compose stack, seeds a practical demo corpus (100 CVEs plus all configured knowledge sources), and forwards the Zagros UI on port `8788`. Forwarded ports are private to the Codespace owner by default.
 
+## Choose your onboarding path
+
+- [AI-agent developer: connect and run first query](docs/ONBOARD-DEVELOPER.md)
+- [Self-hosting administrator: deploy, seed and query](docs/ONBOARD-ADMIN.md)
+
 ## Quick start
 
 ### 1. Start the stack
