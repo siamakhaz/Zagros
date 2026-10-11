@@ -26,7 +26,7 @@ Example seeded corpus baseline captured 2026-09-08 (`backfill --limit 500` + `so
 | CVE nodes | 499+ | `cvelistV5` deltaLog (hourly history) |
 | CWE weaknesses | 969 | MITRE CWE 4.15 |
 | OWASP ASVS requirements | 345 | OWASP ASVS 5.0 |
-| CAPEC attack patterns | 613 | MITRE CAPEC 3.9 |
+| CAPEC attack patterns | 613 (historical seed example) | MITRE CAPEC 3.9 |
 | ATT&CK Enterprise techniques | 697 | MITRE ATT&CK v16.1 |
 | **Total** | **~3,123** | verify with `cli status` / `GET /api/status` |
 
@@ -114,7 +114,7 @@ docker run --rm --network zagros -e HELIX_URL=http://helix:8080 zagros-cli:0.1.0
 
 ```powershell
 .\target\debug\zagros.exe source all
-# ingested 969 CWE, 345 ASVS, 613 CAPEC, 697 ATT&CK records
+# historical counts vary; verify with zagros status
 
 # or via Docker:
 docker compose -f docker/compose.yml --profile cli run --rm cli source all
@@ -353,7 +353,7 @@ Zagros-authored code, documentation, and skills are licensed under Apache-2.0 â€
 
 ## Project status and trust model
 
-Zagros separates authoritative evidence from agent analysis and recommendations. Retrieved third-party text is treated as untrusted data, provenance is preserved, and mutating/network MCP tools require explicit approval.
+Zagros separates source evidence from agent analysis and recommendations. See [claim audit](docs/CLAIM-AUDIT.md) for evidence and verification limits. Retrieved third-party text is treated as untrusted data, provenance is preserved, and clients must obtain operator approval before invoking mutating/network MCP tools; this is a client-side policy, not proof of server-enforced authorization.
 
 - Threat model: `docs/THREAT-MODEL.md`
 - Interface stability: `docs/INTERFACE-STATUS.md`

@@ -10,7 +10,7 @@ The public website also exposes this flow interactively on the `/demo/` page. De
 
 ## 1. Evidence — retrieve and verify
 
-Start by checking corpus health with `index_status`, then retrieve the exact record with `get_cve`.
+Start by checking corpus health with `index_status`, then retrieve the exact record with `get_cve`. The example CVE must be present in the index; otherwise use an ID returned by `search_cves`.
 
 ![Evidence stage](../assets/demo/01-evidence.png)
 
@@ -56,7 +56,7 @@ Zagros does not certify compliance and does not autonomously remediate systems.
 With a running Zagros MCP server:
 
 1. Call `index_status`.
-2. Call `get_cve` for `CVE-2024-3094`.
+2. Call `get_cve` for `CVE-2024-3094` if indexed; otherwise select an indexed CVE using `search_cves` first.
 3. Present output using **Evidence / Analysis / Recommendation** sections.
 4. Cite the CVE ID and canonical source for evidence-backed claims.
 5. Require explicit approval before any sync/backfill operation.
