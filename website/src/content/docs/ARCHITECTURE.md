@@ -1,5 +1,13 @@
 # Architecture
 
+## Core and Skills boundary
+
+**Core** comprises the Rust service binaries, shared ingestion/retrieval code, and HelixDB storage. The CLI, MCP servers, and web UI expose retrieved source-attributed evidence. Core can function without an agent skill. Server-side access restrictions for a shared deployment must be supplied by an authenticated gateway; MCP client approval guidance alone is not authorization.
+
+**Skills** are separately versioned, optional agent guidance packaged under `skills/` and governed by [the Skill Contract](SKILL-CONTRACT.md). They specify how a compatible agent should distinguish evidence from analysis, cite sources, and seek approval for writes. They neither execute ingestion on their own nor establish that any target is vulnerable. Retrieved source text is untrusted data, not agent instructions.
+
+Current capabilities and limitations must be verified against source and tests; see [claim audit](CLAIM-AUDIT.md) and [deployment security](DEPLOYMENT.md).
+
 ## Overview
 
 Zagros is a four-binary Rust project:
@@ -15,48 +23,27 @@ All four binaries share the library crate defined in `src/lib.rs`, `src/db.rs`, 
 
 ---
 
-## Component diagram
+## Component and data flow
 
+For a short user-facing explanation see [How Zagros works](HOW-IT-WORKS.md).
+
+```text
+Upstream source feeds -> fetch / validate / normalize -> HelixDB (Cve, Knowledge)
+                                     |                        |
+                              provenance metadata            v
+                                               application retrieval + BM25
+                                                         |
+                                               CLI / MCP / Web UI
 ```
-┌──────────────────────────────────────────────────────────────────────┐
-│                     AI Agent Clients                                  │
-│           (OpenCode, Claude Desktop, VS Code, custom)                 │
-└─────────────────────────┬────────────────────────────────────────────┘
-                          │  stdio (JSON-RPC / MCP protocol)
-                  Docker MCP Toolkit
-                          │  spawns on demand
-┌─────────────────────────▼────────────────────────────────────────────┐
-│  zagros-mcp[-http]  (src/bin/zagros-mcp{,-http}.rs)                 │
-│  search_cves  get_cve  index_status  sync_cves                        │
-│  search_knowledge  sync_knowledge_source  backfill_cves                │
-│  DocCache + KnowledgeCache (5-min TTL)  write-tool rate-limit guards    │
-└──────────┬───────────────────────────────────────────────────────────┘
-            │                              │ sync_cves only
-            │                    raw.githubusercontent.com
-            │                    delta.json / CVE JSON files
-┌──────────▼───────────────────────────────────────────────────────────┐
-│  BM25 Retrieval Engine  (src/lib.rs)                                  │
-│  rank_documents(Cve)   rank_knowledge(Knowledge)                      │
-│  field weights: id×8  title×3  description×1                          │
-│  exact-match bonus +100   phrase bonus +8/+4                          │
-└──────────┬───────────────────────────────────────────────────────────┘
-           │  HTTP  (helix-db crate)
-┌──────────▼───────────────────────────────────────────────────────────┐
-│  HelixDB  (docker/compose.yml, port 47474)                            │
-│  Cve nodes           Knowledge nodes                                  │
-│  499+ CVE records    2,624 CWE/ASVS/CAPEC/ATT&CK records             │
-│  No graph edges yet  No vector embeddings yet                         │
-│  Volume: zagros_helix-data                                           │
-└──────────────────────────────────────────────────────────────────────┘
 
-Web UI Binary (src/bin/zagros-ui.rs)
-  /api/status  /api/cves  /api/knowledge  /api/search
-  Default port 8788 via UI_PORT
+CLI and the three MCP write tools can initiate ingestion. The retrieval logic is in
+the shared Rust library; MCP provides both stdio and Streamable HTTP transports.
+The UI is a separate HTTP server. All retrieved upstream content is untrusted
+reference material, never instructions to agents. HelixDB stores nodes; it is not
+an autonomous vulnerability scanner or a server-side authorization layer.
 
-CLI Binary  (src/main.rs)
-  ingest  backfill  source  search  know  interactive  status
-  Uses same db.rs + lib.rs path; no MCP layer; no in-process cache
-```
+Corpus counts are installation-dependent. Inspect live status instead of relying
+on historical seed examples.
 
 ---
 
@@ -66,7 +53,7 @@ CLI Binary  (src/main.rs)
 zagros/
 ├── Cargo.toml                  # dependencies, edition 2024
 ├── Cargo.lock                  # pinned dependency graph
-├── Dockerfile                  # two-stage build → debian:bookworm-slim
+├── Dockerfile                  # multi-stage build → debian:bookworm-slim
 ├── assets/
 │   └── zagros.png
 ├── data/
@@ -213,7 +200,7 @@ record is absent from the index until the next successful upsert of the same ID.
 
 ## MCP server internals
 
-`zagros-mcp` is a stdio-transport MCP server built with `rmcp` 3.1.2.
+`zagros-mcp` is a stdio-transport MCP server built with the repository-locked `rmcp` dependency.
 Docker Desktop MCP Toolkit spawns it as a subprocess when an agent client
 connects.
 
@@ -238,21 +225,18 @@ return `McpError::invalid_params`.
 
 ---
 
-## Docker image
+## Docker images
 
-The `Dockerfile` uses a two-stage build:
+The MCP `Dockerfile` uses a Go builder for Supercronic, a Rust builder for
+the CLI and both MCP binaries, and a Debian Bookworm runtime image. The runtime
+runs as an unprivileged `zagros` user and includes `zagros`,
+`zagros-mcp`, and `zagros-mcp-http`. Its daily refresh mechanism executes
+through the bundled scheduler and entrypoint. Image dependencies are updated
+during building; security scans remain required.
 
-**Stage 1 — builder** (`rust:1.95-bookworm`, pinned SHA256)
-- Compiles the `zagros-mcp` and `zagros-mcp-http` binaries with `--release --locked`.
-
-**Stage 2 — runtime** (`debian:bookworm-slim`, pinned SHA256)
-- Installs only `ca-certificates`.
-- Creates system user `zagros` (uid 10001, no shell, no home).
-- Copies binary as root-owned 755.
-- Sets `ZAGROS_DATA_DIR=/data` and declares `/data` as a Docker volume.
-- Runs as `USER zagros`.
-
-The CLI binary (`zagros`) is not included in the Docker image.
+`Dockerfile.cli` builds the standalone CLI image, and `Dockerfile.ui`
+builds the UI service image. See [deployment](DEPLOYMENT.md) for networking,
+mount permissions, and access controls.
 
 ---
 
