@@ -50,6 +50,26 @@ const base = import.meta.env.BASE_URL;
   </section>
 
   <section class="block">
+    <div class="kicker">Core and Skills</div>
+    <h2>Security evidence and agent guidance are separate.</h2>
+    <div class="grid2">
+      <div class="card">
+        <h3>Zagros Core</h3>
+        <p>Run a self-hosted service that ingests supported security sources, preserves record provenance, and serves searchable evidence through MCP, CLI, and the web UI. The service does not scan or remediate systems.</p>
+      </div>
+      <div class="card">
+        <h3>Optional Zagros Skills</h3>
+        <p>Install guidance for compatible AI agents on citing evidence, separating source facts from interpretation, and requesting approval before changes. Skills do not enforce server authorization or replace an investigator's judgment.</p>
+      </div>
+    </div>
+    <p class="sub">Core works without Skills. For shared access, provide authentication and authorization at a protected gateway.</p>
+    <div class="cta-row" style="justify-content:flex-start">
+      <a class="btn btn-ghost" href={`${base}docs/skill-contract/`}>Skill Contract</a>
+      <a class="btn btn-ghost" href={`${base}docs/deployment/`}>Deployment security</a>
+    </div>
+  </section>
+
+  <section class="block">
     <div class="kicker">Why Zagros</div>
     <h2>One trusted reference. Shared across your team.</h2>
     <p class="sub">Instead of every AI agent searching independently or relying only on model memory, connect them to the same team-controlled security knowledge service.</p>

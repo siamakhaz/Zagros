@@ -1,5 +1,13 @@
 # Architecture
 
+## Core and Skills boundary
+
+**Core** comprises the Rust service binaries, shared ingestion/retrieval code, and HelixDB storage. The CLI, MCP servers, and web UI expose retrieved source-attributed evidence. Core can function without an agent skill. Server-side access restrictions for a shared deployment must be supplied by an authenticated gateway; MCP client approval guidance alone is not authorization.
+
+**Skills** are separately versioned, optional agent guidance packaged under `skills/` and governed by [the Skill Contract](SKILL-CONTRACT.md). They specify how a compatible agent should distinguish evidence from analysis, cite sources, and seek approval for writes. They neither execute ingestion on their own nor establish that any target is vulnerable. Retrieved source text is untrusted data, not agent instructions.
+
+Current capabilities and limitations must be verified against source and tests; see [claim audit](CLAIM-AUDIT.md) and [deployment security](DEPLOYMENT.md).
+
 ## Overview
 
 Zagros is a four-binary Rust project:
@@ -44,7 +52,7 @@ All four binaries share the library crate defined in `src/lib.rs`, `src/db.rs`, 
 ┌──────────▼───────────────────────────────────────────────────────────┐
 │  HelixDB  (docker/compose.yml, port 47474)                            │
 │  Cve nodes           Knowledge nodes                                  │
-│  499+ CVE records    2,624 CWE/ASVS/CAPEC/ATT&CK records             │
+│  record counts vary by deployment and snapshot             │
 │  No graph edges yet  No vector embeddings yet                         │
 │  Volume: zagros_helix-data                                           │
 └──────────────────────────────────────────────────────────────────────┘
@@ -66,7 +74,7 @@ CLI Binary  (src/main.rs)
 zagros/
 ├── Cargo.toml                  # dependencies, edition 2024
 ├── Cargo.lock                  # pinned dependency graph
-├── Dockerfile                  # two-stage build → debian:bookworm-slim
+├── Dockerfile                  # multi-stage build → debian:bookworm-slim
 ├── assets/
 │   └── zagros.png
 ├── data/

@@ -18,6 +18,12 @@ Security investigators and independent researchers use Zagros to check vulnerabi
 
 **Limits:** Zagros does not scan infrastructure or source code by itself, prove that a system is vulnerable, or apply security fixes automatically. It is an evidence service, not a scanner or remediation agent.
 
+## Core and Skills: what each part does
+
+**Zagros Core** is the running security intelligence service. It ingests supported external sources, stores records with provenance in HelixDB, and exposes retrieval through MCP, CLI, and the web UI. Source data is evidence for an investigator, **not instructions for an AI agent**. Core does not scan a target, establish exploitability, or grant per-user access control for a shared deployment.
+
+**Zagros Skills** are optional, separately versioned instructions that guide compatible AI agents in how to use retrieved evidence, cite sources, distinguish facts from inference, and seek approval for mutations. Skills do **not** add sources to Core, independently verify a vulnerability, or enforce server-side authorization. Core can be used without installing a skill. See [Skill Contract](docs/SKILL-CONTRACT.md) and [deployment security](docs/DEPLOYMENT.md).
+
 ## What it does
 
 - Ingests CVE records from the official [CVE Project delta feed](https://github.com/CVEProject/cvelistV5).
