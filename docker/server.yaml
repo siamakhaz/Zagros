@@ -4,17 +4,17 @@ type: server
 # The image default entrypoint is zagros-mcp-http (HTTP server).
 # The MCP Toolkit needs the stdio binary, so override it here.
 command: ["/usr/local/bin/zagros-mcp"]
-description: Search and synchronize official CVE records with ranked lexical retrieval backed by HelixDB.
+description: Search and synchronize official CVE records and authoritative security knowledge with ranked lexical retrieval backed by HelixDB.
 meta:
   category: security
   tags:
     - security
     - cve
     - vulnerability
-    - rag
+    - knowledge
 about:
   title: Zagros
-  description: Search and synchronize official CVE records with ranked retrieval
+  description: Search CVE records and security knowledge with ranked lexical retrieval
 source:
   project: local
 # The zagros-mcp container reaches HelixDB via host.docker.internal which
@@ -22,6 +22,8 @@ source:
 # setup.sh adds the required iptables rule so the host accepts the connection.
 allowHosts:
   - raw.githubusercontent.com:443
+  - cwe.mitre.org:443
+  - capec.mitre.org:443
   - host.docker.internal:47474
 extraHosts:
   - host.docker.internal:host-gateway
@@ -36,6 +38,12 @@ tools:
   - name: get_cve
     description: "Get one exact CVE record from HelixDB by CVE identifier."
   - name: index_status
-    description: "Report CVE record count in HelixDB and the HelixDB URL in use."
+    description: "Report CVE and knowledge counts plus source integrity and freshness."
   - name: sync_cves
     description: "Download latest changed official CVE records and upsert them into HelixDB. This writes data and makes network requests; clients should request user approval before calling it."
+  - name: search_knowledge
+    description: "Search the local CWE, ASVS, CAPEC, and ATT&CK knowledge index using ranked lexical retrieval."
+  - name: sync_knowledge_source
+    description: "Refresh one knowledge source or all configured knowledge sources. This writes data and makes network requests; clients should request user approval before calling it."
+  - name: backfill_cves
+    description: "Walk official CVE deltaLog history and backfill records into HelixDB. This writes data and makes network requests; clients should request user approval before calling it."

@@ -1,5 +1,5 @@
 name: zagros
-title: Security RAG (CVE + CWE + ASVS + CAPEC + ATT&CK)
+title: Zagros Security Knowledge
 type: server
 image: zagros-mcp:0.1.0
 # The image default entrypoint is zagros-mcp-http (HTTP server).
@@ -8,9 +8,12 @@ command: ["/usr/local/bin/zagros-mcp"]
 description: >
   Search CVE records and the security knowledge base (MITRE CWE, OWASP ASVS,
   MITRE CAPEC, MITRE ATT&CK) stored in a local HelixDB instance.
-  Tools: search_cves, get_cve, index_status, sync_cves.
+  Tools: search_cves, get_cve, index_status, sync_cves, search_knowledge,
+  sync_knowledge_source, backfill_cves.
 allowHosts:
   - raw.githubusercontent.com:443
+  - cwe.mitre.org:443
+  - capec.mitre.org:443
   - host.docker.internal:47474
 env:
   - name: HELIX_URL

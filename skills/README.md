@@ -1,4 +1,4 @@
-# zagros-skill â€” cybersecurity skill + Zagros MCP wiring
+# zagros-skill — cybersecurity skill + Zagros MCP wiring
 
 Pairs the `cybersecurity-expert` skill with your own [Zagros](../README.md)
 security knowledge MCP server. The skill content is independently authored from
@@ -19,13 +19,13 @@ official exam content, or an ISC2-endorsed derivative work.
 
 | Path | What it is |
 |---|---|
-| `.apm/skills/cybersecurity-expert/` | Skill source: `SKILL.md`, `references/` (domains 1â€“5 + `zagros-mcp.md`), `evals/` |
+| `.apm/skills/cybersecurity-expert/` | Skill source: `SKILL.md`, `references/` (domains 1–5 + `zagros-mcp.md`), `evals/` |
 | `apm.yml` / `skill-meta.yml` | APM package metadata (no personal data; MCP default = localhost) |
 | `install.sh` / `install.ps1` | Standalone installers: fetch tarball, verify SHA256, install skill, wire MCP into `opencode.json` |
 | `INSTALL-PROMPT.md` | Copy-paste prompt for agent-harness installs (script path + manual fallback) |
 | `build-dist.py` | Builds the versioned distributable from `apm.yml` |
 
-## Path 1 â€” URL install (modern one-liners)
+## Path 1 — URL install (modern one-liners)
 
 Replace `<release>` with your published Release base, e.g.
 `https://github.com/<org>/zagros/releases/download/zagros-skill-v0.1.0`.
@@ -51,18 +51,18 @@ $env:ZAGROS_MCP_URL = "https://mcp.example.com/mcp"; irm <release>/install.ps1 |
 ```
 
 Safer variant (download, verify hash, then run) is documented in each script's
-header. Every run backs up `opencode.json â†’ opencode.json.bak`, refuses to
+header. Every run backs up `opencode.json → opencode.json.bak`, refuses to
 clobber JSONC configs, and is idempotent (re-run safe; `--force` / `-Force` to
 overwrite the MCP entry).
 
 Then: restart your harness and verify with `opencode mcp list`
-(expect `Zagros: connected`), plus `GET http://localhost:8789/health â†’ ok`.
+(expect `Zagros: connected`), plus `GET http://localhost:8789/health → ok`.
 
-## Path 2 â€” agent prompt install
+## Path 2 — agent prompt install
 
 Copy the whole of `INSTALL-PROMPT.md` into any agent harness (opencode,
 copilot, generic). It instructs the agent to do the fast script path with hash
-verification and approval gates, with a manual download â†’ verify â†’ extract â†’
+verification and approval gates, with a manual download → verify → extract →
 JSON-merge fallback when piping scripts is not allowed.
 
 ## Self-host Zagros (what the default MCP URL expects)
@@ -97,7 +97,7 @@ The validator checks required files and metadata, Contract v1, SemVer, eval stru
 
 ```bash
 cd skills
-python build-dist.py            # reads version from apm.yml â†’ dist/
+python build-dist.py            # reads version from apm.yml → dist/
 # attach dist/zagros-skill.tar.gz + .sha256 with install.sh / install.ps1
 # to GitHub Release zagros-skill-v<version>, then update the BASE_URL
 # defaults in both installers to that Release base.

@@ -1,10 +1,14 @@
-# Zagros Ã¢â‚¬â€ Security Knowledge MCP Server
+# Zagros — Shared Security Knowledge for AI Agents
 
-A Rust CLI and MCP server for ingesting, storing, and searching official CVE records and authoritative security standards, backed by a local **HelixDB** graph-vector store.
+Zagros is an open-source, self-hosted security knowledge service for teams. It gives a company, lab, or engineering group one controlled reference that humans and AI agents can share, built from authoritative CVE, CWE, ASVS, CAPEC, and ATT&CK sources with provenance preserved in HelixDB.
 
 ![Zagros](assets/zagros.png)
 
 ---
+
+## Why teams use it
+
+Zagros is designed to run once on infrastructure your team controls and serve the same security evidence to multiple developers, AI agents, IDE integrations, and internal tools through MCP, CLI, and the web UI. This keeps the reference corpus consistent across the team instead of letting every agent independently search or improvise security facts.
 
 ## What it does
 
@@ -22,7 +26,7 @@ Example seeded corpus baseline captured 2026-09-08 (`backfill --limit 500` + `so
 | CVE nodes | 499+ | `cvelistV5` deltaLog (hourly history) |
 | CWE weaknesses | 969 | MITRE CWE 4.15 |
 | OWASP ASVS requirements | 345 | OWASP ASVS 5.0 |
-| CAPEC attack patterns | 613 | MITRE CAPEC 3.9 |
+| CAPEC attack patterns | 613 (historical seed example) | MITRE CAPEC 3.9 |
 | ATT&CK Enterprise techniques | 697 | MITRE ATT&CK v16.1 |
 | **Total** | **~3,123** | verify with `cli status` / `GET /api/status` |
 
@@ -36,11 +40,22 @@ Example seeded corpus baseline captured 2026-09-08 (`backfill --limit 500` + `so
 
 ---
 
+## Try it live in GitHub Codespaces
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/siamakhaz/Zagros?quickstart=1)
+
+The repository includes a `.devcontainer` live-demo configuration. A new Codespace starts the real Docker Compose stack, seeds a practical demo corpus (100 CVEs plus all configured knowledge sources), and forwards the Zagros UI on port `8788`. Forwarded ports are private to the Codespace owner by default.
+
+## Choose your onboarding path
+
+- [AI-agent developer: connect and run first query](docs/ONBOARD-DEVELOPER.md)
+- [Self-hosting administrator: deploy, seed and query](docs/ONBOARD-ADMIN.md)
+
 ## Quick start
 
 ### 1. Start the stack
 
-Single compose file Ã¢â‚¬â€ HelixDB + MCP HTTP + UI:
+Single compose file — HelixDB + MCP HTTP + UI:
 
 ```powershell
 docker compose -f docker/compose.yml up -d
@@ -52,7 +67,7 @@ Services:
 
 | Service | Container | Host port | Internal | Traefik host |
 |---|---|---|---|---|
-| `helix` | `zagros-helix` | `127.0.0.1:47474` Ã¢â€ â€™ `8080` | `http://helix:8080` | Ã¢â‚¬â€ |
+| `helix` | `zagros-helix` | `127.0.0.1:47474` → `8080` | `http://helix:8080` | — |
 | `mcp` | `zagros-mcp-http` | `127.0.0.1:8789` | `http://helix:8080` | optional via Traefik override |
 | `zagros-ui` | `zagros-ui` | `127.0.0.1:8788` | `http://helix:8080` | optional via Traefik override |
 
@@ -75,7 +90,7 @@ cargo build
 
 ### 3. Populate CVE records
 
-CLI is host binary or standalone Docker image `zagros-cli:0.1.0` (`Dockerfile.cli`, profile `cli` Ã¢â‚¬â€ no daemon, `HELIX_URL=http://helix:8080` on `zagros` net):
+CLI is host binary or standalone Docker image `zagros-cli:0.1.0` (`Dockerfile.cli`, profile `cli` — no daemon, `HELIX_URL=http://helix:8080` on `zagros` net):
 
 **Host:**
 
@@ -104,7 +119,7 @@ docker run --rm --network zagros -e HELIX_URL=http://helix:8080 zagros-cli:0.1.0
 
 ```powershell
 .\target\debug\zagros.exe source all
-# ingested 969 CWE, 345 ASVS, 613 CAPEC, 697 ATT&CK records
+# historical counts vary; verify with zagros status
 
 # or via Docker:
 docker compose -f docker/compose.yml --profile cli run --rm cli source all
@@ -192,13 +207,13 @@ docker build -f Dockerfile.cli -t zagros-cli:0.1.0 .
 docker build -f Dockerfile.ui -t zagros-ui:0.1.0 .
 ```
 
-#### HTTP (remote agents Ã¢â‚¬â€ opencode, OpenCode, custom)
+#### HTTP (remote agents — opencode, OpenCode, custom)
 
 `mcp` listens `0.0.0.0:8789` (`MCP_BIND_ADDR`, `MCP_ALLOWED_HOSTS`):
 
 ```powershell
 curl http://localhost:8789/health
-# via Traefik (Host header validated Ã¢â‚¬â€ must be in MCP_ALLOWED_HOSTS):
+# via Traefik (Host header validated — must be in MCP_ALLOWED_HOSTS):
 curl -H "Accept: application/json, text/event-stream" https://mcp.example.com/mcp
 ```
 
@@ -221,7 +236,7 @@ Client config examples:
 
 Local direct: `"url": "http://localhost:8789/mcp"` or `http://<host-ip>:8789/mcp` (add IP to `MCP_ALLOWED_HOSTS`).
 
-#### Stdio (Docker Desktop MCP Toolkit Ã¢â‚¬â€ Claude/VS Code)
+#### Stdio (Docker Desktop MCP Toolkit — Claude/VS Code)
 
 ```powershell
 docker build -t zagros-mcp:0.1.0 .
@@ -247,10 +262,10 @@ Or automated:
 | `search_cves` | BM25 search over CVE records; returns ranked hits with score and source URL |
 | `get_cve` | Exact lookup by CVE ID (e.g. `CVE-2024-3094`) |
 | `index_status` | CVE/knowledge counts, refresh state, and per-source integrity/freshness health |
-| `sync_cves` | Download latest CVE delta (1..1000) and upsert into HelixDB Ã¢â‚¬â€ **requires user approval**, 5-min rate limit |
+| `sync_cves` | Download latest CVE delta (1..1000) and upsert into HelixDB — **requires user approval**, 5-min rate limit |
 | `search_knowledge` | BM25 search over CWE / ASVS / CAPEC / ATT&CK |
-| `sync_knowledge_source` | Ingest `cwe` \| `asvs` \| `capec` \| `attack` \| `all` Ã¢â‚¬â€ **requires user approval**, 5-min rate limit |
-| `backfill_cves` | Walk deltaLog history (1..10000) and upsert Ã¢â‚¬â€ **requires user approval**, 5-min rate limit |
+| `sync_knowledge_source` | Ingest `cwe` \| `asvs` \| `capec` \| `attack` \| `all` — **requires user approval**, 5-min rate limit |
+| `backfill_cves` | Walk deltaLog history (1..10000) and upsert — **requires user approval**, 5-min rate limit |
 
 * `sync_cves` fetches `delta.json` (latest), not `deltaLog.json` (history). For historical bulk via MCP use `backfill_cves`; via CLI use `backfill --limit 10000`.
 
@@ -267,7 +282,7 @@ Or automated:
 The `cybersecurity-expert` skill is independently authored guidance built from
 the maintainer's personal cybersecurity study notes and practical experience;
 ISC2 CC influenced topic coverage, but no official ISC2 courseware or exam
-content is included. It pairs with your own Zagros instance Ã¢â‚¬â€ see
+content is included. It pairs with your own Zagros instance — see
 [`skills/README.md`](skills/README.md).
 Two install paths: paste [`skills/INSTALL-PROMPT.md`](skills/INSTALL-PROMPT.md)
 to any agent harness, or run the URL installers (`install.sh` / `install.ps1`,
@@ -339,11 +354,11 @@ Default Compose uses only the internal `zagros` bridge network. `proxy_default` 
 
 ## License
 
-Zagros-authored code, documentation, and skills are licensed under Apache-2.0 Ã¢â‚¬â€ see [LICENSE](LICENSE). Third-party security datasets retain their original terms and attribution requirements; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Security disclosures: see [SECURITY.md](SECURITY.md).
+Zagros-authored code, documentation, and skills are licensed under Apache-2.0 — see [LICENSE](LICENSE). Third-party security datasets retain their original terms and attribution requirements; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Security disclosures: see [SECURITY.md](SECURITY.md).
 
 ## Project status and trust model
 
-Zagros separates authoritative evidence from agent analysis and recommendations. Retrieved third-party text is treated as untrusted data, provenance is preserved, and mutating/network MCP tools require explicit approval.
+Zagros separates source evidence from agent analysis and recommendations. See [claim audit](docs/CLAIM-AUDIT.md) for evidence and verification limits. Retrieved third-party text is treated as untrusted data, provenance is preserved, and clients must obtain operator approval before invoking mutating/network MCP tools; this is a client-side policy, not proof of server-enforced authorization.
 
 - Threat model: `docs/THREAT-MODEL.md`
 - Interface stability: `docs/INTERFACE-STATUS.md`

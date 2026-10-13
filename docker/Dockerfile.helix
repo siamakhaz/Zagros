@@ -15,6 +15,10 @@ FROM debian:bookworm-slim@sha256:88200866dfff7ea7f5cbcb6ec7c8a701889efe6fe859fe6
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends ca-certificates=20250419~deb12u1 curl=7.88.1-10+deb12u15 \
+    && groupadd --system helix \
+    && useradd --system --gid helix --home-dir /nonexistent --shell /usr/sbin/nologin helix \
+    && mkdir -p /data \
+    && chown helix:helix /data \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /src/target/release/server /usr/local/bin/helix-server
@@ -25,4 +29,5 @@ ENV HELIX_HTTP_ADDR=0.0.0.0:8080 \
 
 EXPOSE 8080 8081
 VOLUME ["/data"]
+USER helix
 ENTRYPOINT ["/usr/local/bin/helix-server"]

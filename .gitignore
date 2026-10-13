@@ -1,10 +1,10 @@
-﻿/target
+/target
 /data
 website/node_modules
 website/dist
 website/.astro
 /skills/dist
-# Machine-specific / secret-adjacent files â€” never commit
+# Machine-specific / secret-adjacent files — never commit
 .vscode/mcp.json
 graphify-out/.graphify_python
 temp_remote_*.ps1

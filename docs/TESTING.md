@@ -43,7 +43,7 @@ The CLI binaries talk to HelixDB directly. No Docker gateway involved.
 ./target/release/zagros status
 ```
 
-Expected output (after seeding):
+Example output from one seeded installation; counts vary by ingestion run:
 
 ```
 HelixDB URL  : http://localhost:47474
@@ -55,7 +55,7 @@ CVE nodes    : 1000
   total       : 2567
 ```
 
-If CVE nodes is 0, run the seed commands:
+If CVE nodes is 0, run the seed commands (these download data and modify the database):
 
 ```bash
 ./target/release/zagros backfill --limit 1000
