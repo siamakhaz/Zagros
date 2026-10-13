@@ -3,6 +3,8 @@
 The `zagros` binary is built from `src/main.rs`. It provides seven subcommands
 covering CVE ingestion, knowledge ingestion, search, and status reporting.
 
+> **Example output note:** numeric counts, scores, timestamps, and health values in this reference are illustrative examples from a seeded instance unless explicitly marked as live. They are not queried when this documentation is rendered.
+
 ```
 zagros.exe <COMMAND>
 
