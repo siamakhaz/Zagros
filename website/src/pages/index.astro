@@ -2,88 +2,95 @@
 import Base from '../layouts/Base.astro';
 const base = import.meta.env.BASE_URL;
 ---
-<Base title="Zagros — Security Intelligence RAG" description="Local-first CVE + CWE, ASVS, CAPEC, ATT&CK search for humans and AI agents. Rust CLI, MCP server, HelixDB.">
+<Base title="Zagros — Shared security knowledge for your team’s AI agents" description="Zagros is a self-hosted security knowledge service that gives teams and AI agents one shared reference built from authoritative security sources with preserved provenance.">
 <div class="wrap">
   <div class="hero">
     <div class="hero-grid">
       <div class="hero-copy">
-        <div class="status"><span class="dot"></span>v0.1.0 · rust · helixdb · mcp · bm25</div>
-        <h1>Local-first CVE search for humans and agents.</h1>
-        <p class="lede">500+ CVEs plus CWE, ASVS, CAPEC and ATT&amp;CK in one HelixDB index. Terminal, web UI, or MCP — every claim cites its source.</p>
+        <div class="status"><span class="dot"></span>self-hosted · shared · evidence-backed</div>
+        <h1>Trusted security knowledge for your team’s AI agents.</h1>
+        <p class="lede">Run one Zagros instance on infrastructure your team controls and give developers, AI agents, IDE integrations, and internal tools the same security reference. Zagros keeps source and provenance attached to the evidence your agents use.</p>
       </div>
       <figure class="hero-art">
         <img src={`${base}zagros.png`} alt="Zagros — octopus over mountains, MCP shield" width="340" height="340" />
       </figure>
       <div class="cta-row hero-actions">
-        <a class="btn btn-primary" href={`${base}docs/`}>Get started</a>
-        <a class="btn btn-ghost" href={`${base}demo/`}>Try a search</a>
-      </div>
-    </div>
-    <div class="terminal">
-      <div class="term-bar"><span>$ zagros search CVE-2024-3094 --top-k 5</span><span class="spacer"></span><button class="copy-lite" data-copy='zagros search "remote code execution" --top-k 5'>copy</button></div>
-      <div class="term-body">
-        <div><span class="o">1 · CVE-2024-3094</span> <span class="g">18.4</span></div>
-        <div><span class="c">XZ Utils supply-chain compromise affecting upstream xz/liblzma release artifacts.</span></div>
-        <div><span class="d">src</span> <a href="https://www.cve.org/CVERecord?id=CVE-2024-3094">cve.org/CVERecord?id=CVE-2024-3094</a></div>
-        <div><span class="o">2 · CWE-787</span> <span class="g">9.1</span></div>
-        <div><span class="c">Out-of-bounds Write — writes past the end of the intended buffer.</span></div>
-        <div><span class="d">src</span> <a href="https://cwe.mitre.org/data/definitions/787.html">cwe.mitre.org/definitions/787</a></div>
-        <div><span class="o">3 · T1190</span> <span class="g">6.7</span></div>
-        <div><span class="c">Exploit Public-Facing Application — initial access via RCE.</span></div>
-        <div><span class="d">src</span> <a href="https://attack.mitre.org/techniques/T1190/">attack.mitre.org/techniques/T1190</a></div>
+        <a class="btn btn-primary" href={`${base}install/`}>Install Zagros</a>
+        <a class="btn btn-ghost" href={`${base}install-prompt/`}>AI install</a>
+        <a class="btn btn-ghost" href="https://codespaces.new/siamakhaz/Zagros?quickstart=1">Try live ↗</a>
+        <a class="btn btn-ghost" href={`${base}docs/`}>Docs</a>
       </div>
     </div>
   </div>
 
   <section class="block">
-    <div class="kicker">Corpora</div>
-    <h2>One index. Five authorities.</h2>
-    <p class="sub">Seed snapshot 2026-09-08 · ~3,100 nodes. Verify anytime with <span class="mono">zagros status</span>.</p>
-    <div class="card feature"><div class="num">499+</div><div><span class="tag">cvelistV5 deltaLog · hourly</span><h3>CVE records</h3><p>Exact-ID lookup plus BM25 ranked search with source URLs on every hit.</p></div></div>
+    <div class="kicker">Who Zagros is for</div>
+    <h2>A trusted security reference for people and their AI.</h2>
+    <p class="sub">Zagros is for anyone who wants AI-assisted security work grounded in a controlled, evidence-backed source instead of relying only on model memory or independent web searches.</p>
     <div class="grid2">
-      <div class="card"><span class="tag">MITRE CWE 4.15</span><div class="num">969</div><h3>Weaknesses</h3><p>Know <span class="mono">CWE-787</span>? Zagros does.</p></div>
-      <div class="card"><span class="tag">OWASP ASVS 5.0</span><div class="num">345</div><h3>Requirements</h3><p>Map findings to verifiable controls.</p></div>
-      <div class="card"><span class="tag">MITRE CAPEC 3.9</span><div class="num">613</div><h3>Attack patterns</h3><p>How attackers actually get in.</p></div>
-      <div class="card"><span class="tag">ATT&amp;CK v16.1</span><div class="num">697</div><h3>Techniques</h3><p>Enterprise tactics, queryable offline.</p></div>
+      <div class="card">
+        <h3>Individuals and security practitioners</h3>
+        <p>Use Zagros while researching vulnerabilities, reviewing code, or performing security audits. Give your AI access to trusted security knowledge with source provenance so findings can be checked against the underlying evidence.</p>
+      </div>
+      <div class="card">
+        <h3>Teams and organizations</h3>
+        <p>Run Zagros as a shared security knowledge service for developers, security teams, AI agents, IDE assistants, and internal tools. Everyone can consult the same controlled reference when assessing code and infrastructure.</p>
+      </div>
     </div>
   </section>
 
   <section class="block">
-    <div class="kicker">Install</div>
-    <h2>Up in three steps.</h2>
-    <p class="sub">Prereqs: Rust 1.85+, Docker + Compose v2. No OpenSSL — reqwest uses rustls.</p>
+    <div class="kicker">Why Zagros</div>
+    <h2>One trusted reference. Shared across your team.</h2>
+    <p class="sub">Instead of every AI agent searching independently or relying only on model memory, connect them to the same team-controlled security knowledge service.</p>
+    <div class="grid2">
+      <div class="card">
+        <h3>Team controlled</h3>
+        <p>Run Zagros on infrastructure you control and decide how your team reaches it.</p>
+      </div>
+      <div class="card">
+        <h3>Authoritative sources</h3>
+        <p>Build the shared reference from established security sources such as CVE, MITRE, and OWASP.</p>
+      </div>
+      <div class="card">
+        <h3>Made for AI</h3>
+        <p>Connect compatible agents and internal tools through MCP so they can retrieve the same evidence consistently.</p>
+      </div>
+      <div class="card">
+        <h3>Evidence with provenance</h3>
+        <p>Keep source information attached to retrieved records so agents can preserve citations and verify important claims.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="kicker">How it works</div>
+    <h2>Sources in. Shared evidence out.</h2>
     <div class="steps">
-      <div class="step"><div class="n">1</div><div><h3>Start the stack <button class="copy-lite" data-copy="docker compose -f docker/compose.yml up -d">copy</button></h3><p>HelixDB on <span class="mono">127.0.0.1:47474</span>, MCP on <span class="mono">:8789</span>, UI on <span class="mono">:8788</span>.</p><pre class="code">docker compose -f docker/compose.yml up -d</pre></div></div>
-      <div class="step"><div class="n">2</div><div><h3>Seed the index <button class="copy-lite" data-copy="zagros backfill --limit 500 && zagros source all">copy</button></h3><p>Idempotent — safe to re-run.</p><pre class="code"><span class="cm"># ~499 CVEs + 2,624 knowledge docs</span>
-.\target\debug\zagros.exe backfill --limit 500
-.\target\debug\zagros.exe source all</pre></div></div>
-      <div class="step"><div class="n">3</div><div><h3>Connect your agent</h3><p>Streamable HTTP for opencode / OpenCode.</p><pre class="code">&#123;
-  <span class="hl">"mcpServers"</span>: &#123;
-    <span class="hl">"zagros"</span>: &#123;
-      <span class="hl">"type"</span>: <span class="hl">"streamable-http"</span>,
-      <span class="hl">"url"</span>: "http://localhost:8789/mcp"
-    &#125;
-  &#125;
-&#125;</pre></div></div>
+      <div class="step"><div class="n">1</div><div><h3>Collect trusted security knowledge</h3><p>Zagros ingests supported security sources into a team-controlled store.</p></div></div>
+      <div class="step"><div class="n">2</div><div><h3>Keep one shared reference</h3><p>Your team operates one Zagros service instead of maintaining separate knowledge copies for every agent or tool.</p></div></div>
+      <div class="step"><div class="n">3</div><div><h3>Connect the tools your team already uses</h3><p>AI agents, IDE integrations, and internal applications can query Zagros through MCP, CLI, or the web interface.</p></div></div>
     </div>
   </section>
 
   <section class="block">
-    <div class="kicker">MCP</div>
-    <h2>Seven tools. Zero guesswork.</h2>
-    <p class="sub">Same seven tools over stdio (<span class="mono">zagros-mcp</span>) and Streamable HTTP (<span class="mono">zagros-mcp-http</span>).</p>
-    <div class="grid2">
-      <div class="card"><span class="tag">search_cves</span><h3>Ranked CVE search</h3><p>BM25 + field weights, exact-match &amp; phrase bonuses.</p></div>
-      <div class="card"><span class="tag">get_cve</span><h3>Exact CVE lookup</h3><p><span class="mono">CVE-2024-3094</span> → full record + source URL.</p></div>
-      <div class="card"><span class="tag">index_status</span><h3>Index health</h3><p>Counts, refresh state, and per-source integrity/freshness health.</p></div>
-      <div class="card"><span class="tag">sync_cves</span><h3>Delta sync</h3><p>Pull latest CVE changes. Approval-required, 5-min cooldown.</p></div>
-      <div class="card"><span class="tag">search_knowledge</span><h3>Knowledge search</h3><p>Ranked CWE / ASVS / CAPEC / ATT&amp;CK retrieval.</p></div>
-      <div class="card"><span class="tag">sync_knowledge_source</span><h3>Knowledge sync</h3><p>Refresh one knowledge source or all. Approval-required.</p></div>
-      <div class="card"><span class="tag">backfill_cves</span><h3>CVE history backfill</h3><p>Walk deltaLog history with explicit approval and rate limiting.</p></div>
-    </div>
+    <div class="kicker">Self-hosted</div>
+    <h2>Your infrastructure. Your access boundary.</h2>
+    <p class="sub">Zagros supports local use, but its primary deployment model is a shared internal service. Keep HelixDB private and place shared MCP/UI access behind your organization’s authenticated gateway, reverse proxy, VPN, or zero-trust network.</p>
     <div class="cta-row" style="justify-content:flex-start">
-      <a class="btn btn-ghost mono" href={`${base}demo/`}>Try a search →</a>
+      <a class="btn btn-primary mono" href={`${base}install/`}>Install Zagros →</a>
+      <a class="btn btn-ghost mono" href={`${base}docs/deployment/`}>Deployment guide →</a>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="kicker">For AI agents</div>
+    <h2>One shared reference for many agents.</h2>
+    <p class="sub">Zagros exposes its security knowledge through MCP so multiple agents can retrieve evidence from the same controlled corpus. Zagros provides retrieval and provenance; the consuming agent remains responsible for interpretation and recommendations.</p>
+    <div class="cta-row" style="justify-content:flex-start">
+      <a class="btn btn-primary mono" href={`${base}install-prompt/`}>AI install →</a>
       <a class="btn btn-ghost mono" href={`${base}docs/mcp/`}>MCP reference →</a>
+      <a class="btn btn-ghost mono" href={`${base}demo/`}>See the demo →</a>
     </div>
   </section>
 </div>

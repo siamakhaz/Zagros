@@ -31,6 +31,8 @@
 #
 # Environment variables
 #   ZAGROS_DATA_DIR      Host path for HelixDB data  (default: ../data relative to this compose file)
+#   ZAGROS_HOST_UID      UID used by HelixDB for host bind-mounted data (default: 1000)
+#   ZAGROS_HOST_GID      GID used by HelixDB for host bind-mounted data (default: 1000)
 #   MCP_BIND_ADDR         Bind address for the HTTP MCP server (default: 0.0.0.0:8789)
 #   MCP_ALLOWED_HOSTS     Comma-separated Host header allowlist
 #                         (default: "localhost,127.0.0.1")
@@ -52,6 +54,7 @@ services:
     mem_limit: 512m
     cpus: "1.0"
     pids_limit: 256
+    user: "${ZAGROS_HOST_UID:-1000}:${ZAGROS_HOST_GID:-1000}"
     ports:
       # Bind to 127.0.0.1 only — fixes security finding F-01.
       # Host CLI tools use http://localhost:47474 as before.
@@ -64,7 +67,11 @@ services:
     networks:
       - zagros
     healthcheck:
-      disable: true
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
 
   mcp:
     build:
@@ -75,7 +82,7 @@ services:
     restart: unless-stopped
     depends_on:
       helix:
-        condition: service_started
+        condition: service_healthy
     mem_limit: 512m
     cpus: "1.0"
     pids_limit: 256
@@ -107,7 +114,7 @@ services:
     restart: unless-stopped
     depends_on:
       helix:
-        condition: service_started
+        condition: service_healthy
     mem_limit: 128m
     cpus: "0.50"
     pids_limit: 128

@@ -2,24 +2,25 @@
 
 ## Purpose
 
-Zagros is an open-source, local-first security knowledge system for AI agents.
-Its purpose is to provide a **secure, inspectable, and trusted source of truth**
-for security investigations without forcing users to send their security corpus
-to a hosted RAG provider.
+Zagros is an open-source, self-hosted security knowledge service for teams and their AI agents.
+Its purpose is to give an organization or technical team a **shared, inspectable, controlled
+security reference** that multiple humans, agents, IDE integrations, and internal tools can use
+consistently without sending the security corpus to a hosted RAG provider.
 
 The repository has two complementary parts:
 
 1. **Zagros Core** — ingestion, HelixDB persistence, retrieval, CLI, MCP servers,
-   and UI. Users can run it locally or on infrastructure they control and connect
-   it to their preferred MCP-compatible agent harness.
+   and UI. Teams can run one instance on infrastructure they control and connect
+   multiple MCP-compatible agent harnesses and internal tools to the same shared corpus.
 2. **Zagros Skills** — independently authored agent guidance that teaches an AI
    agent how to investigate security questions, use Zagros evidence correctly,
    distinguish evidence from interpretation, and follow safe investigation
    practices.
 
-Zagros favors authoritative upstream sources, explicit provenance, local control,
-and evidence-backed conclusions. The project is not tied to one agent harness,
-one model provider, or one deployment environment.
+Zagros favors authoritative upstream sources, explicit provenance, organizational control,
+and evidence-backed conclusions. Local single-user deployment remains supported, but the primary
+product model is a shared team service. The project is not tied to one agent harness, one model
+provider, or one deployment environment.
 
 ---
 

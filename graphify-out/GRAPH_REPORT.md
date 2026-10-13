@@ -315,7 +315,7 @@ Nodes (23): Administrative Controls (Managerial Controls), Compensating Controls
 
 ### Community 31 - "Zagros Open-Source Release TODO"
 Cohesion: 0.11
-Nodes (18): CI and release engineering, Current verified baseline â€” 2026-09-11, Deployment and usability, First public-release gate, P0 â€” Release blockers, P1 Review â€” 2026-09-12, P1 â€” CI and release engineering, P1 â€” Deployment and usability (+10 more)
+Nodes (18): CI and release engineering, Current verified baseline — 2026-09-11, Deployment and usability, First public-release gate, P0 — Release blockers, P1 Review — 2026-09-12, P1 — CI and release engineering, P1 — Deployment and usability (+10 more)
 
 ### Community 32 - "Development"
 Cohesion: 0.10
@@ -383,7 +383,7 @@ Nodes (20): Architecture, BM25 retrieval engine, Bonus scoring, Component diagra
 
 ### Community 48 - "Zagros Open-Source Release TODO"
 Cohesion: 0.11
-Nodes (18): CI and release engineering, Current verified baseline â€” 2026-09-11, Deployment and usability, First public-release gate, P0 â€” Release blockers, P1 Review â€” 2026-09-12, P1 â€” CI and release engineering, P1 â€” Deployment and usability (+10 more)
+Nodes (18): CI and release engineering, Current verified baseline — 2026-09-11, Deployment and usability, First public-release gate, P0 — Release blockers, P1 Review — 2026-09-12, P1 — CI and release engineering, P1 — Deployment and usability (+10 more)
 
 ### Community 49 - "Security Review — Zagros Pre-Release"
 Cohesion: 0.17
@@ -547,7 +547,7 @@ Nodes (7): 6. Change Management Policy, CAB, Change categories, Emergency change
 
 ### Community 89 - "skills/README.md"
 Cohesion: 0.29
-Nodes (6): Layout, Path 1 â€” URL install (modern one-liners), Path 2 â€” agent prompt install, Provenance, Publishing a release, Self-host Zagros (what the default MCP URL expects)
+Nodes (6): Layout, Path 1 — URL install (modern one-liners), Path 2 — agent prompt install, Provenance, Publishing a release, Self-host Zagros (what the default MCP URL expects)
 
 ### Community 90 - "[Unreleased]"
 Cohesion: 0.33
