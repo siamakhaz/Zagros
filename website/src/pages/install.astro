@@ -27,7 +27,7 @@ const base = import.meta.env.BASE_URL;
     <div class="steps">
       <div class="step"><div class="n">1</div><div><h3>Clone <button class="copy-lite" data-copy="git clone https://github.com/siamakhaz/Zagros.git">copy</button></h3><pre class="code">git clone https://github.com/siamakhaz/Zagros.git
 cd Zagros</pre></div></div>
-      <div class="step"><div class="n">2</div><div><h3>Configure environment (optional)</h3><p>Copy the example file only if you need to customize settings. Defaults work out of the box.</p><pre class="code">cp .env.example .env</pre></div></div>
+      <div class="step"><div class="n">2</div><div><h3>Configure environment (optional)</h3><p>Copy the example file only if you need to customize settings. Defaults work out of the box. On Linux, if your account UID or GID is not <span class="mono">1000</span>, set <span class="mono">ZAGROS_HOST_UID</span> and <span class="mono">ZAGROS_HOST_GID</span> in <span class="mono">.env</span> to the values reported by <span class="mono">id -u</span> and <span class="mono">id -g</span>. This keeps the bind-mounted HelixDB data owned by your host account.</p><pre class="code">cp .env.example .env</pre></div></div>
       <div class="step"><div class="n">3</div><div><h3>Start the stack <button class="copy-lite" data-copy="docker compose -f docker/compose.yml up -d --build">copy</button></h3><p>Starts HelixDB, the MCP server, and the web UI — all bound to loopback only.</p><pre class="code">docker compose -f docker/compose.yml up -d --build</pre></div></div>
     </div>
   </section>
