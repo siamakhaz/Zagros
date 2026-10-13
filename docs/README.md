@@ -7,8 +7,14 @@ Zagros Core provides ingestion, HelixDB-backed retrieval, CLI, MCP servers, and 
 Zagros Skills provide harness-neutral investigation guidance that teaches agents how to use
 retrieved evidence safely and correctly.
 
+## Start here
+
+- [AI-agent developer onboarding](ONBOARD-DEVELOPER.md)
+- [Self-hosting administrator onboarding](ONBOARD-ADMIN.md)
+
 ## Quick links
 
+- [CLAIM-AUDIT.md](CLAIM-AUDIT.md) — Claim evidence and verification limits
 - [README](../README.md) — Quick start, setup, MCP tools summary
 - [CLI.md](CLI.md) — All CLI subcommands, flags, options, and output formats
 - [MCP.md](MCP.md) — MCP server tools, input/output schemas, safety guidance
@@ -29,10 +35,10 @@ retrieved evidence safely and correctly.
 |---|---|
 | HelixDB storage | Active — `Cve` and `Knowledge` node labels |
 | CVE ingestion | Active — delta feed + full deltaLog backfill |
-| CWE ingestion | Active — 969 records |
-| ASVS ingestion | Active — 345 records (v5.0.0 pinned) |
-| CAPEC ingestion | Active — 613 records |
-| ATT&CK ingestion | Active — 697 records |
+| CWE ingestion | Implemented; counts vary by snapshot |
+| ASVS ingestion | Implemented; source version and record count must be verified per deployment |
+| CAPEC ingestion | Active; count varies by source snapshot and deployment |
+| ATT&CK ingestion | Implemented; counts vary by snapshot |
 | BM25 retrieval | Active — field weights, exact-match bonus, phrase bonus |
 | CLI | Active — 7 subcommands |
 | MCP servers | Active — 7 tools over stdio and Streamable HTTP |
