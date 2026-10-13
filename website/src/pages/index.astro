@@ -8,8 +8,8 @@ const base = import.meta.env.BASE_URL;
     <div class="hero-grid">
       <div class="hero-copy">
         <div class="status"><span class="dot"></span>self-hosted · shared · evidence-backed</div>
-        <h1>Trusted security knowledge for your team’s AI agents.</h1>
-        <p class="lede">Run one Zagros instance on infrastructure your team controls and give developers, AI agents, IDE integrations, and internal tools the same security reference. Zagros keeps source and provenance attached to the evidence your agents use.</p>
+        <h1>Security evidence for people and AI agents.</h1>
+        <p class="lede">Zagros helps individuals and teams investigate security questions using the same traceable security records. It collects records from established security sources and lets people and AI agents search them. Run it on your own infrastructure and verify findings against the original sources.</p>
       </div>
       <figure class="hero-art">
         <img src={`${base}zagros.png`} alt="Zagros — octopus over mountains, MCP shield" width="340" height="340" />
@@ -22,6 +22,16 @@ const base = import.meta.env.BASE_URL;
       </div>
     </div>
   </div>
+
+  <section class="block">
+    <div class="kicker">In practice</div>
+    <h2>Check a security finding against its source.</h2>
+    <p class="sub">Suppose an AI assistant finds a possible vulnerability in your application. The assistant can search Zagros for related CVE records and weakness definitions, then cite the original sources in its analysis. You review the evidence and decide what applies to your system.</p>
+    <p class="sub"><strong>Zagros is a reference service, not a scanner.</strong> It does not inspect your infrastructure or code by itself, confirm that a vulnerability affects your system, or automatically fix security issues.</p>
+    <div class="cta-row" style="justify-content:flex-start">
+      <a class="btn btn-ghost mono" href={`${base}demo/`}>See an investigation →</a>
+    </div>
+  </section>
 
   <section class="block">
     <div class="kicker">Who Zagros is for</div>
