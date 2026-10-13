@@ -24,6 +24,8 @@ Security investigators and independent researchers use Zagros to check vulnerabi
 
 **Zagros Skills** are optional, separately versioned instructions that guide compatible AI agents in how to use retrieved evidence, cite sources, distinguish facts from inference, and seek approval for mutations. Skills do **not** add sources to Core, independently verify a vulnerability, or enforce server-side authorization. Core can be used without installing a skill. See [Skill Contract](docs/SKILL-CONTRACT.md) and [deployment security](docs/DEPLOYMENT.md).
 
+For the end-to-end ingestion, storage, search and interface flow, see [How Zagros works](docs/HOW-IT-WORKS.md).
+
 ## What it does
 
 - Ingests CVE records from the official [CVE Project delta feed](https://github.com/CVEProject/cvelistV5).
