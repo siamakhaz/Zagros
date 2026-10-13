@@ -10,6 +10,14 @@ Zagros is an open-source, self-hosted security knowledge service for teams. It g
 
 Zagros is designed to run once on infrastructure your team controls and serve the same security evidence to multiple developers, AI agents, IDE integrations, and internal tools through MCP, CLI, and the web UI. This keeps the reference corpus consistent across the team instead of letting every agent independently search or improvise security facts.
 
+## Who it helps and how it works
+
+Security investigators and independent researchers use Zagros to check vulnerability and weakness references during audits. Teams can host one controlled service for developers, security staff, and AI assistants. Zagros collects source-attributed security records in HelixDB and makes them searchable through MCP, CLI, and its web UI.
+
+**Investigation example:** If an AI assistant identifies a potential weakness during code review, it can search Zagros for related CVE and CWE records, cite the original sources, and clearly separate the published evidence from its interpretation. An investigator still verifies whether the issue applies to the system.
+
+**Limits:** Zagros does not scan infrastructure or source code by itself, prove that a system is vulnerable, or apply security fixes automatically. It is an evidence service, not a scanner or remediation agent.
+
 ## What it does
 
 - Ingests CVE records from the official [CVE Project delta feed](https://github.com/CVEProject/cvelistV5).
