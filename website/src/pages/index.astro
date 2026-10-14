@@ -62,7 +62,7 @@ const base = import.meta.env.BASE_URL;
         <p>Install guidance for compatible AI agents on citing evidence, separating source facts from interpretation, and requesting approval before changes. Skills do not enforce server authorization or replace an investigator's judgment.</p>
       </div>
     </div>
-    <p class="sub">Core works without Skills. For shared access, provide authentication and authorization at a protected gateway.</p>
+    <p class="sub">Core works without Skills. Zagros does not provide application-level user authentication; for shared or remote access, provide authentication and authorization at a protected gateway.</p>
     <div class="cta-row" style="justify-content:flex-start">
       <a class="btn btn-ghost" href={`${base}docs/skill-contract/`}>Skill Contract</a>
       <a class="btn btn-ghost" href={`${base}docs/deployment/`}>Deployment security</a>
@@ -88,7 +88,7 @@ const base = import.meta.env.BASE_URL;
       </div>
       <div class="card">
         <h3>Evidence with provenance</h3>
-        <p>Keep source information attached to retrieved records so agents can preserve citations and verify important claims.</p>
+        <p>Keep source information attached to retrieved records so investigators can trace claims to upstream sources. Provenance does not independently certify source accuracy or make stored evidence tamper-proof.</p>
       </div>
     </div>
   </section>
