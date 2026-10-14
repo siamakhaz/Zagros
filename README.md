@@ -1,6 +1,6 @@
 # Zagros â€” Shared Security Knowledge for AI Agents
 
-Zagros is an open-source, self-hosted security knowledge service for teams. It gives a company, lab, or engineering group one controlled reference that humans and AI agents can share, built from authoritative CVE, CWE, ASVS, CAPEC, and ATT&CK sources with provenance preserved in HelixDB.
+Zagros is an open-source, self-hosted security knowledge service for teams and AI agents. It indexes authoritative CVE, CWE, ASVS, CAPEC, and ATT&CK references and exposes source-attributed records through MCP, CLI, and a web UI. Organizations control its deployment and must provide their own access controls for shared or remote use.
 
 ![Zagros](assets/zagros.png)
 
@@ -375,6 +375,8 @@ Zagros-authored code, documentation, and skills are licensed under Apache-2.0 â€
 ## Project status and trust model
 
 Zagros separates source evidence from agent analysis and recommendations. See [claim audit](docs/CLAIM-AUDIT.md) for evidence and verification limits. Retrieved third-party text is treated as untrusted data, provenance is preserved, and clients must obtain operator approval before invoking mutating/network MCP tools; this is a client-side policy, not proof of server-enforced authorization.
+
+Source provenance supports traceability to upstream records; it does not independently certify that those records are accurate or that stored evidence is tamper-proof.
 
 - Threat model: `docs/THREAT-MODEL.md`
 - Interface stability: `docs/INTERFACE-STATUS.md`
