@@ -14,6 +14,7 @@ retrieved evidence safely and correctly.
 
 ## Quick links
 
+- [GLOSSARY.md](GLOSSARY.md) — Consistent terminology, evidence limits, and writing conventions
 - [CLAIM-AUDIT.md](CLAIM-AUDIT.md) — Claim evidence and verification limits
 - [README](../README.md) — Quick start, setup, MCP tools summary
 - [CLI.md](CLI.md) — All CLI subcommands, flags, options, and output formats
@@ -29,7 +30,7 @@ retrieved evidence safely and correctly.
 - [OPEN-SOURCE-RELEASE-TODO.md](OPEN-SOURCE-RELEASE-TODO.md) — Public-release readiness checklist and review status
 - [../THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md) — Upstream data-source licenses, attribution, and trademark notices
 
-## Current pre-release state
+## Documented component status (verify against your deployment)
 
 | Component | Status |
 |---|---|
