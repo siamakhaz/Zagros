@@ -1,6 +1,6 @@
 # Self-hosting administrator: first Zagros query
 
-This is the supported Docker Compose path for a local, single-operator deployment. It is also a foundation for an organization-managed deployment, but production access requires an authenticated gateway; see [deployment security](DEPLOYMENT.md).
+This is the supported Docker Compose path for a local, single-operator deployment. It is also a foundation for an organization-managed deployment, but production access requires an authenticated gateway; see [deployment security](DEPLOYMENT.md). See the [glossary](GLOSSARY.md) for terms and security boundaries.
 
 ## Prerequisites
 

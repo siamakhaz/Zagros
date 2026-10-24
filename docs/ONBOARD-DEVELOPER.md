@@ -1,6 +1,6 @@
 # AI-agent developer: first Zagros query
 
-This path is for a developer using a local or organization-hosted Zagros MCP service from an AI coding/research client. It is intentionally read-only. For an isolated installation, follow [administrator onboarding](ONBOARD-ADMIN.md) first.
+This path is for a developer using a local or organization-hosted Zagros MCP service from an AI coding/research client. It is intentionally read-only. For terms used in this guide, see the [glossary](GLOSSARY.md). For an isolated installation, follow [administrator onboarding](ONBOARD-ADMIN.md) first.
 
 ## Prerequisites
 
