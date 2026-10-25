@@ -1,7 +1,13 @@
 # Docker MCP Gateway on Windows (Without Docker Desktop)
 
-This guide covers two paths for running the Docker MCP Gateway on Windows
-without Docker Desktop:
+This is an **optional, upstream Docker MCP Gateway integration guide**, not
+the supported Zagros first-query installation path. Zagros's native stdio and
+Streamable HTTP MCP servers do not require Docker MCP Gateway. Start with
+[administrator onboarding](ONBOARD-ADMIN.md) and
+[developer onboarding](ONBOARD-DEVELOPER.md) for the supported Compose path.
+
+This guide covers two paths for running the separate Docker MCP Gateway on
+Windows without Docker Desktop:
 
 - **Path A — WSL2 + Docker CE** (recommended): Run Docker Engine inside WSL2.
   The gateway runs natively in Linux; Windows clients (opencode, VS Code, Claude)
@@ -283,8 +289,10 @@ docker mcp client connect cursor --profile my-profile --global
 
 ## Zagros MCP Server on Windows
 
-The `zagros-mcp` server in this project uses Docker MCP. On Windows without
-Docker Desktop, follow these steps instead of `register.ps1`.
+Zagros does **not** depend on Docker MCP Gateway. The following is an
+optional integration for users who explicitly choose the Gateway instead of
+connecting directly to Zagros's native HTTP MCP endpoint. Gateway CLI commands
+are upstream-dependent and are not covered by the Zagros onboarding verification.
 
 ### WSL2 Path
 
@@ -317,16 +325,11 @@ DOCKER_MCP_IN_CONTAINER=1 docker mcp gateway run --profile zagros-profile
 
 ### Native Windows Path
 
-```powershell
-# Build the image
-docker build -t zagros-mcp:0.1.0 .
-
-# Register via file reference
-docker mcp profile create --name zagros-profile `
-  --server file://./docker/server.yaml
-
-docker mcp gateway run --profile zagros-profile
-```
+**Unsupported for the Linux-based Zagros container image:** Windows-native
+Docker Engine in Windows-container mode cannot build or run this image.
+Use the WSL2 Linux-container path above, Docker Desktop in Linux-container
+mode, or a remote Linux Docker host. Do not treat a successful Windows Docker
+Engine installation as evidence that Zagros MCP is running.
 
 ---
 
