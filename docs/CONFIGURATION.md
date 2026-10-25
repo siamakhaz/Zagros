@@ -200,7 +200,7 @@ The setup script is an **optional Docker Desktop MCP Toolkit** workflow, not the
 2. **HelixDB** — starts HelixDB with Docker Compose; polls until responsive (up to 30 s).
 3. **Build** — `cargo build --release --locked --bin zagros --bin zagros-mcp` (CLI and stdio MCP binaries).
 4. **Image** — `docker build -t zagros-mcp:0.1.0 .`
-5. **Register** — runs `docker/register.ps1` to create catalog entry and add to profile.
+5. **Register** — directly creates the Docker MCP catalog entry and adds the server to the selected profile (same purpose as `docker/register.ps1`; the script does not invoke that file).
 6. **Seed** (if `-Seed`) — runs `zagros.exe backfill --limit $SeedLimit` against local HelixDB. The stdio MCP binary does not accept CLI subcommands; a failed backfill stops setup.
 
 **Example:**
