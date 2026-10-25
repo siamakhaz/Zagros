@@ -1,5 +1,11 @@
 # Docker MCP Gateway on Linux
 
+This is an optional guide for the **separate Docker MCP Gateway**, not a
+prerequisite for Zagros. For the supported native Zagros MCP service, use
+[administrator onboarding](ONBOARD-ADMIN.md) and
+[developer onboarding](ONBOARD-DEVELOPER.md). The Compose deployment exposes
+Streamable HTTP directly without the Gateway.
+
 This guide covers installing and running the Docker MCP Gateway on Linux without
 Docker Desktop. The gateway is the same technology that powers the MCP Toolkit in
 Docker Desktop, but it runs entirely from the open-source
