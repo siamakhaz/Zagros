@@ -178,7 +178,7 @@ These are Toolkit registration settings, **not** proof of a complete network egr
 
 ## Automated setup (`scripts/setup.ps1`)
 
-The setup script runs all configuration steps in order and is safe to re-run.
+The setup script is an **optional Docker Desktop MCP Toolkit** workflow, not the supported Compose first-query path. For the supported deployment, follow [administrator onboarding](ONBOARD-ADMIN.md). The script builds both the native stdio MCP server and the separate CLI used for seeding.
 
 ```powershell
 .\scripts\setup.ps1 [OPTIONS]
@@ -191,17 +191,17 @@ The setup script runs all configuration steps in order and is safe to re-run.
 | `-Profile` | string | `profile` | Docker MCP profile name |
 | `-Seed` | switch | false | Run `backfill` after setup to pre-populate the CVE index |
 | `-SeedLimit` | integer | `500` | Number of CVEs to load during seed |
-| `-SkipBuild` | switch | false | Skip `cargo build --release` |
+| `-SkipBuild` | switch | false | Skip building both `zagros.exe` (CLI) and `zagros-mcp.exe` (stdio MCP); both must already exist |
 | `-SkipImage` | switch | false | Skip `docker build` |
 
 **Steps performed:**
 
 1. **Preflight** — verifies `docker`, `cargo`, and `pwsh` ≥ 7 are available.
 2. **HelixDB** — starts HelixDB with Docker Compose; polls until responsive (up to 30 s).
-3. **Build** — `cargo build --release --bin zagros-mcp`.
+3. **Build** — `cargo build --release --locked --bin zagros --bin zagros-mcp` (CLI and stdio MCP binaries).
 4. **Image** — `docker build -t zagros-mcp:0.1.0 .`
 5. **Register** — runs `docker/register.ps1` to create catalog entry and add to profile.
-6. **Seed** (if `-Seed`) — runs `zagros-mcp backfill --limit $SeedLimit`.
+6. **Seed** (if `-Seed`) — runs `zagros.exe backfill --limit $SeedLimit` against local HelixDB. The stdio MCP binary does not accept CLI subcommands; a failed backfill stops setup.
 
 **Example:**
 
@@ -217,7 +217,7 @@ The setup script runs all configuration steps in order and is safe to re-run.
 
 ## Dockerfile
 
-The `Dockerfile` produces the `zagros-mcp` image only (the CLI binary is not included).
+The `Dockerfile` produces the `zagros-mcp:0.1.0` image containing the `zagros` CLI, `zagros-mcp` stdio server, and `zagros-mcp-http` server. Its default entrypoint starts the HTTP server; it does not run CLI subcommands unless explicitly invoked.
 
 **Build:**
 
