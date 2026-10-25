@@ -4,8 +4,8 @@
 
 | Variable | Default | Description |
 |---|---|---|
-| `HELIX_URL` | `http://localhost:47474` | HelixDB instance URL used by all CLI commands and the MCP server |
-| `ZAGROS_DATA_DIR` | `data/` relative to CWD | Directory for the legacy flat-file cache (`cves.json`) |
+| `HELIX_URL` | `http://localhost:47474` for native processes | HelixDB URL; Compose overrides it to `http://helix:8080` for MCP and CLI containers |
+| `ZAGROS_DATA_DIR` | `./data` in `.env.example` | Host directory bind-mounted at `/data` for HelixDB by Compose; native CLI also uses it for legacy local files |
 | `UI_PORT` | `8788` | Port for the optional web UI binary (`zagros-ui`) |
 
 ### Setting `HELIX_URL`
@@ -31,8 +31,7 @@ environment:
 
 ### Setting `ZAGROS_DATA_DIR`
 
-Used only by `save_local_index` and `load_local_index` (legacy flat-file path).
-HelixDB is the canonical store; this variable is rarely needed.
+In the supported Compose stack, this sets the **host directory** bind-mounted into HelixDB at `/data`. Set it in `.env` before starting Compose; ensure it is writable by `ZAGROS_HOST_UID`/`ZAGROS_HOST_GID` (default 1000:1000). In a native CLI process, the same variable also controls the legacy `cves.json` file path. HelixDB remains the canonical store.
 
 ```powershell
 $env:ZAGROS_DATA_DIR = "C:\data\zagros"
@@ -55,24 +54,20 @@ cargo run --bin zagros-ui
 
 ### Running the UI with Docker Compose
 
-Build the image and start the container (HelixDB must already be running):
+The canonical Compose file includes HelixDB, MCP HTTP, and the UI. Start the stack from the repository root:
 
 ```powershell
-docker compose -f docker/compose.ui.yml up -d --build
+docker compose -f docker/compose.yml up -d --build
+docker compose -f docker/compose.yml ps
 ```
 
-The UI is available at `http://localhost:8788`.
-
-Stop:
+The UI is available at `http://127.0.0.1:8788` by default. To stop the stack without deleting the host index directory:
 
 ```powershell
-docker compose -f docker/compose.ui.yml down
+docker compose -f docker/compose.yml down
 ```
 
-| File | Purpose |
-|---|---|
-| `Dockerfile.ui` | Two-stage build that produces the `zagros-ui` binary image |
-| `docker/compose.ui.yml` | Compose service for the UI; exposes loopback port `8788` |
+`Dockerfile.ui` builds the `zagros-ui` image.
 
 ---
 
@@ -104,29 +99,28 @@ connection to HelixDB.
 docker compose -f docker/compose.yml down
 ```
 
-Data persists in the named volume `zagros_helix-data` across container restarts
-and `down` commands. Use `down -v` to also delete the volume.
+HelixDB data persists in the **host bind-mounted directory** selected by `ZAGROS_DATA_DIR` (default `./data` in `.env.example`). `docker compose down` does not delete this directory. Do not use `down -v` as a data cleanup command: it removes Compose-managed named volumes such as `zagros-data`, but does not delete the HelixDB host directory.
 
 ### Docker Compose configuration (`docker/compose.yml`)
 
 | Setting | Value | Notes |
 |---|---|---|
-| Image | `ghcr.io/helixdb/helixdb` (pinned SHA256) | Exact digest — upgrade by updating the digest |
+| Image | `zagros-helix:3.1.1-pinned` | Built from `docker/Dockerfile.helix` at the repository-pinned HelixDB source commit |
 | Port | `127.0.0.1:47474:8080` | Loopback-only; not exposed to the network |
-| Memory limit | `256m` | Sufficient for the current corpus size |
+| Memory limit | `512m` | Compose resource ceiling, not a capacity guarantee |
 | CPU limit | `1.0` | One vCPU |
-| Volume | `zagros_helix-data` | Named, survives container restarts |
+| Data | `ZAGROS_DATA_DIR` bind-mounted at `/data` | Host-owned directory; writable by the configured UID/GID |
 
 ### Connecting from inside a Docker container
 
-When the MCP server container needs to reach HelixDB on the host:
+In the supported `docker/compose.yml` stack, MCP and CLI containers reach HelixDB through the private Compose network:
 
 ```yaml
 environment:
-  HELIX_URL: http://host.docker.internal:47474
+  HELIX_URL: http://helix:8080
 ```
 
-`host.docker.internal` resolves to the Docker host on Windows and macOS.
+The separate Docker Desktop MCP Toolkit registration uses `http://host.docker.internal:47474` for HelixDB; `docker/server.yaml` also declares a host-gateway mapping. This is **not** the canonical Compose service-to-service address.
 
 ---
 
@@ -166,15 +160,19 @@ Two YAML files are provided:
 
 | File | Use case |
 |---|---|
-| `docker/server.yaml` | MCP server runs inside Docker; HelixDB also in Docker (internal network) |
-| `docker/zagros-server.yaml` | MCP server inside Docker; HelixDB on host (`host.docker.internal:47474`) |
+| `docker/server.yaml` | Full Toolkit registration with tool metadata, host-gateway mapping, and host-accessible HelixDB |
+| `docker/zagros-server.yaml` | Minimal Toolkit registration; also uses host-accessible HelixDB (`host.docker.internal:47474`) |
 
-### Allowed hosts
+### Allowed hosts (Docker MCP Toolkit registration)
 
-The MCP server is permitted to reach only:
+The current `allowHosts` entries in `docker/server.yaml` and `docker/zagros-server.yaml` are:
 
 - `raw.githubusercontent.com:443` — CVE delta feed
-- `host.docker.internal:47474` — HelixDB on the Docker host (zagros-server.yaml only)
+- `cwe.mitre.org:443` — CWE source
+- `capec.mitre.org:443` — CAPEC source
+- `host.docker.internal:47474` — host-accessible HelixDB
+
+These are Toolkit registration settings, **not** proof of a complete network egress policy and **not** authentication. Verify actual network controls independently. The Compose HTTP MCP service uses a different network configuration; see [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ---
 

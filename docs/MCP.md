@@ -324,12 +324,14 @@ environment:
 ```yaml
 allowHosts:
   - raw.githubusercontent.com:443
+  - cwe.mitre.org:443
+  - capec.mitre.org:443
+  - host.docker.internal:47474
 volumes:
   - zagros-data:/data
 ```
 
-The server is allowed to reach only `raw.githubusercontent.com` (CVE delta feed).
-HelixDB access is via `host.docker.internal` (declared in `zagros-server.yaml`).
+The Docker MCP Toolkit registration lists the CVE, CWE, and CAPEC hosts above and the host gateway used for HelixDB. These `allowHosts` entries describe the current Toolkit configuration; they do **not** prove an exhaustive network egress policy or authenticate clients. The canonical Compose deployment instead connects to HelixDB over its private `helix:8080` network. See [CONFIGURATION.md](CONFIGURATION.md) and [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ### Docker image hardening
 
