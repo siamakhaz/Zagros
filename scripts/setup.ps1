@@ -64,7 +64,8 @@ $dockerDir   = Join-Path $repoRoot "docker"
 $composeFile = Join-Path $dockerDir "compose.yml"
 $serverYaml  = Join-Path $dockerDir "zagros-server.yaml"
 $dockerfile  = Join-Path $repoRoot "Dockerfile"
-$binary      = Join-Path $repoRoot "target" "release" "zagros-mcp.exe"
+$mcpBinary   = Join-Path $repoRoot "target" "release" "zagros-mcp.exe"
+$cliBinary   = Join-Path $repoRoot "target" "release" "zagros.exe"
 
 $catalogName = "zagros-tools:latest"
 $serverRef   = "catalog://$catalogName/zagros"
@@ -113,16 +114,19 @@ Ok "HelixDB healthy at $helixUrl"
 
 # ─── Step 3: Build binary ─────────────────────────────────────────────────────
 if ($SkipBuild) {
-    if (-not (Test-Path $binary)) { Fail "--SkipBuild set but binary not found at $binary" }
+    foreach ($requiredBinary in @($mcpBinary, $cliBinary)) {
+        if (-not (Test-Path $requiredBinary)) { Fail "--SkipBuild set but binary not found at $requiredBinary" }
+    }
     Warn "Skipping cargo build (--SkipBuild)."
 } else {
     Step "Building release binary  (cargo build --release)"
     Push-Location $repoRoot
     try {
-        cargo build --release --bin zagros-mcp
+        cargo build --release --locked --bin zagros --bin zagros-mcp
         if ($LASTEXITCODE -ne 0) { Fail "cargo build failed." }
     } finally { Pop-Location }
-    Ok "Binary: $binary"
+    Ok "MCP binary: $mcpBinary"
+    Ok "CLI binary: $cliBinary"
 }
 
 # ─── Step 4: Docker image ─────────────────────────────────────────────────────
@@ -166,8 +170,8 @@ if ($Seed) {
     $env:HELIX_URL = $helixUrl
     Push-Location $repoRoot
     try {
-        & $binary backfill --limit $SeedLimit
-        if ($LASTEXITCODE -ne 0) { Warn "backfill exited with code $LASTEXITCODE — check output above." }
+        & $cliBinary backfill --limit $SeedLimit
+        if ($LASTEXITCODE -ne 0) { Fail "backfill failed with exit code $LASTEXITCODE." }
     } finally { Pop-Location }
     Ok "Seed complete."
 }
@@ -178,14 +182,15 @@ Write-Host "━━━━━━━━━━━━━━━━━━━━━━�
 Write-Host " zagros is ready." -ForegroundColor Green
 Write-Host ""
 Write-Host " HelixDB  : $helixUrl  (container: zagros-helix)"
-Write-Host " Binary   : $binary"
+Write-Host " MCP binary: $mcpBinary"
+Write-Host " CLI binary: $cliBinary"
 Write-Host " Image    : $imageName"
 Write-Host " Profile  : $Profile"
 Write-Host ""
 Write-Host " Useful commands:"
-Write-Host "   Status :  `$env:HELIX_URL='$helixUrl'; $binary status"
-Write-Host "   Sync   :  `$env:HELIX_URL='$helixUrl'; $binary ingest --limit 50"
-Write-Host "   Search :  `$env:HELIX_URL='$helixUrl'; $binary search `"<query>`""
+Write-Host "   Status :  `$env:HELIX_URL='$helixUrl'; $cliBinary status"
+Write-Host "   Sync   :  `$env:HELIX_URL='$helixUrl'; $cliBinary ingest --limit 50"
+Write-Host "   Search :  `$env:HELIX_URL='$helixUrl'; $cliBinary search `"<query>`""
 Write-Host ""
 Write-Host " Re-run this script anytime — it is fully idempotent."
 Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
