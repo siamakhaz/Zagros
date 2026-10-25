@@ -1,17 +1,31 @@
 # MCP Server Reference
 
-The `zagros-mcp` binary (`src/bin/zagros-mcp.rs`) is an MCP stdio server built
-with `rmcp` 3.1.2. It is launched on demand by the Docker Desktop MCP Toolkit when
-an AI agent client connects. A second binary, `zagros-mcp-http`
-(`src/bin/zagros-mcp-http.rs`), exposes the same seven tools over Streamable HTTP
-for clients that cannot use the Toolkit transport.
+The `zagros-mcp` binary (`src/bin/zagros-mcp.rs`) is a native MCP stdio
+server built with `rmcp`. The `zagros-mcp-http` binary
+(`src/bin/zagros-mcp-http.rs`) exposes the same seven tools over Streamable
+HTTP. Neither binary requires Docker MCP Gateway or Docker Desktop MCP Toolkit.
+The supported Compose deployment runs the HTTP server directly; Toolkit
+registration is an optional integration for clients that use it.
 
 ---
 
 ## Setup
 
-### Prerequisites
+### Supported Compose path (no Docker MCP Gateway required)
 
+Follow [administrator onboarding](ONBOARD-ADMIN.md) to start and populate the
+services. The Compose deployment exposes the MCP Streamable HTTP endpoint at
+`http://127.0.0.1:8789/mcp` by default. Follow
+[developer onboarding](ONBOARD-DEVELOPER.md) to connect a client and run the
+first read-only query. Keep the endpoint on loopback unless an authenticated,
+authorized TLS gateway is configured; see [deployment security](DEPLOYMENT.md).
+
+### Optional Docker Desktop MCP Toolkit integration
+
+This path uses the separate Docker MCP Toolkit to launch the native stdio
+binary. It is **not** a prerequisite for the Compose or HTTP path.
+
+Prerequisites:
 - Docker Desktop with the MCP Toolkit extension
 - HelixDB running locally (see [CONFIGURATION.md](CONFIGURATION.md))
 - Populated HelixDB (run `zagros.exe backfill` and `zagros.exe source all` first)
