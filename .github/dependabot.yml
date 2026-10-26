@@ -17,3 +17,8 @@ updates:
     schedule:
       interval: weekly
     labels: [dependencies, github-actions]
+    # CodeQL init/autobuild/analyze share state and require identical versions.
+    groups:
+      codeql-action:
+        patterns:
+          - "github/codeql-action/*"
