@@ -156,6 +156,26 @@ cargo clippy -- -D warnings # treat warnings as errors
 
 ---
 
+## CI action maintenance
+
+The Security workflow uses `github/codeql-action/init`, `autobuild`, and
+`analyze` in one CodeQL job. All three steps **must reference the same
+40-character commit SHA**. Mixing CodeQL action versions causes a configuration
+error before analysis can complete, even when the other CI jobs pass.
+
+Dependabot groups `github/codeql-action/*` updates so these steps advance
+together. The CI documentation job runs `scripts/test_workflow_actions.py`
+to reject missing or mismatched CodeQL pins. Run the check locally with:
+
+```powershell
+python -m unittest discover -s scripts -p 'test_*.py'
+```
+
+After updating an action pin, review the upstream release and verify the
+Security/CodeQL GitHub Actions job on the **current PR commit** before merging.
+
+---
+
 ## Building the Docker image
 
 ```powershell
