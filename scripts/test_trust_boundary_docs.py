@@ -2,7 +2,6 @@
 
 These are static repository checks, not live authentication verification.
 """
-import re
 import unittest
 from pathlib import Path
 
@@ -32,7 +31,7 @@ class TrustBoundaryDocumentationTests(unittest.TestCase):
     def test_client_approval_is_not_misrepresented_as_server_enforcement(self):
         threat = (ROOT / "docs/THREAT-MODEL.md").read_text(encoding="utf-8")
         mcp = (ROOT / "src/mcp.rs").read_text(encoding="utf-8")
-        self.assertIn("does not enforce user approval", threat)
+        self.assertIn("does not enforce user approval", threat.replace("**", ""))
         self.assertIn("server-side cooldowns", threat)
         self.assertIn("clients should request user approval", mcp)
 
