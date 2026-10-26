@@ -167,7 +167,11 @@ Report CVE record count, newest update, and knowledge counts by source.
 
 `newest_update` is the most recent `updated_at` timestamp across all CVE nodes, or `null` if no CVEs are stored. The refresh fields come from the persistent daily-refresh status file; they are `null` until the scheduler completes its first run.
 
-`source_health` covers CVE, CWE, ASVS, CAPEC, and ATT&CK. `integrity` compares current counts with conservative regression minimums; `freshness` uses the newest provenance `retrieved_at` timestamp with a 48-hour freshness window. `overall_health` is `healthy` only when every tracked source has healthy integrity and fresh provenance. See [QUALITY-METRICS.md](QUALITY-METRICS.md).
+`source_health` covers CVE, CWE, ASVS, CAPEC, and ATT&CK. `integrity` compares current counts with conservative regression minimums; `freshness` uses the newest provenance `retrieved_at` timestamp with a 48-hour freshness window. `overall_health` is `healthy` only when every tracked source has healthy integrity and fresh provenance.
+For legacy records with no stored provenance, `retrieved_at` is empty and cannot establish freshness.
+A source with no verified retrieval timestamps reports `freshness=unknown`, even if its record count
+passes the integrity threshold. Source-level freshness uses the **newest** known retrieval timestamp;
+it does not prove that every indexed record is current. See [QUALITY-METRICS.md](QUALITY-METRICS.md).
 
 **Performance:** Uses the CVE and knowledge document caches (5-minute TTL); no HelixDB document reload is needed on cache hits.
 

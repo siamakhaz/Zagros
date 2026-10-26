@@ -160,14 +160,20 @@ pub fn build_provenance_with_retrieval(
 }
 
 pub fn legacy_provenance(source: &str, canonical_url: &str) -> Provenance {
-    build_provenance(
+    // Legacy records have no verified retrieval time or source authority metadata.
+    // Do not synthesize a current timestamp: index_status uses it for freshness.
+    let mut provenance = build_provenance(
         source,
         "legacy-unknown",
         canonical_url,
         Utc::now(),
         String::new(),
         None,
-    )
+    );
+    provenance.retrieved_at.clear();
+    provenance.retrieval_url.clear();
+    provenance.trust_tier = TrustTier::LegacyUnknown;
+    provenance
 }
 
 pub fn append_source_manifest(provenance: &Provenance, raw_sha256: &str, record_count: usize) {
@@ -244,6 +250,20 @@ mod tests {
         let b = normalized_record_hash("CWE-89", "SQL Injection", "a b c", "x   y");
         assert_eq!(a, b);
         assert_eq!(a.len(), 64);
+    }
+
+    #[test]
+    fn legacy_rows_do_not_claim_freshness_or_verified_authority() {
+        for source in ["cve", "cwe", "unknown"] {
+            let record = legacy_provenance(source, "https://example.invalid/record");
+            assert_eq!(record.trust_tier, TrustTier::LegacyUnknown);
+            assert_eq!(record.source_version, "legacy-unknown");
+            assert!(record.retrieved_at.is_empty());
+            assert!(record.retrieval_url.is_empty());
+            assert!(record.content_sha256.is_empty());
+            assert!(record.upstream_updated_at.is_none());
+            assert_eq!(record.canonical_url, "https://example.invalid/record");
+        }
     }
 
     #[test]

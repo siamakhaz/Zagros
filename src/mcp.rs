@@ -814,5 +814,18 @@ mod health_tests {
         let empty = build_source_health("attack", 0, None, now);
         assert_eq!(empty.integrity, "empty");
         assert_eq!(empty.freshness, "unknown");
+
+        // Legacy records may meet the count threshold but have no retrieval evidence.
+        let legacy = crate::provenance::legacy_provenance(
+            "cwe",
+            "https://cwe.mitre.org/data/definitions/89.html",
+        );
+        let latest = chrono::DateTime::parse_from_rfc3339(&legacy.retrieved_at)
+            .ok()
+            .map(|timestamp| timestamp.to_rfc3339());
+        let unknown = build_source_health("cwe", 969, latest, now);
+        assert_eq!(unknown.integrity, "healthy");
+        assert_eq!(unknown.freshness, "unknown");
+        assert_eq!(unknown.age_hours, None);
     }
 }
