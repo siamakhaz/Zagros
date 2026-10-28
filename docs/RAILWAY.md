@@ -51,7 +51,7 @@ PORT=8788
 
 Railway's root-owned volume mounts caused `cannot create /data/zagros-crontab: Permission denied` under the original non-root container. Railway-specific images now use `docker/railway-volume-entrypoint.sh`: startup runs with root privilege to `chown` `/data`, then invokes `runuser` to run the service as `zagros` or `helix`. **This privileged initialization is a security exception requiring review.** The security workflow currently flags root as a HIGH finding. Do not waive the scanner or present the image as production-hardened until a reviewed least-privilege solution and checks are documented. Recursive ownership changes can have additional costs or impacts on populated volumes.
 
-The standard Docker images and Docker Compose mounts are unchanged.
+Do not set `RAILWAY_RUN_UID=0` as a blanket workaround without an explicit security review; it keeps the application privileged.\n\nThe standard Docker images and Docker Compose mounts are unchanged.
 
 ## Refresh and backfill
 
