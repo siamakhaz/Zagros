@@ -110,6 +110,7 @@ async fn main() -> anyhow::Result<()> {
 
     let app = Router::new()
         .route("/", get(index))
+        .route("/healthz", get(healthz))
         .route("/api/status", get(status))
         .route("/api/cves", get(cves))
         .route("/api/cves/{cve_id}", get(cve))
@@ -123,6 +124,22 @@ async fn main() -> anyhow::Result<()> {
     println!("Zagros UI listening on http://{bind_addr}");
     axum::serve(listener, app).await?;
     Ok(())
+}
+
+// Liveness is intentionally independent of HelixDB. Keep /api/status as the
+// deeper dependency-aware status endpoint for operators and diagnostics.
+async fn healthz() -> StatusCode {
+    StatusCode::OK
+}
+
+#[cfg(test)]
+mod health_tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn liveness_does_not_require_helix() {
+        assert_eq!(healthz().await, StatusCode::OK);
+    }
 }
 
 async fn index() -> Html<&'static str> {
