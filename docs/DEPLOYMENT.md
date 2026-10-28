@@ -29,11 +29,13 @@ The MCP health endpoint verifies that HelixDB is reachable, so it acts as the pr
 
 Do **not** expose HelixDB directly. Keep port 47474 loopback-only/internal.
 
-For team, remote, or cloud MCP/UI access, place Zagros behind a TLS reverse proxy or authenticated internal gateway. Give clients one stable internal endpoint (for example, `https://zagros.example.com/mcp`) so multiple agents query the same corpus. An optional Traefik override is provided:
+For team, remote, or cloud MCP/UI access, require **both TLS and an authenticated, authorized ingress** (or a private identity-aware gateway). A TLS certificate alone does not restrict clients. Give clients one stable internal endpoint (for example, `https://zagros.example.com/mcp`) so multiple agents query the same corpus. An optional Traefik override is provided:
 
 ```bash
 docker compose -f docker/compose.yml -f docker/compose.traefik.yml up -d --build
 ```
+
+**Security gate — TLS routing only:** `docker/compose.traefik.yml` configures Traefik routing and TLS, but **does not configure authentication or authorization** for either MCP or the web UI. Do not attach this override to a publicly reachable entrypoint until an operator-managed authentication/authorization policy is in place and independently tested. `TRAEFIK_*` values select routing, network, and certificate settings; they do not create an access policy. See the validation steps below.
 
 Configure the `TRAEFIK_*` variables from `.env.example`.
 
@@ -50,6 +52,24 @@ For any MCP endpoint reachable outside a trusted local network, terminate access
 - private VPN/Zero-Trust network with identity-aware policy.
 
 Never publish port 8789 directly to the public internet without an authentication layer. Keep HelixDB private in all deployment modes.
+
+### Validate the remote authentication boundary (operator-run, no deployment performed)
+
+1. Confirm the gateway configuration applies authentication **and authorization** to `/mcp` and to the UI routes. Review the active ingress configuration and access logs; the example Traefik override alone does not provide these controls.
+2. From a client without gateway credentials, send a **read-only** MCP initialization request using the intended public hostname (with that hostname correctly configured in `MCP_ALLOWED_HOSTS`):
+
+   ```bash
+   curl -i --max-time 15 -X POST 'https://mcp.example.com/mcp' \
+     -H 'Content-Type: application/json' \
+     -H 'Accept: application/json, text/event-stream' \
+     --data '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"unauthenticated-probe","version":"1"}}}'
+   ```
+
+3. Expect an authentication challenge or denial **from the gateway** (for example, 401/403 or a redirect to its login flow), with no MCP initialization response. **A 403 from Zagros host-header validation does not prove authentication.** Confirm the gateway logs show the rejection and the backend was not reached. Do not follow login redirects when testing unauthenticated access.
+4. Using an approved test identity, repeat through the gateway and verify that permitted read-only MCP queries work. Record the hostname, gateway policy reference, HTTP statuses, timestamps, and relevant redacted logs. Do not paste access tokens into evidence. Repeat equivalent access checks for the web UI.
+
+These steps are a verification procedure, **not** evidence that any deployed gateway has been tested or that Zagros provides native authentication.
+
 ## Freshness
 
 The persistent MCP container runs a non-root cron-compatible scheduler.
