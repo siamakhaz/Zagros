@@ -96,7 +96,14 @@ pub fn source_definition(source: &str) -> Option<SourceDefinition> {
 pub fn sha256_hex(bytes: &[u8]) -> String {
     let mut hasher = Sha256::new();
     hasher.update(bytes);
-    format!("{:x}", hasher.finalize())
+    // Digest output types changed between sha2 0.10 and 0.11; encode bytes
+    // explicitly so the provenance format stays stable across upgrades.
+    use std::fmt::Write as _;
+    let mut hex = String::with_capacity(64);
+    for byte in hasher.finalize() {
+        write!(&mut hex, "{byte:02x}").expect("writing to a String cannot fail");
+    }
+    hex
 }
 pub fn normalized_record_hash(id: &str, name: &str, description: &str, tags: &str) -> String {
     let normalized = format!(
@@ -243,6 +250,18 @@ pub fn preserve_raw_snapshot(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn sha256_hex_matches_known_vectors() {
+        assert_eq!(
+            sha256_hex(b""),
+            "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        );
+        assert_eq!(
+            sha256_hex(b"abc"),
+            "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+        );
+    }
 
     #[test]
     fn normalized_hash_is_deterministic_across_whitespace() {
