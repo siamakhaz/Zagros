@@ -45,7 +45,7 @@ class RailwayDeploymentTests(unittest.TestCase):
         guide = (ROOT / "docs/RAILWAY.md").read_text(encoding="utf-8")
         for term in ("railway config plan", "RAILWAY_RUN_UID=0",
                      "authentication", "unverified", "persistent",
-                     "no public domain"):
+                     "Do not create public domains."):
             self.assertIn(term, guide)
 
 
