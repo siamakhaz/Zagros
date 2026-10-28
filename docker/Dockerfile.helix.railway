@@ -15,7 +15,7 @@ RUN cargo build --manifest-path /src/Cargo.toml --locked --release -p server
 FROM debian:bookworm-slim@sha256:88200866dfff7ea7f5cbcb6ec7c8a701889efe6fe859fe64d6990e4b07ea4171
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates=20250419~deb12u1 curl=7.88.1-10+deb12u15 \
+    && apt-get install -y --no-install-recommends ca-certificates curl util-linux \
     && groupadd --system helix \
     && useradd --system --gid helix --home-dir /nonexistent --shell /usr/sbin/nologin helix \
     && mkdir -p /data \
@@ -29,5 +29,7 @@ ENV HELIX_HTTP_ADDR=0.0.0.0:8080 \
     HELIX_DATA_DIR=/data
 
 EXPOSE 8080 8081
-USER helix
-ENTRYPOINT ["/usr/local/bin/helix-server"]
+COPY --chown=root:root docker/railway-volume-entrypoint.sh /usr/local/bin/railway-volume-entrypoint
+RUN chmod 755 /usr/local/bin/railway-volume-entrypoint
+USER root
+ENTRYPOINT ["/usr/local/bin/railway-volume-entrypoint", "helix", "/usr/local/bin/helix-server"]
