@@ -1,6 +1,6 @@
 # Railway deployment — Zagros (preview)
 
-This guide documents the three-service deployment tested on 2026-10-28 in the Railway project `wonderful-patience`. The original Docker Builder v4 `VOLUME` error is fixed in the Railway-specific Dockerfiles. **The deployment is not yet verified for security or scheduled ingestion.** Do not expose the services publicly until authenticated ingress is implemented and tested. Normal Docker Compose installation is unchanged.
+This guide documents the three-service deployment tested on 2026-10-28 in the Railway project `wonderful-patience`. The original Docker Builder v4 `VOLUME` error is fixed in the Railway-specific Dockerfiles. **The deployment is unverified for security and scheduled ingestion.** Do not expose the services publicly until authenticated ingress is implemented and tested. Normal Docker Compose installation is unchanged.
 
 ## Architecture and configuration
 
