@@ -1,46 +1,81 @@
-# Deploy Zagros on Railway (preview)
+# Railway deployment — Zagros (preview)
 
-This is an **opt-in, unverified Railway deployment blueprint** for issue #97. It has not been live-deployed. The existing Docker Compose installation is unchanged.
+This guide documents the three-service deployment tested on 2026-10-28 in the Railway project `wonderful-patience`. The original Docker Builder v4 `VOLUME` error is fixed in the Railway-specific Dockerfiles. **The deployment is not yet verified for security or scheduled ingestion.** Do not expose the services publicly until authenticated ingress is implemented and tested. Normal Docker Compose installation is unchanged.
 
-## Services
+## Architecture and configuration
 
-- `zagros-helix`: HelixDB, private HTTP port 8080; Railway persistent volume at `/data`.
-- `zagros-mcp`: Zagros MCP HTTP, port 8789; separate persistent volume at `/data` for refresh/status data. It calls `http://zagros-helix.railway.internal:8080`.
-- Web UI is **not** included in the initial blueprint. A separate service can be added after the core stack is proven.
+| Service | Dockerfile | Private endpoint | Probe | Storage |
+| --- | --- | --- | --- | --- |
+| `zagros-helix` | `docker/Dockerfile.helix.railway` | `zagros-helix.railway.internal:8080` | `/healthz` | 500 MB at `/data` |
+| `Zagros` (MCP HTTP) | `Dockerfile.railway` | `zagros.railway.internal:8789` | `/health` | 500 MB at `/data` |
+| `zagros-ui` | `Dockerfile.ui` | `zagros-ui.railway.internal:8788` | `/healthz` | none |
 
-Both services use the same GitHub repository and build from the repository **root** with custom Dockerfiles: `docker/Dockerfile.helix.railway` and `Dockerfile.railway` respectively. Do not use the root default `Dockerfile` for Railway because it declares `VOLUME`. On each Railway service, verify the Dockerfile Path setting matches the respective filename and the build context is the repository root. `RAILWAY_DOCKERFILE_PATH` is provided in the blueprint; verify Railway resolves it before deploying.
+All three services build from repository root. The Railway Free plan tested here limits volume size to 500 MB, requires sleeping, and does not allow a fourth cron worker; limits may change by plan. If deploying from a feature branch, use the same commit across services. After PR approval, use a reviewed release commit rather than an unreviewed mutable development branch.
 
-## Review and provision (requires Railway account and explicit operator approval)
+Required service variables:
 
-1. Install and authenticate the current Railway CLI and link the intended Railway workspace/project.
-2. Review `.railway/railway.ts` including region (`us-west2`), costs, storage sizes, code source and environment variables. The blueprint references `main`, so test changes on a safe branch/environment until merged.
-3. Run `railway config plan` and inspect **all** proposed changes before any `railway config apply`. Never auto-apply from CI. Applying the file may provision billable services and volumes.
-4. Confirm both services use their custom Dockerfile paths, two separate `/data` volumes, and no public domain.
-5. **Volume initialization:** Railway mounts volumes root-owned. The Railway-specific images start a minimal root-owned `railway-volume-entrypoint` that validates `/data`, adjusts its ownership, and immediately runs the MCP/Helix workload via `runuser` under the unprivileged `zagros`/`helix` account. This introduces a privileged startup phase only on Railway; review its effects on existing volume data and verify process UIDs and persistence before production. Do not set `RAILWAY_RUN_UID=0` on the regular Docker images.
-6. Confirm Helix starts and passes `/healthz`, then MCP passes `/health` and can complete `index_status` over the internal network. Railway does not translate Docker Compose `depends_on`; startup/retry behavior must be validated.
-7. Before adding any public domain for MCP, put an authenticated and authorized gateway in front of `/mcp` (and the UI if later added). TLS and `MCP_ALLOWED_HOSTS` alone are **not authentication**. Confirm anonymous clients are denied and authorized clients can connect through the gateway. Do not publish HelixDB.
-8. Verify persistence across restart/redeploy, including access permissions, refresh metadata and Helix indexes. Document actual deployment results and limits before closing #97.
+```text
+# zagros-helix
+HELIX_HTTP_ADDR=0.0.0.0:8080
+HELIX_GRPC_ADDR=0.0.0.0:8081
+HELIX_DATA_DIR=/data
 
-A Railway volume is attached at runtime, not during a Dockerfile build. Removing Dockerfile `VOLUME` changes image metadata but does not remove existing Compose mounts.
+# Zagros MCP
+HELIX_URL=http://zagros-helix.railway.internal:8080
+MCP_BIND_ADDR=0.0.0.0:8789
+MCP_ALLOWED_HOSTS=localhost,127.0.0.1,zagros.railway.internal
+ZAGROS_DATA_DIR=/data
+ZAGROS_AUTO_REFRESH=true
+ZAGROS_REFRESH_CRON=0 3 * * *
+ZAGROS_DAILY_CVE_LIMIT=1000
 
-## Verification
+# zagros-ui
+HELIX_URL=http://zagros-helix.railway.internal:8080
+UI_PORT=8788
+PORT=8788
+```
 
-Run static checks:
+`PORT=8788` is essential: Railway's healthcheck otherwise may probe an unrelated injected port and fail even while the UI logs that it is listening on 8788. `/healthz` verifies the UI process only; `/api/status` remains dependency-aware and must be checked separately to validate HelixDB access.
+
+## Provisioning
+
+1. Create a Railway project and three GitHub-backed services from `siamakhaz/Zagros` in a private environment. Specify the Dockerfile path from the table for each service. The default root `Dockerfile` is **not** Railway-compatible due to its Dockerfile-level `VOLUME`.
+2. Set the variables above, enable private networking, configure each healthcheck, and attach **two different** volumes to `/data` (never share one volume across services). Do not create public domains.
+3. Review the opt-in `.railway/railway.ts` blueprint if using Railway IaC. Treat it as a reference until its syntax and `railway config plan` output are independently validated against the installed Railway CLI. Do not automatically apply it; inspect resource costs and all planned changes first.
+4. Deploy the HelixDB image, check its logs and `/healthz`, then deploy MCP and UI and check their logs and health checks.
+5. Confirm the MCP can query Helix and the UI `/api/status` can fetch real data. Liveness-only responses do not prove data-plane connectivity.
+6. Verify writes to each volume, restart/redeploy, then compare persisted indexes and refresh metadata. Check data size and the volume capacity before backfill.
+7. Test anonymous denial and authorized access through an approved authentication/authorization gateway *before* adding any public MCP/UI domain. TLS and the MCP Host header allowlist do not authenticate callers; Helix must remain private.
+
+## Startup permissions and security gate
+
+Railway's root-owned volume mounts caused `cannot create /data/zagros-crontab: Permission denied` under the original non-root container. Railway-specific images now use `docker/railway-volume-entrypoint.sh`: startup runs with root privilege to `chown` `/data`, then invokes `runuser` to run the service as `zagros` or `helix`. **This privileged initialization is a security exception requiring review.** The security workflow currently flags root as a HIGH finding. Do not waive the scanner or present the image as production-hardened until a reviewed least-privilege solution and checks are documented. Recursive ownership changes can have additional costs or impacts on populated volumes.
+
+The standard Docker images and Docker Compose mounts are unchanged.
+
+## Refresh and backfill
+
+The MCP container's existing `supercronic` scheduler uses `0 3 * * *` UTC, invokes the Zagros ingestion command with a daily CVE cap of 1000, then refreshes source data. **This is a bounded incremental refresh, not guaranteed full historical backfill.** Railway sleeping can stop the process, making the in-container cron unreliable. A dedicated always-on or Railway-scheduled job needs the appropriate plan/resources and a verified single-run entrypoint. Do not claim freshness until successful run logs, source provenance, and updated index counts are observed.
+
+## Evidence and known limitations
+
+2026-10-28 observed Railway deployment outcomes:
+- Zagros UI `0c9a563f`: `SUCCESS`; `/healthz` returned a successful Railway health check after setting `PORT=8788`.
+- Helix `749f1589`: `SUCCESS` with successful health check.
+- MCP `a2fbdf44`: previously `SUCCESS`, then `SLEEPING` on Free plan; logs showed scheduler initialized and listening on port 8789.
+
+**Not yet independently verified:** cross-service application queries, volume persistence across redeploy, reliable cron execution while sleeping, live authenticated remote access, and security review of root startup. The PR must not be merged on healthcheck success alone while required security CI fails.
+
+## Development verification
 
 ```powershell
 python -m unittest scripts/test_railway_deployment.py
 ```
 
-Static checks do **not** prove a Railway build, storage permissions, Helix connectivity, or authentication.
+Check GitHub CI and Security on the exact PR head commit. Static tests are not a Railway runtime substitute.
 
 References:
-- https://docs.railway.com/infrastructure-as-code/reference
-- https://docs.railway.com/guides/docker-compose
 - https://docs.railway.com/volumes
+- https://docs.railway.com/deployments/healthchecks
 - https://docs.railway.com/builds/dockerfiles
-
-## October 28 Railway build follow-up
-
-Railway's Helix build failed because the exact apt package version `ca-certificates=20250419~deb12u1` was unavailable from current Bookworm mirrors. The Railway-only Dockerfile installs distribution packages without frozen point-release package versions, while retaining the digest-pinned Debian base image. The resulting package versions need to be recorded from an actual successful build. The first MCP volume deployment reached `SUCCESS` but its process repeatedly failed to create `/data/zagros-crontab` with `Permission denied`; the Railway-only volume-entrypoint addresses this with privileged ownership initialization followed by unprivileged execution. Recheck actual logs; neither fix is verified merely by a passing CI run.
-
-A separate Railway UI service uses `Dockerfile.ui` and `HELIX_URL` pointing to the private Helix service. The current Free plan supported 500 MB volumes; it required sleeping and rejected a standalone cron service. The MCP process includes supercronic with `ZAGROS_REFRESH_CRON=0 3 * * *`, but an in-process cron may not execute reliably while Railway sleeps the service. Do not claim scheduled backfill reliability without observed execution. No public domain should be added without authenticated ingress.
+- https://docs.railway.com/infrastructure-as-code/reference
