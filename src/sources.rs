@@ -148,7 +148,7 @@ mod cwe_zip_limit_tests {
         let xml = b"<Weakness_Catalog><Weakness ID=\"79\" /></Weakness_Catalog>";
         assert_eq!(
             read_cwe_xml_bounded(Cursor::new(xml), xml.len() + 1).unwrap(),
-            xml
+            xml.to_vec()
         );
     }
 
