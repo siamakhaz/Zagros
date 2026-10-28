@@ -92,6 +92,12 @@ def main():
 
         # A session must be preserved for subsequent stateful MCP calls.
         assert session, "MCP HTTP did not return a session ID"
+        status, _, _ = request(
+            port,
+            {"jsonrpc": "2.0", "method": "notifications/initialized", "params": {}},
+            session=session,
+        )
+        assert status in (200, 202, 204), f"Initialized notification failed: {status}"
         status, _, tools = request(port, rpc(2, "tools/list"), session=session)
         assert status == 200 and "result" in tools, (
             f"MCP HTTP tools/list failed: HTTP {status}, {tools}"
