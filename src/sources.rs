@@ -143,6 +143,41 @@ fn read_cwe_xml_bounded(reader: impl Read, limit: usize) -> Result<Vec<u8>> {
 mod cwe_zip_limit_tests {
     use super::*;
 
+    // Exercise the actual ZIP reader, not only synthetic Read implementations.
+    // The small limit keeps this regression deterministic and inexpensive.
+    fn zipped_xml(xml: &[u8]) -> Vec<u8> {
+        use std::io::Write;
+        let mut writer = zip::ZipWriter::new(Cursor::new(Vec::new()));
+        let options = zip::write::SimpleFileOptions::default()
+            .compression_method(zip::CompressionMethod::Deflated);
+        writer.start_file("cwec.xml", options).unwrap();
+        writer.write_all(xml).unwrap();
+        writer.finish().unwrap().into_inner()
+    }
+
+    #[test]
+    fn zip_fixture_preserves_xml_and_catalog_version() {
+        let xml = b"<Weakness_Catalog Version=\"4.18\"><Weakness ID=\"79\" /></Weakness_Catalog>";
+        let bytes = zipped_xml(xml);
+        let mut archive = zip::ZipArchive::new(Cursor::new(bytes)).unwrap();
+        let decoded = read_cwe_xml_bounded(archive.by_index(0).unwrap(), 256).unwrap();
+        assert_eq!(decoded, xml);
+        assert_eq!(
+            xml_catalog_version(&decoded, b"Weakness_Catalog").as_deref(),
+            Some("4.18")
+        );
+    }
+
+    #[test]
+    fn zip_fixture_rejects_compressible_oversize_xml() {
+        let xml = vec![b'A'; 8192];
+        let compressed = zipped_xml(&xml);
+        assert!(compressed.len() < xml.len());
+        let mut archive = zip::ZipArchive::new(Cursor::new(compressed)).unwrap();
+        let err = read_cwe_xml_bounded(archive.by_index(0).unwrap(), 128).unwrap_err();
+        assert!(err.to_string().contains("CWE XML too large"));
+    }
+
     #[test]
     fn bounded_read_preserves_small_xml() {
         let xml = b"<Weakness_Catalog><Weakness ID=\"79\" /></Weakness_Catalog>";
