@@ -12,7 +12,7 @@ RUN cargo build --release --locked --bin zagros --bin zagros-mcp --bin zagros-mc
 FROM debian:bookworm-slim@sha256:88200866dfff7ea7f5cbcb6ec7c8a701889efe6fe859fe64d6990e4b07ea4171
 RUN apt-get update \
     && apt-get upgrade -y \
-    && apt-get install -y --no-install-recommends ca-certificates curl libpcre2-8-0 util-linux \
+    && apt-get install -y --no-install-recommends ca-certificates curl libpcre2-8-0 \
     && rm -rf /var/lib/apt/lists/* \
     && useradd --system --create-home --uid 10001 zagros \
     && mkdir -p /data \
@@ -35,9 +35,6 @@ ENV ZAGROS_DATA_DIR=/data \
 # Default to the HTTP server.  Override with --entrypoint when the
 # Docker Desktop MCP Toolkit needs the stdio binary.
 EXPOSE 8789
-COPY --chown=root:root docker/railway-volume-entrypoint.sh /usr/local/bin/railway-volume-entrypoint
-RUN chmod 755 /usr/local/bin/railway-volume-entrypoint
-# Railway mounts /data root-owned; a narrowly scoped init fixes ownership,
-# then drops privileges before running the existing MCP entrypoint.
-USER root
-ENTRYPOINT ["/usr/local/bin/railway-volume-entrypoint", "zagros", "/usr/local/bin/mcp-entrypoint"]
+# Requires a previously provisioned volume with /data owned by UID 10001.
+USER zagros
+ENTRYPOINT ["/usr/local/bin/mcp-entrypoint"]
