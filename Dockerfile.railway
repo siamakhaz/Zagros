@@ -1,0 +1,39 @@
+# Railway Builder v4: persistent storage is mounted by Railway, not Dockerfile VOLUME.
+FROM golang:1.26.10-bookworm AS supercronic-build
+RUN GOBIN=/go/bin go install github.com/aptible/supercronic@v0.2.49
+
+FROM rust:1.95-bookworm@sha256:6258907abe69656e41cd992e0b705cdcfabcbbe3db374f92ed2d47121282d4a1 AS builder
+WORKDIR /src
+COPY Cargo.toml Cargo.lock ./
+COPY src ./src
+# Build CLI + both MCP binaries in one pass so the daily refresh job can use the same trusted ingestion code.
+RUN cargo build --release --locked --bin zagros --bin zagros-mcp --bin zagros-mcp-http
+
+FROM debian:bookworm-slim@sha256:88200866dfff7ea7f5cbcb6ec7c8a701889efe6fe859fe64d6990e4b07ea4171
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends ca-certificates curl libpcre2-8-0 \
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd --system --create-home --uid 10001 zagros \
+    && mkdir -p /data \
+    && chown zagros:zagros /data
+
+COPY --from=builder --chown=root:root /src/target/release/zagros          /usr/local/bin/zagros
+COPY --from=builder --chown=root:root /src/target/release/zagros-mcp      /usr/local/bin/zagros-mcp
+COPY --from=builder --chown=root:root /src/target/release/zagros-mcp-http /usr/local/bin/zagros-mcp-http
+COPY --chown=root:root docker/zagros-refresh.sh /usr/local/bin/zagros-refresh
+COPY --chown=root:root docker/mcp-entrypoint.sh /usr/local/bin/mcp-entrypoint
+RUN chmod 755 /usr/local/bin/zagros /usr/local/bin/zagros-mcp /usr/local/bin/zagros-mcp-http /usr/local/bin/zagros-refresh /usr/local/bin/mcp-entrypoint
+
+COPY --from=supercronic-build /go/bin/supercronic /usr/local/bin/supercronic
+RUN chmod 755 /usr/local/bin/supercronic
+
+ENV ZAGROS_DATA_DIR=/data \
+    ZAGROS_AUTO_REFRESH=true \
+    ZAGROS_DAILY_CVE_LIMIT=1000
+
+# Default to the HTTP server.  Override with --entrypoint when the
+# Docker Desktop MCP Toolkit needs the stdio binary.
+EXPOSE 8789
+USER zagros
+ENTRYPOINT ["/usr/local/bin/mcp-entrypoint"]
