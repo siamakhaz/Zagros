@@ -132,16 +132,6 @@ async fn healthz() -> StatusCode {
     StatusCode::OK
 }
 
-#[cfg(test)]
-mod health_tests {
-    use super::*;
-
-    #[tokio::test]
-    async fn liveness_does_not_require_helix() {
-        assert_eq!(healthz().await, StatusCode::OK);
-    }
-}
-
 async fn index() -> Html<&'static str> {
     Html(INDEX_HTML)
 }
@@ -450,3 +440,13 @@ async function inspect(item,tr){state.selected=item.kind+':'+item.id;document.qu
 function renderDetail(item,doc){const isCve=item.kind==='cve',url=isCve?doc.source_url:doc.url,title=isCve?doc.title:doc.name,meta=isCve?[['Published',doc.published_at||'Missing'],['Updated',doc.updated_at||'Missing']]:[['Source',sourceLabel(doc.source)],['Tags',doc.tags||'None stored']];$('detail').className='';$('detail').innerHTML=`<div class="inspect-head"><div class="eyebrow">${isCve?'CVE node':'Knowledge node'}</div><div class="inspect-id">${esc(item.id)}</div><div class="inspect-title">${esc(title||'Untitled')}</div></div>${item.issues.length?`<div class="issues"><strong>Quality flags</strong>${item.issues.map(x=>`<div>• ${esc(x)}</div>`).join('')}</div>`:''}<div class="section"><h2>Stored metadata</h2>${meta.map(([k,v])=>`<div class="kv"><span>${esc(k)}</span><span>${esc(v)}</span></div>`).join('')}<div class="kv"><span>Source URL</span><span>${url?`<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">Open authoritative source ↗</a>`:'Not available'}</span></div></div><div class="section"><h2>Full description</h2><div class="description">${esc(doc.description||'No description stored.')}</div></div><details><summary>Raw API representation</summary><pre>${esc(JSON.stringify(doc,null,2))}</pre></details>`}
 document.querySelectorAll('[data-dataset]').forEach(b=>b.onclick=()=>selectDataset(b.dataset.dataset));$('query').oninput=e=>{clearTimeout(timer);timer=setTimeout(()=>{state.q=e.target.value.trim();state.page=1;load()},250)};$('quality').onchange=e=>{state.quality=e.target.value;state.page=1;load()};$('pageSize').onchange=e=>{state.pageSize=Number(e.target.value);state.page=1;load()};$('prev').onclick=()=>{state.page--;load()};$('next').onclick=()=>{state.page++;load()};$('closeInspector').onclick=()=>$('inspector').classList.remove('open');boot();
 </script></body></html>"#;
+
+#[cfg(test)]
+mod health_tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn liveness_does_not_require_helix() {
+        assert_eq!(healthz().await, StatusCode::OK);
+    }
+}
