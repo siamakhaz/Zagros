@@ -18,7 +18,7 @@ class RailwayDeploymentTests(unittest.TestCase):
         for path, user in (("Dockerfile.railway", "zagros"),
                            ("docker/Dockerfile.helix.railway", "helix")):
             content = (ROOT / path).read_text(encoding="utf-8")
-            last_user = re.findall(r"(?m)^USER\\s+(\\S+)\\s*$", content)
+            last_user = re.findall(r"(?m)^USER\s+(\S+)\s*$", content)
             self.assertEqual(last_user[-1], user)
             self.assertNotIn("railway-volume-entrypoint", content)
             self.assertNotIn("USER root", content)
