@@ -49,7 +49,7 @@ PORT=8788
 
 ## Startup permissions and security gate
 
-Railway's root-owned volume mounts caused `cannot create /data/zagros-crontab: Permission denied` under the original non-root container. Railway-specific images now use `docker/railway-volume-entrypoint.sh`: startup runs with root privilege to `chown` `/data`, then invokes `runuser` to run the service as `zagros` or `helix`. **This privileged initialization is a security exception requiring review.** The security workflow currently flags root as a HIGH finding. Do not waive the scanner or present the image as production-hardened until a reviewed least-privilege solution and checks are documented. Recursive ownership changes can have additional costs or impacts on populated volumes.
+Railway's root-owned volume mounts caused `cannot create /data/zagros-crontab: Permission denied` under the original non-root container. This experimental branch removes the root startup helper and declares `USER zagros` and `USER helix` in the respective Railway Dockerfiles. This eliminates privileged application startup and the Dockerfile-level DS-0002 finding; it **does not itself fix root-owned Railway volume mounts**. The existing running Railway volumes were previously chowned by the old startup helper, but we have not verified that ownership is retained after a fresh deploy or restart. Do not deploy these images to a newly attached volume until a one-time, explicitly reviewed ownership bootstrap has set the mount ownership for the correct service UID. Bootstrap must be isolated from the long-running application, use a dedicated operator-controlled administrative job with the volume attached, and be removed after validation. Do not use a long-running root application or disable Trivy. Do not perform recursive ownership changes on populated volumes without a backup and risk review. If Railway remounts the volume as root on each deployment, this model is not viable without a supported volume-ownership mechanism or separate storage design; rollback instead of claiming a fix.
 
 Do not set `RAILWAY_RUN_UID=0` as a blanket workaround without an explicit security review; it keeps the application privileged.\n\nThe standard Docker images and Docker Compose mounts are unchanged.
 
@@ -64,7 +64,7 @@ The MCP container's existing `supercronic` scheduler uses `0 3 * * *` UTC, invok
 - Helix `749f1589`: `SUCCESS` with successful health check.
 - MCP `a2fbdf44`: previously `SUCCESS`, then `SLEEPING` on Free plan; logs showed scheduler initialized and listening on port 8789.
 
-**Not yet independently verified:** cross-service application queries, volume persistence across redeploy, reliable cron execution while sleeping, live authenticated remote access, and security review of root startup. The PR must not be merged on healthcheck success alone while required security CI fails.
+**Not yet independently verified (including non-root mounted-volume write capability after redeploy):** cross-service application queries, volume persistence across redeploy, reliable cron execution while sleeping, live authenticated remote access, and security review of root startup. The PR must not be merged on healthcheck success alone while required security CI fails.
 
 ## Development verification
 
