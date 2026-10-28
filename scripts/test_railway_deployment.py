@@ -14,6 +14,19 @@ class RailwayDeploymentTests(unittest.TestCase):
             self.assertNotRegex(data, r"(?im)^\s*VOLUME\s")
             self.assertIn("/data", data)
 
+    def test_railway_volume_bootstrap_drops_privileges(self):
+        entry = (ROOT / "docker/railway-volume-entrypoint.sh").read_text(encoding="utf-8")
+        self.assertIn('chown -R "$service_user:$service_user" /data', entry)
+        self.assertIn('exec runuser -u "$service_user" -- "$@"', entry)
+        for path, user in (("Dockerfile.railway", "zagros"),
+                           ("docker/Dockerfile.helix.railway", "helix")):
+            content = (ROOT / path).read_text(encoding="utf-8")
+            self.assertIn("util-linux", content)
+            self.assertIn("docker/railway-volume-entrypoint.sh", content)
+            self.assertIn(f'"{user}"', content)
+        helix = (ROOT / "docker/Dockerfile.helix.railway").read_text(encoding="utf-8")
+        self.assertNotIn("ca-certificates=20250419~deb12u1", helix)
+
     def test_docker_compose_storage_is_preserved(self):
         compose = (ROOT / "docker/compose.yml").read_text(encoding="utf-8")
         self.assertIn("zagros-data:/data", compose)
