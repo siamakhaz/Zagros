@@ -8,7 +8,14 @@ distinguishing them.
 
 Every newly ingested CVE and Knowledge record carries structured provenance persisted in HelixDB and returned through MCP: publisher, source name/version, canonical evidence URL, exact retrieval URL, license, retrieval timestamp, upstream update timestamp when available, SHA-256 content fingerprint, and trust tier.
 
-Source manifests record raw retrieval SHA-256 values and record counts. Optional raw snapshot retention is disabled by default and controlled by `ZAGROS_PRESERVE_RAW_SOURCES`. Legacy Helix rows without provenance remain readable as `legacy_unknown` until their source is refreshed.
+Source manifests record raw retrieval SHA-256 values and record counts. Optional raw snapshot retention is disabled by default and controlled by `ZAGROS_PRESERVE_RAW_SOURCES`. Legacy Helix rows without provenance remain readable until their source is refreshed.
+The fallback sets `trust_tier=legacy_unknown` and `source_version=legacy-unknown`.
+It leaves `retrieved_at`, `retrieval_url`, and `content_sha256` empty because the
+original fetch time, exact retrieval URL, and content fingerprint are unverified.
+Do not treat a legacy row's read time as its fetch time. In `index_status`, a
+source containing only legacy rows has `freshness=unknown`, even if its record
+count meets the integrity minimum. A newer verified row can make source-level
+freshness `fresh`; this is **not** evidence that every record is fresh.
 
 See [SOURCE-TRUST-POLICY.md](SOURCE-TRUST-POLICY.md) for claim-specific source authority and conflict handling.
 
