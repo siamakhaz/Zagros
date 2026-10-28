@@ -167,7 +167,6 @@ mod cwe_zip_limit_tests {
     }
 }
 
-
 /// Download and parse the CWE XML ZIP.  Returns one [`KnowledgeDoc`] per
 /// `<Weakness>` entry that has a description.
 pub async fn ingest_cwe() -> Result<Vec<KnowledgeDoc>> {
