@@ -25,6 +25,17 @@ class RailwayDeploymentTests(unittest.TestCase):
         helix = (ROOT / "docker/Dockerfile.helix.railway").read_text(encoding="utf-8")
         self.assertNotIn("ca-certificates=20250419~deb12u1", helix)
 
+    def test_persistent_volume_ids_are_explicit(self):
+        mcp = (ROOT / "Dockerfile.railway").read_text(encoding="utf-8")
+        helix = (ROOT / "docker/Dockerfile.helix.railway").read_text(encoding="utf-8")
+        guide = (ROOT / "docs/RAILWAY.md").read_text(encoding="utf-8")
+        self.assertIn("useradd --system --create-home --uid 10001 zagros", mcp)
+        self.assertIn("groupadd --system --gid 10002 helix", helix)
+        self.assertIn("useradd --system --uid 10002 --gid helix", helix)
+        self.assertIn("UID 10001", guide)
+        self.assertIn("UID/GID 10002", guide)
+        self.assertIn("numeric ownership", guide)
+
     def test_docker_compose_storage_is_preserved(self):
         compose = (ROOT / "docker/compose.yml").read_text(encoding="utf-8")
         self.assertIn("zagros-data:/data", compose)
