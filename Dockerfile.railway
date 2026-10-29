@@ -14,7 +14,8 @@ RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends ca-certificates curl libpcre2-8-0 \
     && rm -rf /var/lib/apt/lists/* \
-    && useradd --system --create-home --uid 10001 zagros \
+    && groupadd --system --gid 10001 zagros \
+    && useradd --system --create-home --uid 10001 --gid zagros zagros \
     && mkdir -p /data \
     && chown zagros:zagros /data
 
@@ -35,6 +36,6 @@ ENV ZAGROS_DATA_DIR=/data \
 # Default to the HTTP server.  Override with --entrypoint when the
 # Docker Desktop MCP Toolkit needs the stdio binary.
 EXPOSE 8789
-# Requires a previously provisioned volume with /data owned by UID 10001.
+# Requires a previously provisioned volume with /data owned by UID/GID 10001.
 USER zagros
 ENTRYPOINT ["/usr/local/bin/mcp-entrypoint"]

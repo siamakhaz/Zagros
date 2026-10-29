@@ -29,10 +29,11 @@ class RailwayDeploymentTests(unittest.TestCase):
         mcp = (ROOT / "Dockerfile.railway").read_text(encoding="utf-8")
         helix = (ROOT / "docker/Dockerfile.helix.railway").read_text(encoding="utf-8")
         guide = (ROOT / "docs/RAILWAY.md").read_text(encoding="utf-8")
-        self.assertIn("useradd --system --create-home --uid 10001 zagros", mcp)
+        self.assertIn("groupadd --system --gid 10001 zagros", mcp)
+        self.assertIn("useradd --system --create-home --uid 10001 --gid zagros zagros", mcp)
         self.assertIn("groupadd --system --gid 10002 helix", helix)
         self.assertIn("useradd --system --uid 10002 --gid helix", helix)
-        self.assertIn("UID 10001", guide)
+        self.assertIn("UID/GID 10001", guide)
         self.assertIn("UID/GID 10002", guide)
         self.assertIn("numeric ownership", guide)
 
