@@ -10,7 +10,7 @@ This guide documents the three-service deployment tested on 2026-10-28 in the Ra
 | `Zagros` (MCP HTTP) | `Dockerfile.railway` | `zagros.railway.internal:8789` | `/health` | 500 MB at `/data` |
 | `zagros-ui` | `Dockerfile.ui` | `zagros-ui.railway.internal:8788` | `/healthz` | none |
 
-All three services build from repository root. The Railway Free plan tested here limits volume size to 500 MB, requires sleeping, and does not allow a fourth cron worker; limits may change by plan. If deploying from a feature branch, use the same commit across services. After PR approval, use a reviewed release commit rather than an unreviewed mutable development branch.
+All three services build from repository root. Railway persistent volumes require explicit ownership verification across redeployments. The Railway Free plan tested here limits volume size to 500 MB, requires sleeping, and does not allow a fourth cron worker; limits may change by plan. If deploying from a feature branch, use the same commit across services. After PR approval, use a reviewed release commit rather than an unreviewed mutable development branch.
 
 Required service variables:
 
@@ -51,7 +51,9 @@ PORT=8788
 
 Railway's root-owned volume mounts caused `cannot create /data/zagros-crontab: Permission denied` under the original non-root container. Railway-specific images now use `docker/railway-volume-entrypoint.sh`: startup runs with root privilege to `chown` `/data`, then invokes `runuser` to run the service as `zagros` or `helix`. **This privileged initialization is a security exception requiring review.** The security workflow currently flags root as a HIGH finding. Do not waive the scanner or present the image as production-hardened until a reviewed least-privilege solution and checks are documented. Recursive ownership changes can have additional costs or impacts on populated volumes.
 
-Do not set `RAILWAY_RUN_UID=0` as a blanket workaround without an explicit security review; it keeps the application privileged.\n\nThe standard Docker images and Docker Compose mounts are unchanged.
+Do not set `RAILWAY_RUN_UID=0` as a blanket workaround without an explicit security review; it keeps the application privileged.
+
+The standard Docker images and Docker Compose mounts are unchanged.
 
 ## Refresh and backfill
 
