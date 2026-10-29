@@ -10,7 +10,7 @@ This guide documents the three-service deployment tested on 2026-10-28 in the Ra
 | `Zagros` (MCP HTTP) | `Dockerfile.railway` | `zagros.railway.internal:8789` | `/health` | 500 MB at `/data` |
 | `zagros-ui` | `Dockerfile.ui` | `zagros-ui.railway.internal:8788` | `/healthz` | none |
 
-All three services build from repository root. Railway persistent volumes require explicit permission verification. The Railway Free plan tested here limits volume size to 500 MB, requires sleeping, and does not allow a fourth cron worker; limits may change by plan. If deploying from a feature branch, use the same commit across services. After PR approval, use a reviewed release commit rather than an unreviewed mutable development branch.
+All three services build from repository root. Railway persistent volumes require explicit numeric ownership and write-permission verification across redeployments. The Railway Free plan tested here limits volume size to 500 MB, requires sleeping, and does not allow a fourth cron worker; limits may change by plan. If deploying from a feature branch, use the same commit across services. After PR approval, use a reviewed release commit rather than an unreviewed mutable development branch.
 
 Required service variables:
 
