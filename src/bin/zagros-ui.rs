@@ -126,7 +126,8 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-// Liveness must not depend on HelixDB availability.
+// Liveness is intentionally independent of HelixDB. Keep /api/status as the
+// deeper dependency-aware status endpoint for operators and diagnostics.
 async fn healthz() -> StatusCode {
     StatusCode::OK
 }

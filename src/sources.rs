@@ -120,6 +120,87 @@ fn attack_source_version(json: &[u8]) -> String {
 // ── CWE ──────────────────────────────────────────────────────────────────────
 
 const CWE_ZIP_URL: &str = "https://cwe.mitre.org/data/xml/cwec_latest.xml.zip";
+const MAX_CWE_XML_BYTES: usize = 50 * 1024 * 1024;
+
+/// Stop reading at the maximum allowed uncompressed size, before a ZIP entry
+/// can allocate unbounded memory. The limit is exclusive to match the
+/// previous post-decompression validation.
+fn read_cwe_xml_bounded(reader: impl Read, limit: usize) -> Result<Vec<u8>> {
+    let mut xml_bytes = Vec::with_capacity(limit.min(4 * 1024 * 1024));
+    reader
+        .take(limit as u64)
+        .read_to_end(&mut xml_bytes)
+        .context("failed to decompress CWE XML")?;
+    ensure!(
+        xml_bytes.len() < limit,
+        "CWE XML too large after decompression: {} bytes",
+        xml_bytes.len()
+    );
+    Ok(xml_bytes)
+}
+
+#[cfg(test)]
+mod cwe_zip_limit_tests {
+    use super::*;
+
+    // Exercise the actual ZIP reader, not only synthetic Read implementations.
+    // The small limit keeps this regression deterministic and inexpensive.
+    fn zipped_xml(xml: &[u8]) -> Vec<u8> {
+        use std::io::Write;
+        let mut writer = zip::ZipWriter::new(Cursor::new(Vec::new()));
+        let options = zip::write::SimpleFileOptions::default()
+            .compression_method(zip::CompressionMethod::Deflated);
+        writer.start_file("cwec.xml", options).unwrap();
+        writer.write_all(xml).unwrap();
+        writer.finish().unwrap().into_inner()
+    }
+
+    #[test]
+    fn zip_fixture_preserves_xml_and_catalog_version() {
+        let xml = b"<Weakness_Catalog Version=\"4.18\"><Weakness ID=\"79\" /></Weakness_Catalog>";
+        let bytes = zipped_xml(xml);
+        let mut archive = zip::ZipArchive::new(Cursor::new(bytes)).unwrap();
+        let decoded = read_cwe_xml_bounded(archive.by_index(0).unwrap(), 256).unwrap();
+        assert_eq!(decoded, xml);
+        assert_eq!(
+            xml_catalog_version(&decoded, b"Weakness_Catalog").as_deref(),
+            Some("4.18")
+        );
+    }
+
+    #[test]
+    fn zip_fixture_rejects_compressible_oversize_xml() {
+        let xml = vec![b'A'; 8192];
+        let compressed = zipped_xml(&xml);
+        assert!(compressed.len() < xml.len());
+        let mut archive = zip::ZipArchive::new(Cursor::new(compressed)).unwrap();
+        let err = read_cwe_xml_bounded(archive.by_index(0).unwrap(), 128).unwrap_err();
+        assert!(err.to_string().contains("CWE XML too large"));
+    }
+
+    #[test]
+    fn bounded_read_preserves_small_xml() {
+        let xml = b"<Weakness_Catalog><Weakness ID=\"79\" /></Weakness_Catalog>";
+        assert_eq!(
+            read_cwe_xml_bounded(Cursor::new(xml), xml.len() + 1).unwrap(),
+            xml.to_vec()
+        );
+    }
+
+    #[test]
+    fn bounded_read_rejects_large_or_unending_streams() {
+        // A nonterminating, highly compressible stream must not allocate
+        // beyond the configured limit or hang waiting for EOF.
+        let err = read_cwe_xml_bounded(std::io::repeat(b'A'), 64).unwrap_err();
+        assert!(err.to_string().contains("CWE XML too large"));
+    }
+
+    #[test]
+    fn bounded_read_rejects_exact_limit() {
+        let err = read_cwe_xml_bounded(Cursor::new([b'A'; 32]), 32).unwrap_err();
+        assert!(err.to_string().contains("CWE XML too large"));
+    }
+}
 
 /// Download and parse the CWE XML ZIP.  Returns one [`KnowledgeDoc`] per
 /// `<Weakness>` entry that has a description.
@@ -145,17 +226,10 @@ pub async fn ingest_cwe() -> Result<Vec<KnowledgeDoc>> {
     // Decompress the single XML file from the ZIP in memory.
     let cursor = Cursor::new(bytes.as_ref());
     let mut archive = zip::ZipArchive::new(cursor).context("failed to open CWE ZIP archive")?;
-    let mut xml_bytes = Vec::with_capacity(4 * 1024 * 1024);
-    archive
-        .by_index(0)
-        .context("CWE ZIP is empty")?
-        .read_to_end(&mut xml_bytes)
-        .context("failed to decompress CWE XML")?;
-    ensure!(
-        xml_bytes.len() < 50 * 1024 * 1024,
-        "CWE XML too large after decompression: {} bytes",
-        xml_bytes.len()
-    );
+    let xml_bytes = read_cwe_xml_bounded(
+        archive.by_index(0).context("CWE ZIP is empty")?,
+        MAX_CWE_XML_BYTES,
+    )?;
 
     let retrieved_at = Utc::now();
     let version = xml_catalog_version(&xml_bytes, b"Weakness_Catalog")
