@@ -28,15 +28,26 @@ def request(port, payload, *, host="localhost", session=None):
     content_type = response.getheader("Content-Type", "")
     body = response.read(1024 * 1024).decode("utf-8", errors="replace")
     conn.close()
-    if "text/event-stream" in content_type:
+    # Rejected Host headers may return a plain-text HTTP error, not JSON.
+    # Keep the HTTP status authoritative; do not hide malformed 2xx MCP replies.
+    if status >= 400 and "text/event-stream" not in content_type and "json" not in content_type:
+        result = {"http_error": body[:512]}
+    elif "text/event-stream" in content_type:
         messages = [
             json.loads(line[5:].strip())
             for line in body.splitlines()
             if line.startswith("data:") and line[5:].strip().startswith("{")
         ]
+        if status == 200 and not messages:
+            raise AssertionError(f"Empty MCP event stream: HTTP {status}, {body[:256]!r}")
         result = messages[-1] if messages else {}
     elif body.strip():
-        result = json.loads(body)
+        try:
+            result = json.loads(body)
+        except json.JSONDecodeError as exc:
+            raise AssertionError(
+                f"Malformed MCP JSON: HTTP {status}, Content-Type={content_type}, {body[:256]!r}"
+            ) from exc
     else:
         result = {}
     return status, session_id, result
