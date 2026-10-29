@@ -32,7 +32,7 @@ zagros.exe ingest [OPTIONS]
 
 | Flag | Default | Range | Description |
 |---|---|---|---|
-| `--limit <N>` | `50` | 1–1000 | Number of latest changed CVE records to download |
+| `--limit <N>` | `50` | Non-negative integer (no CLI maximum) | Number of latest changed CVE records to download; use a modest limit to bound network work |
 
 **Example:**
 
@@ -96,25 +96,35 @@ zagros.exe source <NAME>
 
 **Argument:**
 
-| Value | Source | Records | Format |
-|---|---|---|---|
-| `cwe` | MITRE CWE (latest XML ZIP) | ~969 | XML in ZIP |
-| `asvs` | OWASP ASVS 5.0.0 (CSV) | 345 | CSV |
-| `capec` | MITRE CAPEC (latest XML) | ~613 | XML |
-| `attack` | MITRE ATT&CK Enterprise (STIX 2.1) | ~697 | JSON |
-| `all` | All four sources in sequence | ~2624 | — |
+| Value | Source | Format |
+|---|---|---|
+| `cwe` | MITRE CWE (latest XML ZIP) | XML in ZIP |
+| `asvs` | OWASP ASVS 5.0.0 (CSV) | CSV |
+| `capec` | MITRE CAPEC (latest XML) | XML |
+| `attack` | MITRE ATT&CK Enterprise (STIX 2.1) | JSON |
+| `all` | All four sources in sequence | — |
+
+Record counts vary by source version, ingestion scope, and the local index. Use `zagros.exe status` to check the indexed counts; do not use example counts as acceptance criteria.
 
 **Examples:**
 
 ```powershell
 .\target\debug\zagros.exe source all
-# ingested 969 CWE records; 969 total
-# ingested 345 ASVS records; 345 total
-# ingested 613 CAPEC records; 613 total
-# ingested 697 ATT&CK records; 697 total
-
 .\target\debug\zagros.exe source cwe
 .\target\debug\zagros.exe source asvs
+```
+
+The `source all` command prints progress and a **cumulative** knowledge-node total after each source. For example, its output follows this shape (counts are placeholders):
+
+```text
+ingesting MITRE CWE…
+CWE: <count> weaknesses stored; <cumulative total> total knowledge nodes
+ingesting OWASP ASVS 5.0…
+ASVS: <count> requirements stored; <cumulative total> total knowledge nodes
+ingesting MITRE CAPEC…
+CAPEC: <count> attack patterns stored; <cumulative total> total knowledge nodes
+ingesting MITRE ATT&CK Enterprise…
+ATT&CK: <count> techniques stored; <cumulative total> total knowledge nodes
 ```
 
 **Behavior:**
@@ -266,21 +276,21 @@ zagros.exe interactive [OPTIONS]
 | `:help` | Show usage hint |
 | `:quit`, `:q`, `quit`, `exit` | Exit the REPL |
 
-**Example session:**
+**Example session (illustrative search result):**
 
+```text
+CVE interactive search (<count> records)
+Commands: :help, :limit N, :quit
+cve> remote code execution
+1. CVE-2024-3094 | 128.342
+   XZ Utils supply-chain compromise
+
+cve> :limit 5
+limit set to 5
+cve> :quit
 ```
-> remote code execution
-1. CVE-2024-3094 | score 128.3 | updated <timestamp>
-   ...
 
-> :limit 5
-
-> buffer overflow in libpng
-1. CVE-2025-98765 | score 44.1 | updated 2025-10-30
-   ...
-
-> :quit
-```
+The interactive command prints a score, but does not print an `updated` field. A search can return `No results.` if the index does not contain a match.
 
 **Note:** `interactive` searches CVE records only. Use `know` for the security
 knowledge base.
@@ -297,19 +307,19 @@ zagros.exe status
 
 No options.
 
-**Example output:**
+**Example output (counts are placeholders):**
 
-```
+```text
 HelixDB URL  : http://localhost:47474
-CVE nodes    : 499
-
-Knowledge nodes by source:
-  asvs        : 345
-  attack      : 697
-  capec       : 613
-  cwe         : 969
-  total       : 2,624
+CVE nodes    : <count>
+  asvs        : <count>
+  attack      : <count>
+  capec       : <count>
+  cwe         : <count>
+  total       : <count>
 ```
+
+Only sources present in the index are listed. With no indexed knowledge records, the command prints `Knowledge    : (none — run 'source all' to populate)` instead of per-source counts.
 
 ---
 
@@ -327,7 +337,8 @@ Knowledge nodes by source:
 | Code | Meaning |
 |---|---|
 | 0 | Success |
-| 1 | Error (HelixDB unreachable, network error, parse failure, invalid argument) |
+| 1 | Application error (for example, HelixDB unreachable or ingestion failure) |
+| 2 | CLI argument/usage error reported by Clap |
 
 Error messages are printed to stderr. All normal output goes to stdout.
 

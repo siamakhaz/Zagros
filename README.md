@@ -87,7 +87,7 @@ Services:
 | `mcp` | `zagros-mcp-http` | `127.0.0.1:8789` | `http://helix:8080` | optional via Traefik override |
 | `zagros-ui` | `zagros-ui` | `127.0.0.1:8788` | `http://helix:8080` | optional via Traefik override |
 
-HelixDB binds `127.0.0.1:47474:8080` (F-01). MCP and UI also bind to loopback by default. Containers communicate only on the internal `zagros` network. For Traefik, start Compose with the optional `docker/compose.traefik.yml` override.
+HelixDB binds `127.0.0.1:47474:8080` (F-01). MCP and UI also bind to loopback by default. Containers communicate only on the internal `zagros` network. For Traefik, start Compose with the optional `docker/compose.traefik.yml` override. **The override provides TLS routing only; it does not add authentication or authorization.** Do not expose it publicly until an authenticated gateway policy is configured and verified; see [deployment security](docs/DEPLOYMENT.md#validate-the-remote-authentication-boundary-operator-run-no-deployment-performed).
 
 Verify:
 

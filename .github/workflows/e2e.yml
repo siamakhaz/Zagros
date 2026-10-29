@@ -57,6 +57,12 @@ jobs:
         env:
           HELIX_URL: http://127.0.0.1:47474
         run: python scripts/e2e_mcp.py
+      - name: Verify MCP HTTP transport and Host validation
+        env:
+          HELIX_URL: http://127.0.0.1:47474
+        run: |
+          cargo build --locked --bin zagros-mcp-http
+          python scripts/e2e_mcp_http.py
       - name: HelixDB logs
         if: failure()
         run: cat /tmp/helix.log

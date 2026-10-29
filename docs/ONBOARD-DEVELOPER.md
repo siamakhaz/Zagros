@@ -12,24 +12,31 @@ For a remote organizational deployment, use the HTTPS URL supplied by your admin
 
 ## Connect and query
 
-1. Confirm service connectivity from the client machine:
+1. Select the Zagros **base URL** from the machine running your MCP client, then check connectivity. For a local Compose installation, use the loopback address shown below. For an organization-hosted service, replace it with the **HTTPS base URL supplied by your administrator** (the example hostname is not a live Zagros service).
 
    ```powershell
-   Invoke-RestMethod http://127.0.0.1:8789/health
+   $ZagrosBaseUrl = "http://127.0.0.1:8789"
+   # Remote example only; replace with the actual authorized HTTPS base URL:
+   # $ZagrosBaseUrl = "https://zagros.example.org"
+   Invoke-RestMethod -Uri "$ZagrosBaseUrl/health"
    ```
 
-2. Register the MCP server in your client using its Streamable HTTP setup. For OpenCode, a configuration example is:
+   The native HTTP server implements `GET /health` and `/mcp` on the same origin. A protected gateway may require authentication for `/health` or may not publish that route. In that case, use your administrator's authorized health-check procedure and verify the MCP connection in step 2; **do not bypass the gateway**. A successful health check confirms service/database reachability, not a populated index.
+
+2. Register the MCP server in your client using its Streamable HTTP setup. For a **local** OpenCode client, use:
 
    ```json
    {
      "mcp": {
        "Zagros": {
          "type": "remote",
-         "url": "http://localhost:8789/mcp"
+         "url": "http://127.0.0.1:8789/mcp"
        }
      }
    }
    ```
+
+   For a **remote** service, replace the `url` with your administrator's authenticated HTTPS MCP endpoint (for example, `https://zagros.example.org/mcp`, which is illustrative only). The URL must refer to the server reachable from your client, not the client's `localhost`. Configure gateway credentials using your client's supported authentication mechanism; never put credentials in shared documentation.
 
    See [harness-specific configuration](../skills/HARNESSES.md). Restart/reload the client and confirm it exposes the Zagros tools.
 
