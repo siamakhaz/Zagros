@@ -81,3 +81,7 @@ References:
 - https://docs.railway.com/deployments/healthchecks
 - https://docs.railway.com/builds/dockerfiles
 - https://docs.railway.com/infrastructure-as-code/reference
+
+## Fresh-volume verification (2026-10-29)
+
+On Railway project `wonderful-patience`, newly created `/data` volumes were attached to Helix and Zagros. Helix's strict non-root image at commit `77c4923` built but failed its `/healthz` probe on the fresh mount; runtime logs showed only volume mount, container start and stop, so the precise failure is not independently confirmed. A temporary deployment of the previous reviewed root-bootstrap image (`9932542`) succeeded against that same Helix volume, after which the service was switched back to strict non-root commit `77c4923`. This sequence is a **one-time operator provisioning experiment**, not evidence that arbitrary fresh Railway volumes support strict non-root startup. Verify the final deployment status, application queries, actual UID/GID, write access and persistence on a further restart before declaring the release ready. Never leave the bootstrap image as the final deployment or bypass security scanning. Fresh volumes require an explicitly reviewed provisioning procedure; image-level `chown` cannot prepare mounted volumes.
