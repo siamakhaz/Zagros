@@ -30,8 +30,11 @@ def request(port, payload, *, host="localhost", session=None):
     conn.close()
     # Rejected Host headers may return a plain-text HTTP error, not JSON.
     # Keep the HTTP status authoritative; do not hide malformed 2xx MCP replies.
-    if status >= 400 and "text/event-stream" not in content_type and "json" not in content_type:
-        result = {"http_error": body[:512]}
+    if status >= 400 and "text/event-stream" not in content_type:
+        try:
+            result = json.loads(body)
+        except json.JSONDecodeError:
+            result = {"http_error": body[:512]}
     elif "text/event-stream" in content_type:
         messages = [
             json.loads(line[5:].strip())
