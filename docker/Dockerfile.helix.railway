@@ -16,8 +16,8 @@ FROM debian:bookworm-slim@sha256:88200866dfff7ea7f5cbcb6ec7c8a701889efe6fe859fe6
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends ca-certificates curl \
-    && groupadd --system helix \
-    && useradd --system --gid helix --home-dir /nonexistent --shell /usr/sbin/nologin helix \
+    && groupadd --system --gid 10002 helix \
+    && useradd --system --uid 10002 --gid helix --home-dir /nonexistent --shell /usr/sbin/nologin helix \
     && mkdir -p /data \
     && chown helix:helix /data \
     && rm -rf /var/lib/apt/lists/*
@@ -29,6 +29,6 @@ ENV HELIX_HTTP_ADDR=0.0.0.0:8080 \
     HELIX_DATA_DIR=/data
 
 EXPOSE 8080 8081
-# Requires a previously provisioned volume with /data owned by the helix UID.
+# Requires /data owned by UID/GID 10002; validate existing mounts before deployment.
 USER helix
 ENTRYPOINT ["/usr/local/bin/helix-server"]
