@@ -10,7 +10,9 @@ Zagros ranks source authority by the type of claim being made. It does not silen
 - **Community** — community reports and discussion.
 - **Legacy unknown** — records created before provenance metadata was available.
 
-All sources in the current Zagros corpus are authoritative.
+The five configured upstream publishers are authoritative for their respective claim types.
+This classification is not proof of provenance for each stored record: legacy rows
+without saved provenance are marked `legacy_unknown` until refreshed.
 
 ## Claim-specific authority
 

@@ -7,8 +7,19 @@
 | Rust | 1.85+ | Compile the project |
 | Docker Desktop | Current | Run HelixDB sidecar |
 | PowerShell | 7+ | Setup and registration scripts |
+| Node.js | 22.23.4+ (22.x) | Build the Astro website |
 
 Install Rust via [rustup](https://rustup.rs/).
+
+The website CI, security audit, and Pages build workflows pin Node.js
+`22.23.4` rather than just `22`. Astro 7.4 requires at least `22.23.4`,
+and an unqualified major pin can resolve to an older cached patch (the
+Dependabot Astro PR #89 failed on `22.23.3`). Keep all three workflow
+pins at or above the Astro lockfile engine requirement and the patched
+Node 22 baseline. Run `python -m unittest discover -s scripts -p
+"test_*docs*.py"` to validate the pins. Updating the Pages workflow does
+not authorize a deployment; review the PR and its required checks before
+merging.
 
 ---
 
@@ -153,6 +164,26 @@ cargo fmt -- --check       # check formatting without modifying files
 cargo clippy               # lint
 cargo clippy -- -D warnings # treat warnings as errors
 ```
+
+---
+
+## CI action maintenance
+
+The Security workflow uses `github/codeql-action/init`, `autobuild`, and
+`analyze` in one CodeQL job. All three steps **must reference the same
+40-character commit SHA**. Mixing CodeQL action versions causes a configuration
+error before analysis can complete, even when the other CI jobs pass.
+
+Dependabot groups `github/codeql-action/*` updates so these steps advance
+together. The CI documentation job runs `scripts/test_workflow_actions.py`
+to reject missing or mismatched CodeQL pins. Run the check locally with:
+
+```powershell
+python -m unittest discover -s scripts -p 'test_*.py'
+```
+
+After updating an action pin, review the upstream release and verify the
+Security/CodeQL GitHub Actions job on the **current PR commit** before merging.
 
 ---
 
