@@ -27,6 +27,13 @@ class RailwayDeploymentTests(unittest.TestCase):
         helix = (ROOT / "docker/Dockerfile.helix.railway").read_text(encoding="utf-8")
         self.assertNotIn("ca-certificates=20250419~deb12u1", helix)
 
+    def test_cron_configuration_is_private_and_ephemeral(self):
+        entry = (ROOT / "docker/mcp-entrypoint.sh").read_text(encoding="utf-8")
+        self.assertIn('cron_file="$(mktemp /tmp/zagros-crontab.XXXXXX)"', entry)
+        self.assertNotIn('/data/zagros-crontab', entry)
+        self.assertIn('printf', entry)
+        self.assertIn('/usr/local/bin/supercronic "$cron_file" &', entry)
+        self.assertIn('exec /usr/local/bin/zagros-mcp-http "$@"', entry)
     def test_docker_compose_storage_is_preserved(self):
         compose = (ROOT / "docker/compose.yml").read_text(encoding="utf-8")
         self.assertIn("zagros-data:/data", compose)
