@@ -14,18 +14,28 @@ class RailwayDeploymentTests(unittest.TestCase):
             self.assertNotRegex(data, r"(?im)^\s*VOLUME\s")
             self.assertIn("/data", data)
 
-    def test_railway_volume_bootstrap_drops_privileges(self):
-        entry = (ROOT / "docker/railway-volume-entrypoint.sh").read_text(encoding="utf-8")
-        self.assertIn('chown -R "$service_user:$service_user" /data', entry)
-        self.assertIn('exec runuser -u "$service_user" -- "$@"', entry)
+    def test_railway_images_run_nonroot_by_default(self):
         for path, user in (("Dockerfile.railway", "zagros"),
                            ("docker/Dockerfile.helix.railway", "helix")):
             content = (ROOT / path).read_text(encoding="utf-8")
-            self.assertIn("util-linux", content)
-            self.assertIn("docker/railway-volume-entrypoint.sh", content)
-            self.assertIn(f'"{user}"', content)
+            last_user = re.findall(r"(?m)^USER\s+(\S+)\s*$", content)
+            self.assertEqual(last_user[-1], user)
+            self.assertNotIn("railway-volume-entrypoint", content)
+            self.assertNotIn("USER root", content)
         helix = (ROOT / "docker/Dockerfile.helix.railway").read_text(encoding="utf-8")
         self.assertNotIn("ca-certificates=20250419~deb12u1", helix)
+
+    def test_persistent_volume_ids_are_explicit(self):
+        mcp = (ROOT / "Dockerfile.railway").read_text(encoding="utf-8")
+        helix = (ROOT / "docker/Dockerfile.helix.railway").read_text(encoding="utf-8")
+        guide = (ROOT / "docs/RAILWAY.md").read_text(encoding="utf-8")
+        self.assertIn("groupadd --system --gid 10001 zagros", mcp)
+        self.assertIn("useradd --system --create-home --uid 10001 --gid zagros zagros", mcp)
+        self.assertIn("groupadd --system --gid 10002 helix", helix)
+        self.assertIn("useradd --system --uid 10002 --gid helix", helix)
+        self.assertIn("UID/GID 10001", guide)
+        self.assertIn("UID/GID 10002", guide)
+        self.assertIn("numeric ownership", guide)
 
     def test_cron_configuration_is_private_and_ephemeral(self):
         entry = (ROOT / "docker/mcp-entrypoint.sh").read_text(encoding="utf-8")
