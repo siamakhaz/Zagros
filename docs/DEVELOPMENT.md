@@ -7,8 +7,19 @@
 | Rust | 1.85+ | Compile the project |
 | Docker Desktop | Current | Run HelixDB sidecar |
 | PowerShell | 7+ | Setup and registration scripts |
+| Node.js | 22.23.4+ (22.x) | Build the Astro website |
 
 Install Rust via [rustup](https://rustup.rs/).
+
+The website CI, security audit, and Pages build workflows pin Node.js
+`22.23.4` rather than just `22`. Astro 7.4 requires at least `22.23.4`,
+and an unqualified major pin can resolve to an older cached patch (the
+Dependabot Astro PR #89 failed on `22.23.3`). Keep all three workflow
+pins at or above the Astro lockfile engine requirement and the patched
+Node 22 baseline. Run `python -m unittest discover -s scripts -p
+"test_*docs*.py"` to validate the pins. Updating the Pages workflow does
+not authorize a deployment; review the PR and its required checks before
+merging.
 
 ---
 
