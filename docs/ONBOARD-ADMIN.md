@@ -10,7 +10,7 @@ This is the supported Docker Compose path for a local, single-operator deploymen
 - Ports 47474, 8789 and 8788 available on **loopback**.
 - On Linux, ensure the bind-mounted data directory is writable by the configured `ZAGROS_HOST_UID`/`ZAGROS_HOST_GID` (defaults 1000:1000). Follow [deployment](DEPLOYMENT.md) and the Compose file; do not indiscriminately make the directory world-writable.
 
-Commands below are for a shell with Docker Compose. Use PowerShell equivalents for downloading or copying configuration where needed.
+The fenced `bash` commands below are for Bash or another POSIX shell. In Windows PowerShell, run the Docker and Git commands as written, but replace `curl -fsS URL` with `curl.exe -fsS URL` (or `Invoke-RestMethod -Uri URL`) to avoid the `curl` alias used by Windows PowerShell 5.1. All commands are run from the repository root unless stated otherwise.
 
 ## Start and populate
 
