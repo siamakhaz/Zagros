@@ -50,10 +50,11 @@ fn checked(records: Vec<CveAlias>) -> Result<Vec<CveAlias>, String> {
         {
             return Err("alias catalog contains invalid or unreviewed evidence".into());
         }
-        if let Some(previous) = seen.insert(key.clone(), record.cve_id.clone()) {
-            if previous != record.cve_id {
-                return Err("conflicting alias maps to multiple CVEs".into());
-            }
+        if seen
+            .insert(key.clone(), record.cve_id.clone())
+            .is_some_and(|previous| previous != record.cve_id)
+        {
+            return Err("conflicting alias maps to multiple CVEs".into());
         }
         if !pairs.insert((key, record.cve_id.clone())) {
             return Err("duplicate alias mapping".into());
