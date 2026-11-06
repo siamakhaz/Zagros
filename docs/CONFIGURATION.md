@@ -99,7 +99,7 @@ connection to HelixDB.
 docker compose -f docker/compose.yml down
 ```
 
-HelixDB data persists in the **host bind-mounted directory** selected by `ZAGROS_DATA_DIR` (default `./data` in `.env.example`). `docker compose down` does not delete this directory. Do not use `down -v` as a data cleanup command: it removes Compose-managed named volumes such as `zagros-data`, but does not delete the HelixDB host directory.
+HelixDB data persists in the **host bind-mounted directory** selected by `ZAGROS_DATA_DIR` (`./data` in `.env.example`; check the resolved host path with `docker compose -f docker/compose.yml config`). The MCP and CLI containers use a **separate** Compose-managed named volume, `zagros-data`, at `/data`. `docker compose -f docker/compose.yml down` preserves both stores. Do not use `down -v` during routine shutdown: it deletes the named volume and its MCP/CLI refresh metadata, even though it does not delete the HelixDB host bind directory. Back up both stores before destructive maintenance.
 
 ### Docker Compose configuration (`docker/compose.yml`)
 

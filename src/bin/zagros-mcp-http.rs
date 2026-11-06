@@ -1,6 +1,6 @@
 // zagros-mcp-http — Streamable HTTP MCP transport
 //
-// Persistent HTTP server that exposes the same four MCP tools as the
+// Persistent HTTP server that exposes the same seven MCP tools as the
 // stdio binary (zagros-mcp), but over a long-lived TCP port so that
 // OpenCode and other remote clients can connect without Docker Desktop
 // MCP Toolkit.
