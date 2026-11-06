@@ -1,6 +1,6 @@
 # Zagros — Shared Security Knowledge for AI Agents
 
-Zagros is an open-source, self-hosted security knowledge service for teams and AI agents. It indexes authoritative CVE, CWE, ASVS, CAPEC, and ATT&CK references and exposes source-attributed records through MCP, CLI, and a web UI. Organizations control its deployment and must provide their own access controls for shared or remote use.
+Zagros is an open-source, self-hosted security reference service for people and AI agents. It indexes source-attributed CVE, CWE, ASVS, CAPEC, and ATT&CK records for investigation through MCP, CLI, and a web UI. **It does not scan systems, independently verify vulnerabilities, certify compliance, or fix security issues.** Teams control its deployment and must provide their own authentication and authorization for shared or remote access.
 
 ![Zagros](assets/zagros.png)
 
