@@ -64,7 +64,7 @@ fn checked(records: Vec<CveAlias>) -> Result<Vec<CveAlias>, String> {
 }
 
 pub fn catalog() -> Result<Vec<CveAlias>, String> {
-    let records: Vec<CveAlias> = serde_json::from_str(include_str!("../catalog/cve-aliases.json"))
+    let records: Vec<CveAlias> = serde_json::from_str(include_str!("catalog/cve-aliases.json"))
         .map_err(|e| format!("invalid alias catalog JSON: {e}"))?;
     checked(records)
 }
