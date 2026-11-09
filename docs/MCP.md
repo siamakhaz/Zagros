@@ -57,6 +57,8 @@ docker mcp client connect claude --profile profile
 
 ---
 
+For reviewed vulnerability nicknames, evidence metadata, and approximate suggestions, see [CVE aliases](CVE-ALIASES.md). The `search_cves` response adds `match_kind`, `indexed_records`, `suggestions` and `coverage_note`. An exact reviewed nickname match has `alias_evidence` in the result; a spelling suggestion never becomes a confirmed CVE hit.
+
 ## Tools
 
 ### `search_cves`
