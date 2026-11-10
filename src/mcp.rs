@@ -330,6 +330,7 @@ pub struct CveMcpServer {
     pub last_knowledge_sync: Arc<Mutex<Option<Instant>>>,
     pub cache: Arc<Mutex<Option<DocCache>>>,
     pub knowledge_cache: Arc<Mutex<Option<KnowledgeCache>>>,
+    mutations_enabled: bool,
 }
 
 impl CveMcpServer {
@@ -340,6 +341,26 @@ impl CveMcpServer {
             last_knowledge_sync: Arc::new(Mutex::new(None)),
             cache: Arc::new(Mutex::new(None)),
             knowledge_cache: Arc::new(Mutex::new(None)),
+            mutations_enabled: true,
+        }
+    }
+
+    /// Fail closed for publicly reachable Streamable HTTP deployments.
+    /// Stdio retains the existing write tools for locally approved workflows.
+    pub fn new_http_read_only() -> Self {
+        let mut server = Self::new();
+        server.mutations_enabled = false;
+        server
+    }
+
+    fn require_mutation_access(&self) -> Result<(), McpError> {
+        if self.mutations_enabled {
+            Ok(())
+        } else {
+            Err(McpError::invalid_params(
+                "write operations are disabled on HTTP transport; use locally approved CLI or stdio",
+                None,
+            ))
         }
     }
 }
@@ -618,6 +639,7 @@ impl CveMcpServer {
         &self,
         Parameters(params): Parameters<SyncParams>,
     ) -> Result<rmcp::Json<SyncResponse>, McpError> {
+        self.require_mutation_access()?;
         if !(1..=1000).contains(&params.limit) {
             return Err(McpError::invalid_params(
                 "limit must be between 1 and 1000",
@@ -658,6 +680,7 @@ impl CveMcpServer {
         &self,
         Parameters(params): Parameters<BackfillParams>,
     ) -> Result<rmcp::Json<BackfillResponse>, McpError> {
+        self.require_mutation_access()?;
         if !(1..=10_000).contains(&params.limit) {
             return Err(McpError::invalid_params(
                 "limit must be between 1 and 10000",
@@ -698,6 +721,7 @@ impl CveMcpServer {
         &self,
         Parameters(params): Parameters<SyncKnowledgeParams>,
     ) -> Result<rmcp::Json<SyncKnowledgeResponse>, McpError> {
+        self.require_mutation_access()?;
         let source = params.source.to_lowercase();
         let allowed = ["cwe", "asvs", "capec", "attack", "all"];
         if !allowed.contains(&source.as_str()) {
@@ -885,5 +909,24 @@ mod health_tests {
         assert_eq!(unknown.integrity, "healthy");
         assert_eq!(unknown.freshness, "unknown");
         assert_eq!(unknown.age_hours, None);
+    }
+}
+
+#[cfg(test)]
+mod remote_mutation_tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn http_transport_denies_every_mutation_before_network_or_disk_access() {
+        let http = CveMcpServer::new_http_read_only();
+        assert!(http.sync_cves(Parameters(SyncParams { limit: 1 })).await.is_err());
+        assert!(http.backfill_cves(Parameters(BackfillParams { limit: 1, verbose: false })).await.is_err());
+        assert!(http.sync_knowledge_source(Parameters(SyncKnowledgeParams { source: "cwe".to_string() })).await.is_err());
+    }
+
+    #[test]
+    fn stdio_keeps_explicitly_invoked_writes_available() {
+        assert!(CveMcpServer::new().require_mutation_access().is_ok());
+        assert!(CveMcpServer::new_http_read_only().require_mutation_access().is_err());
     }
 }
