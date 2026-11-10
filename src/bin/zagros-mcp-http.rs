@@ -50,7 +50,7 @@ async fn main() -> anyhow::Result<()> {
     }
 
     let mcp_service =
-        StreamableHttpService::new(|| Ok(CveMcpServer::new()), session_manager, config);
+        StreamableHttpService::new(|| Ok(CveMcpServer::new_http_read_only()), session_manager, config);
 
     // ── axum router ────────────────────────────────────────────────────────
     let app = Router::new()
