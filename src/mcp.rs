@@ -919,14 +919,35 @@ mod remote_mutation_tests {
     #[tokio::test]
     async fn http_transport_denies_every_mutation_before_network_or_disk_access() {
         let http = CveMcpServer::new_http_read_only();
-        assert!(http.sync_cves(Parameters(SyncParams { limit: 1 })).await.is_err());
-        assert!(http.backfill_cves(Parameters(BackfillParams { limit: 1, verbose: false })).await.is_err());
-        assert!(http.sync_knowledge_source(Parameters(SyncKnowledgeParams { source: "cwe".to_string() })).await.is_err());
+        assert!(
+            http.sync_cves(Parameters(SyncParams { limit: 1 }))
+                .await
+                .is_err()
+        );
+        assert!(
+            http.backfill_cves(Parameters(BackfillParams {
+                limit: 1,
+                verbose: false
+            }))
+            .await
+            .is_err()
+        );
+        assert!(
+            http.sync_knowledge_source(Parameters(SyncKnowledgeParams {
+                source: "cwe".to_string()
+            }))
+            .await
+            .is_err()
+        );
     }
 
     #[test]
     fn stdio_keeps_explicitly_invoked_writes_available() {
         assert!(CveMcpServer::new().require_mutation_access().is_ok());
-        assert!(CveMcpServer::new_http_read_only().require_mutation_access().is_err());
+        assert!(
+            CveMcpServer::new_http_read_only()
+                .require_mutation_access()
+                .is_err()
+        );
     }
 }
