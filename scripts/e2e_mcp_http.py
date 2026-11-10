@@ -119,6 +119,27 @@ def main():
         names = {item["name"] for item in tools["result"]["tools"]}
         assert {"search_cves", "get_cve"}.issubset(names), names
 
+        # A public HTTP endpoint must never execute state-changing ingestion.
+        # Probe each handler with valid arguments; no upstream fetch or DB write
+        # should happen because the rejection precedes all mutation logic.
+        for rpc_id, tool_name, arguments in (
+            (20, "sync_cves", {"limit": 1}),
+            (21, "backfill_cves", {"limit": 1, "verbose": False}),
+            (22, "sync_knowledge_source", {"source": "cwe"}),
+        ):
+            write_status, _, denied = request(
+                port,
+                rpc(rpc_id, "tools/call", {
+                    "name": tool_name,
+                    "arguments": arguments,
+                }),
+                session=session,
+            )
+            assert write_status == 200, (tool_name, write_status, denied)
+            assert "disabled on HTTP transport" in json.dumps(denied), (
+                f"HTTP write tool did not fail closed: {tool_name}, {denied}"
+            )
+
         status, _, search = request(
             port,
             rpc(3, "tools/call", {
