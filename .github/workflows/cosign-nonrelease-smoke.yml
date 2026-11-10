@@ -49,9 +49,5 @@ jobs:
           echo "COSIGN_OCI_DIGEST_SIGN_VERIFY_PASS"
           # Exercise the release's keyless --yes path on a disposable local registry.
           cosign sign --yes --allow-insecure-registry "localhost:5000/zagros-cosign-test@$digest"
-          cosign verify --allow-insecure-registry \\
-            --certificate-identity-regexp '^https://github.com/siamakhaz/Zagros/.github/workflows/cosign-nonrelease-smoke.yml@refs/pull/120/merge
- \\
-            --certificate-oidc-issuer 'https://token.actions.githubusercontent.com' \\
-            "localhost:5000/zagros-cosign-test@$digest"
+          cosign verify --allow-insecure-registry --certificate-identity-regexp 'https://github.com/siamakhaz/Zagros/.github/workflows/cosign-nonrelease-smoke.yml@refs/pull/120/merge' --certificate-oidc-issuer 'https://token.actions.githubusercontent.com' "localhost:5000/zagros-cosign-test@$digest"
           echo "COSIGN_KEYLESS_OCI_DIGEST_SIGN_VERIFY_PASS"
