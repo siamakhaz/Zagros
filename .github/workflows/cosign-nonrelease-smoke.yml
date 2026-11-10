@@ -25,3 +25,24 @@ jobs:
           cosign sign-blob --yes --key cosign.key --bundle sample.sigstore.json sample.txt
           cosign verify-blob --key cosign.pub --bundle sample.sigstore.json sample.txt
           echo "COSIGN_INSTALL_SIGN_VERIFY_PASS"
+      - name: Sign and verify image digest in disposable localhost registry
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker run -d --name zagros-cosign-test-registry -p 5000:5000 registry:2
+          trap 'docker rm -f zagros-cosign-test-registry >/dev/null 2>&1 || true' EXIT
+          for i in {1..20}; do
+            curl -fsS http://localhost:5000/v2/ >/dev/null && break || sleep 1
+          done
+          docker pull alpine:3.21
+          docker tag alpine:3.21 localhost:5000/zagros-cosign-test:ci
+          digest="$(docker push localhost:5000/zagros-cosign-test:ci | sed -n 's/.*digest: \\(sha256:[a-f0-9]*\\).*/\\1/p' | tail -1)"
+          test -n "$digest"
+          d="$(mktemp -d)"
+          trap 'rm -rf "$d"; docker rm -f zagros-cosign-test-registry >/dev/null 2>&1 || true' EXIT
+          cd "$d"
+          export COSIGN_PASSWORD="$(openssl rand -hex 32)"
+          cosign generate-key-pair >/dev/null
+          cosign sign --yes --allow-insecure-registry --key cosign.key "localhost:5000/zagros-cosign-test@$digest"
+          cosign verify --allow-insecure-registry --key cosign.pub "localhost:5000/zagros-cosign-test@$digest"
+          echo "COSIGN_OCI_DIGEST_SIGN_VERIFY_PASS"
