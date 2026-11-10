@@ -36,7 +36,7 @@ jobs:
           done
           docker pull alpine:3.21
           docker tag alpine:3.21 localhost:5000/zagros-cosign-test:ci
-          digest="$(docker push localhost:5000/zagros-cosign-test:ci | sed -n 's/.*digest: \\(sha256:[a-f0-9]*\\).*/\\1/p' | tail -1)"
+          digest="$(docker push localhost:5000/zagros-cosign-test:ci | awk '/digest: sha256:/ {print $3}' | tail -1)"
           test -n "$digest"
           d="$(mktemp -d)"
           trap 'rm -rf "$d"; docker rm -f zagros-cosign-test-registry >/dev/null 2>&1 || true' EXIT
