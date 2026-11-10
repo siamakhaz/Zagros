@@ -2,8 +2,14 @@
 
 The `zagros-mcp` binary (`src/bin/zagros-mcp.rs`) is a native MCP stdio
 server built with `rmcp`. The `zagros-mcp-http` binary
-(`src/bin/zagros-mcp-http.rs`) exposes the same seven tools over Streamable
-HTTP. Neither binary requires Docker MCP Gateway or Docker Desktop MCP Toolkit.
+(`src/bin/zagros-mcp-http.rs`) exposes the same seven tool names over Streamable
+HTTP, but **HTTP mutation calls are rejected server-side** until an authorized
+remote-write design is implemented. The HTTP transport allows read-only
+`search_cves`, `get_cve`, `index_status`, and `search_knowledge`; `sync_cves`,
+`backfill_cves`, and `sync_knowledge_source` remain available only through the
+local stdio transport or administrator CLI. MCP tool descriptions and client
+approval prompts are **not** authentication or authorization. Do not expose a
+public endpoint without an authenticated gateway, even for read-only tools. Neither binary requires Docker MCP Gateway or Docker Desktop MCP Toolkit.
 The supported Compose deployment runs the HTTP server directly; Toolkit
 registration is an optional integration for clients that use it.
 
