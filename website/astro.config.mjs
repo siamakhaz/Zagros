@@ -1,11 +1,10 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
-// GitHub Pages: https://siamakhaz.github.io/Zagros/
-// For local dev the base is ignored; for build it prefixes all assets.
+// GitHub Pages custom domain serves the site at the root.
 export default defineConfig({
-  site: 'https://siamakhaz.github.io',
-  base: '/Zagros/',
+  site: 'https://zagros.mystronics.com',
+  base: '/',
   output: 'static',
   integrations: [sitemap()],
   build: { format: 'directory' },
