@@ -12,6 +12,16 @@ const { doc } = Astro.props;
 const { Content } = await render(doc);
 const label = (id: string) => id.replace(/\.md$/, '').replace(/[-_]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 const title = doc.data.title ?? label(doc.id);
+const plainParagraphs = doc.body
+  .replace(/```[\s\S]*?```/g, ' ')
+  .split(/\n\s*\n/)
+  .map((paragraph) => paragraph
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/!?\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/[`*_>#|]/g, ' ')
+    .replace(/\s+/g, ' ').trim())
+  .filter((paragraph) => paragraph.length > 40 && !paragraph.startsWith('- '));
+const description = `${title}: ${plainParagraphs[0] ?? 'Source-backed security intelligence reference and guidance for teams and AI agents.'}`.slice(0, 155);
 const docUrl = (id: string) => `${base}docs/${id.replace(/\.md$/, '')}/`;
 
 interface NavItem { id?: string; href?: string; title: string; }
@@ -57,7 +67,7 @@ const navGroups: NavGroup[] = [
 const hrefFor = (item: NavItem) => item.href ?? docUrl(item.id!);
 const isCurrent = (item: NavItem) => item.id === doc.id;
 ---
-<Base title={`${title} — Zagros docs`}>
+<Base title={`${title} — Zagros docs`} description={description}>
 <div class="wrap">
   <div class="docs-layout">
     <aside class="docs-side">

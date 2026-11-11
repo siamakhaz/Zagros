@@ -1,18 +1,20 @@
 {
-  "name": "zagros-website",
-  "version": "0.1.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview"
-  },
-  "dependencies": {
-    "@astrojs/sitemap": "^3.7.4",
-    "astro": "7.4.7"
-  },
-  "devDependencies": {
-    "typescript": "^5.9.2"
-  }
+    "name":  "zagros-website",
+    "version":  "0.1.0",
+    "private":  true,
+    "type":  "module",
+    "scripts":  {
+                    "dev":  "astro dev",
+                    "build":  "astro build \u0026\u0026 node scripts/check-seo.mjs",
+                    "preview":  "astro preview",
+                    "check:seo":  "node scripts/check-seo.mjs"
+                },
+    "dependencies":  {
+                         "@astrojs/sitemap":  "^3.7.4",
+                         "astro":  "7.4.7"
+                     },
+    "devDependencies":  {
+                            "typescript":  "^5.9.2",
+                            "@astrojs/markdown-remark":  "^7.3.7"
+                        }
 }
