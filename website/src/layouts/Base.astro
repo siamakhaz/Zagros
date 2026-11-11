@@ -3,6 +3,8 @@ import '../styles/global.css';
 interface Props { title?: string; description?: string; }
 const { title = 'Zagros — Shared security knowledge for AI agents', description = 'Self-hosted security knowledge for teams and AI agents, with authoritative CVE, CWE, ASVS, CAPEC and ATT&CK evidence, provenance, MCP, CLI and web UI.' } = Astro.props;
 const base = import.meta.env.BASE_URL;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
+const sitemapURL = new URL(base + 'sitemap-index.xml', Astro.site ?? Astro.url).href;
 ---
 <!doctype html>
 <html lang="en">
@@ -11,6 +13,12 @@ const base = import.meta.env.BASE_URL;
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{title}</title>
   <meta name="description" content={description} />
+  <link rel="canonical" href={canonical} />
+  <link rel="sitemap" type="application/xml" href={sitemapURL} />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={canonical} />
   <meta name="google-site-verification" content="GdFShr9HIoHfaOxvBGac7jcIkdaMWoMDZACZT3Ba2x8" />
   <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
