@@ -13,6 +13,10 @@ function collect(folder) {
 }
 collect(join(dist, 'docs'));
 const errors = [];
+const robots = readFileSync(join(dist, 'robots.txt'), 'utf8');
+const expectedSitemap = 'Sitemap: https://zagros.mystronics.com/sitemap-index.xml';
+if (!robots.split(/\r?\n/).includes(expectedSitemap)) errors.push('robots.txt: sitemap must use the canonical custom domain');
+if (robots.includes('siamakhaz.github.io/Zagros')) errors.push('robots.txt: legacy GitHub Pages sitemap is not allowed');
 const descriptions = new Map();
 for (const file of files) {
   const html = readFileSync(file, 'utf8');
