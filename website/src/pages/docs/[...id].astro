@@ -21,7 +21,11 @@ const plainParagraphs = doc.body
     .replace(/[`*_>#|]/g, ' ')
     .replace(/\s+/g, ' ').trim())
   .filter((paragraph) => paragraph.length > 40 && !paragraph.startsWith('- '));
-const description = `${title}: ${plainParagraphs[0] ?? 'Source-backed security intelligence reference and guidance for teams and AI agents.'}`.slice(0, 155);
+const descriptions: Record<string, string> = {
+  'onboard-admin.md': 'Deploy and verify a self-hosted Zagros service, seed security sources, and run your first source-backed investigation.',
+  'releasing.md': 'Release Zagros using versioned artifacts, documented verification steps, and consistent published documentation.',
+};
+const description = descriptions[doc.id] ?? `${title}: ${plainParagraphs[0] ?? 'Source-backed security intelligence reference and guidance for teams and AI agents.'}`.slice(0, 155);
 const docUrl = (id: string) => `${base}docs/${id.replace(/\.md$/, '')}/`;
 
 interface NavItem { id?: string; href?: string; title: string; }
